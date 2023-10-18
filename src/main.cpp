@@ -837,7 +837,7 @@ void loop() {
 }
     }
   }
-if ( ((millis() - Timer_Cooler) > (TIMERDELAY * 1000) ) && (sysvar.puissance <= config.minpow) && digitalRead(COOLER) == HIGH ) {   // cut cooler 
+if ( ((millis() - Timer_Cooler) > (TIMERDELAY * 1000) ) && ((sysvar.puissance <= config.minpow) || (config.dimmer_on_off == 0)) && digitalRead(COOLER) == HIGH ) {   // cut cooler 
   digitalWrite(COOLER, LOW); 
   if (!AP && mqtt_config.mqtt) { device_cooler.send(stringboolMQTT(false));}
 }
