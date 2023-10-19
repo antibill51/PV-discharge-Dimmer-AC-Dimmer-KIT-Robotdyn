@@ -643,6 +643,18 @@ void setup() {
     device_dimmer_minpow.send(String(config.minpow));
     device_dimmer_maxpow.send(String(config.maxpow));
     device_dimmer_child_mode.send(String(config.mode));
+
+    device_dimmer_on_off.send(String(config.dimmer_on_off));
+
+    #ifdef RELAY1
+      int relaystate = digitalRead(RELAY1); 
+	  	device_relay1.send(String(relaystate));
+    #endif
+    #ifdef RELAY2
+      relaystate = digitalRead(RELAY2); 
+		  device_relay2.send(String(relaystate));
+    #endif
+
     }
 
 

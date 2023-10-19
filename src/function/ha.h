@@ -79,7 +79,8 @@ struct MQTT
           "\"pl_off\": \"{ \\\""+object_id+"\\\" : \\\"0\\\"  } \","
           "\"stat_on\":1,"
           "\"stat_off\":0,"
-          "\"cmd_t\": \""+ topic_Xlyric + entity_type + "/command\",";
+          "\"qos\":1,"
+          "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\",";
     } 
     else if (entity_type == "number") { 
             info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","

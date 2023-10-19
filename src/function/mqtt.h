@@ -56,7 +56,7 @@ String stringboolMQTT(bool mybool);
   String topic = "homeassistant/sensor/"+ node_id +"/status";  
   String topic_Xlyric = "Xlyric/"+ node_id +"/";
 
-  String command_switch = String(topic_Xlyric + "switch/command");
+  String command_switch = String(topic_Xlyric + "command/switch");
   String command_number = String(topic_Xlyric + "number/command");
   String command_select = String(topic_Xlyric + "select/command");
   String command_button = String(topic_Xlyric + "button/command");
@@ -98,10 +98,10 @@ void callback(char* Subscribedtopic, byte* message, unsigned int length) {
       logs += loguptime() + "MQTT temp at " + String(sysvar.celsius) + "\r\n";
     }
   }
-    //   logs += loguptime() + "Subscribedtopic : " + String(Subscribedtopic)+ "\r\n";
-    // logs += loguptime() + "switchcommand : " + String(switch_command)+ "\r\n";
+    // logs += loguptime() + "Subscribedtopic : " + String(Subscribedtopic)+ "\r\n";
+    // logs += loguptime() + "command_switch : " + String(command_switch)+ "\r\n";
 //#ifdef  STANDALONE // désactivé sinon ne fonctionne pas avec ESP32
-  if (strcmp( Subscribedtopic, command_switch.c_str() ) == 0) { 
+  if (strstr( Subscribedtopic, command_switch.c_str() ) != NULL) { 
     #ifdef RELAY1
       if (doc2.containsKey("relay1")) { 
           int relay = doc2["relay1"]; 
@@ -272,10 +272,10 @@ void reconnect() {
         logs += loguptime() + "Connected\r\n";
         if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV);}
         if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP);}
-        client.subscribe(command_button.c_str());
-        client.subscribe(command_number.c_str());
-        client.subscribe(command_select.c_str());
-        client.subscribe(command_switch.c_str());
+        client.subscribe(command_button.c_str(),1);
+        client.subscribe(command_number.c_str(),1);
+        client.subscribe(command_select.c_str(),1);
+        client.subscribe((command_switch + "/#").c_str(),1);
 
         client.publish(String(topic_Xlyric +"status").c_str() , "online", true); // status Online
         
