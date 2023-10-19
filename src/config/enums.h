@@ -2,7 +2,8 @@
 #define ENUMS
 
 #include <Arduino.h>
-#ifdef ESP32
+
+#if defined(ESP32) || defined(ESP32ETH)
   #include "WiFi.h"
 #else
   #include <ESP8266WiFi.h>
@@ -31,7 +32,9 @@ struct Config {
   bool JEEDOM;
   bool DOMOTICZ;
   char PVROUTER[5];
-
+  int charge;
+  int dispo; 
+  
 };
 
 struct Mqtt {
@@ -51,14 +54,36 @@ struct Wifi_struct {
 
 ///variables globales 
 struct System {
-
+/// @brief  température actuelle
 float celsius=0.00; 
+/// @brief  puissance actuelle en %
 int puissance; 
-int change=0; 
-//String loginit;
-//String logs="197}11}1";
+/// @brief  puissance actuelle en Watt
+int puissancewatt=0; 
+/// @brief  puissance max locale en Watt
+int puissancemax=0; 
+/// @brief  puissance dispo en watt
+int puissance_dispo=0;
 
+int change=0; 
+/// @brief état du ventilateur
+bool cooler=0;
+/// @brief  puissance cumulée en Watt (remonté par l'enfant toute les 10 secondes)
+int puissance_cumul=0;
+/// @brief etat de la surchauffe
+byte security=0;
 };
+
+struct epoc {
+  public:int heure;
+  public:int minute;
+  public:int seconde;
+  public:int jour;
+  public:int mois;
+  public:int annee;
+};
+
+
 
 
 #endif

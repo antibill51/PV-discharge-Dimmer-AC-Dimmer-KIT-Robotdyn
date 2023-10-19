@@ -56,6 +56,12 @@
                     </a>
                 </li>
                 <li class="nav-item active">
+                    <a class="nav-link" href="/minuteur.html">
+                        <i class="fas fa-fw fa-moon"></i>
+                        <span>Minuteur d'appoint</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
                     <a class="nav-link" href="/log.html">
                         <i class="fas fa-fw fa-info"></i>
                         <span>Console logs</span>
@@ -146,7 +152,8 @@
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Puissance</div>
                                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    <span id="state">%STATE%</span>
+                                                    <span id="state">%STATE%</span>(percent)
+                                                    <span id="power">%POWER%</span>(W)
                                                 </div>
                                             </div>
                                             <div class="col-auto">
@@ -221,50 +228,48 @@
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="form-group row">
-                                                            <div class="col-sm-6">Max Temp</div>
-                                                            <div class="col-sm-6">Start Power</div>
+                                                            <div class="col-sm-3">Max Temp (°C)</div>
+                                                            <div class="col-sm-3">Min Power (percent)</div>
+                                                            <div class="col-sm-3">Max Power (percent)</div>
+                                                            <div class="col-sm-3">Charge (W)</div>
                                                         </div>
                                                         <div class="form-group row">
-                                                            <div class="col-sm-6">
+                                                            <div class="col-sm-3">
                                                                 <input
-                                                                    type="text"
+                                                                    type="number"
+                                                                    step="1"
                                                                     class="form-control form-control-user"
                                                                     id="maxtemp"
                                                                     placeholder="%MAXTEMP%"
                                                                 >
                                                             </div>
-                                                            <div class="col-sm-6">
+                                                            <div class="col-sm-3">
                                                                 <input
-                                                                    type="text"
-                                                                    class="form-control form-control-user"
-                                                                    id="startingpow"
-                                                                    placeholder="%STARTINGPOW%"
-                                                                >
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="form-group row">
-                                                            <div class="col-sm-6">Min Power</div>
-                                                            <div class="col-sm-6">Max Power</div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <div class="col-sm-6">
-                                                                <input
-                                                                    type="text"
+                                                                    type="number"
+                                                                    step="1"
                                                                     class="form-control form-control-user"
                                                                     id="minpow"
                                                                     placeholder="%MINPOW%"
                                                                 >
                                                             </div>
-                                                            <div class="col-sm-6">
+                                                            <div class="col-sm-3">
                                                                 <input
-                                                                    type="text"
+                                                                    type="number"
+                                                                    step="1"
                                                                     class="form-control form-control-user"
                                                                     id="maxpow"
                                                                     placeholder="%MAXPOW%"
                                                                 >
                                                             </div>
-      
+                                                            <div class="col-sm-3">
+                                                                <input
+                                                                    type="number"
+                                                                    step="1"
+                                                                    class="form-control form-control-user"
+                                                                    id="charge"
+                                                                    placeholder="%CHARGE%"
+                                                                >
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -302,50 +307,49 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                <!-- </div> -->
-                                                <br>
-                                                <div class="card position-relative"  id="IDXview" style="display: none">
-                                                    <div class="card-header py-3">
-                                                    <h6 class="m-0 font-weight-bold text-primary">Domoticz</h6>
-                                                        <span id="saveform"></span>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="form-group row">
-                                                            <div class="col-sm-3">IDX temp</div>
-                                                            <div class="col-sm-3">IDX pow</div>
-                                                            <div class="col-sm-3">IDX alarme</div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <div class="col-sm-3">
-                                                                <input
-                                                                    type="text"
-                                                                    class="form-control form-control-user"
-                                                                    id="idxtemp"
-                                                                    placeholder="%IDXTEMP%"
-                                                                >
-                                                            </div>
-                                                            <div class="col-sm-3">
-                                                                <input
-                                                                    type="text"
-                                                                    class="form-control form-control-user"
-                                                                    id="IDX"
-                                                                    placeholder="%IDX%"
-                                                                >
-                                                            </div>
-                                                            <div class="col-sm-3">
-                                                                <input
-                                                                    type="text"
-                                                                    class="form-control form-control-user"
-                                                                    id="IDXAlarme"
-                                                                    placeholder="%IDXALARME%"
-                                                                >
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-
+                                            <br>
+                                                    <div class="card position-relative"  id="IDXview" style="display: none">
+                                                        <div class="card-header py-3">
+                                                        <h6 class="m-0 font-weight-bold text-primary">Domoticz</h6>
+                                                            <span id="saveform"></span>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group row">
+                                                                <div class="col-sm-3">IDX temp</div>
+                                                                <div class="col-sm-3">IDX pow</div>
+                                                                <div class="col-sm-3">IDX alarme</div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <div class="col-sm-3">
+                                                                    <input
+                                                                        type="text"
+                                                                        class="form-control form-control-user"
+                                                                        id="idxtemp"
+                                                                        placeholder="%IDXTEMP%"
+                                                                    >
+                                                                </div>
+                                                                <div class="col-sm-3">
+                                                                    <input
+                                                                        type="text"
+                                                                        class="form-control form-control-user"
+                                                                        id="IDX"
+                                                                        placeholder="%IDX%"
+                                                                    >
+                                                                </div>
+                                                                <div class="col-sm-3">
+                                                                    <input
+                                                                        type="text"
+                                                                        class="form-control form-control-user"
+                                                                        id="IDXAlarme"
+                                                                        placeholder="%IDXALARME%"
+                                                                    >
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <!-- </div>     -->
                                                 <br>
                                                 <div class="card position-relative">
                                                     <div class="card-header py-3">
@@ -394,8 +398,8 @@
                                                                 </select>
                                                             </div>
                                                         </div>        
-                                                    <!-- </div>         -->
-
+                                                    </div>  
+                                                </div>      
                                                 <br>
                                                 <div class="card position-relative"  id="PV_MQTT" style="display: none">
                                                     <div class="card-header py-3">
@@ -427,23 +431,28 @@
                                                         </div>   
                                                         <!-- <div class="form-group row">
                                                             <div class="col-sm-6">Puissance de démarrage</div>
+                                                            <div class="col-sm-6">Etat au démarrage</div>
                                                         </div>
                                                         <div class="form-group row">
                                                             <div class="col-sm-6">
                                                                 <input
-                                                                    type="text"
+                                                                    type="number"
+                                                                    step="1"
                                                                     class="form-control form-control-user"
                                                                     id="startingpow"
                                                                     placeholder="%STARTINGPOW%"
                                                                 >
                                                             </div>
+                                                            <div class="col-sm-3">
+                                                                <select id="dimmer_on_off" class="form-control form-control-user">
+                                                                    <option value="1">on</option>
+                                                                    <option value="0">off</option>
+                                                                </select>
+                                                            </div>
                                                         </div>     -->
                                                     </div>
-
-                                                    </div>
                                                 </div>
-
-
+                                     
                                             </div>
                                         </div>
                                     </div>
@@ -462,24 +471,18 @@
             <!-- Content Row -->
             <script type="text/javascript"> 
 
+      //<!-- rafraichissement valeurs -->
 setInterval(function refreshsend( ) {
-var xhttpstate = $.get ({
-		url : '/state',
-		type : 'GET',
-		dataType: "text",
-		success: function ( result ) { 
-		var config = result.split(";");
-		
-		document.getElementById("state").innerHTML = config[0];
-		document.getElementById("sigma").innerHTML = config[1];
-		
-		
-	
-		},
-		async: true });
-  }, 5000 ) ;
-
-
+        $.getJSON('/state', function(data) {
+          // Récupérer les données du JSON
+            var dimmer = data.dimmer;
+            var temperature = data.temperature;
+            var power= data.power;
+          document.getElementById("state").innerHTML = dimmer;
+          document.getElementById("sigma").innerHTML = temperature;
+          document.getElementById("power").innerHTML = power;
+          });
+}, 5000);
 	
 function sendmode (mode) {
 
@@ -491,22 +494,14 @@ function sendmode (mode) {
 
 
 }
-
-
-
-
 function sendservermode (mode) {
-
-$.get( "/get", { servermode: mode } )
-.done(function(data) { 
-$( "#saveform" ).text( "Configuration appliqué" ).show().fadeOut( 5000 );
-var config = data.split(";");
-document.getElementById("HA").value = config[14];
-document.getElementById("JEEDOM").value = config[15];
-document.getElementById("DOMOTICZ").value = config[16];
-
-}); 
+        $.get( "/get", { servermode: mode } )
+        .done(function(data) { 
+        $( "#saveform" ).text( "Configuration appliqué" ).show().fadeOut( 5000 );
+        }); 
 }
+
+
 // function sendservermode (mode) {
 
 // 		$.get( "/get", { mode: mode } )
@@ -554,7 +549,7 @@ $( "#save" ).click(function() {
 
 $( "#formulaire" ).submit(function() {
 
-	 var data = {'hostname':$('#hostname').val(), 'port':$('#port').val(), 'Publish':$('#Publish').val(), 'idxtemp':$('#idxtemp').val(), 'maxtemp':$('#maxtemp').val(), 'IDXAlarme':$('#IDXAlarme').val(), 'IDX':$('#IDX').val(), 'startingpow':$('#startingpow').val(), 'minpow':$('#minpow').val(), 'maxpow':$('#maxpow').val(), 'child':$('#child').val(), 'SubscribePV':$('#SubscribePV').val(), 'SubscribeTEMP':$('#SubscribeTEMP').val(), 'mode':$('#delester').val(), 'PVROUTER':$('#PVROUTER').val() } 
+	 var data = {'hostname':$('#hostname').val(), 'port':$('#port').val(), 'Publish':$('#Publish').val(), 'idxtemp':$('#idxtemp').val(), 'maxtemp':$('#maxtemp').val(), 'IDXAlarme':$('#IDXAlarme').val(), 'IDX':$('#IDX').val(), 'startingpow':$('#startingpow').val(), 'minpow':$('#minpow').val(), 'maxpow':$('#maxpow').val(), 'child':$('#child').val(), 'SubscribePV':$('#SubscribePV').val(), 'SubscribeTEMP':$('#SubscribeTEMP').val(), 'mode':$('#delester').val() , 'charge':$('#charge').val(), 'PVROUTER':$('#PVROUTER').val() }  
 
      $.ajax({
             type: "GET",
@@ -568,6 +563,7 @@ $( "#formulaire" ).submit(function() {
         });
   return false;
 });
+
 
 $("#DOMOTICZ").click(function () {
     if ($(this).is(":checked")) {
@@ -588,56 +584,23 @@ $("#PVROUTER").change(function() {
     }
 });
 
-// $("#PVROUTER").trigger('change');
 
 
-var recupconfig = $.get ({
-		url : '/config',
-		type : 'GET',
-		dataType: "text",
-		async: false }).responseText; 
-				  
-        var config = recupconfig.split(";");
-    i=0;
-		
-    i++;
-	
-    i++;
-		
-    i++;
-		document.getElementById("idxtemp").value = config[i];
-    i++;
-		document.getElementById("maxtemp").value = config[i];
-    i++;
-		document.getElementById("IDXAlarme").value = config[i];
-    i++;
-		document.getElementById("IDX").value = config[i];
-    i++;
-        document.getElementById("startingpow").value = config[i];
-    i++;	
-        document.getElementById("minpow").value = config[i];
-    i++;		
-		document.getElementById("maxpow").value = config[i];
-    i++;		
-		document.getElementById("child").value = config[i];
-    i++;
-        document.getElementById("delester").value = config[i];
-    i++;		
-		document.getElementById("SubscribePV").value = config[i];
-    i++;		
-		document.getElementById("SubscribeTEMP").value = config[i];
-    i++;
-        document.getElementById("HA").checked = config[i]; //14
-        document.getElementById("HA").value = config[i];
-    i++;
-        document.getElementById("JEEDOM").checked = config[i];
-        document.getElementById("JEEDOM").value = config[i];
-    i++;
-        document.getElementById("DOMOTICZ").checked = config[i];
-        document.getElementById("DOMOTICZ").value = config[i];
-    i++;
-        document.getElementById("PVROUTER").value = config[i];
+var recupconfig =  $.getJSON('/config', function(data) {
+  for (var key in data) {
+    if (data.hasOwnProperty(key)) {
+      var element = document.getElementById(key);
+      if (element) {
+        element.value = data[key];
+        if (element.type === 'checkbox') {
+          element.checked = data[key];
+        }
+      }
+    }
     $("#PVROUTER").trigger('change');
+    $("#DOMOTICZ").trigger('change');
+  }
+});
 
             </script>
 
@@ -664,5 +627,14 @@ var recupconfig = $.get ({
 <script src="https://ota.apper-solaire.org/css/jquery.easing.min.js"></script>
 <!-- Custom scripts for all pages-->
 <script src="https://ota.apper-solaire.org/css/sb-admin-2.js"></script>
+<script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+<script>
+  kofiWidgetOverlay.draw('clyric', {
+    'type': 'floating-chat',
+    'floating-chat.donateButton.text': 'Support me',
+    'floating-chat.donateButton.background-color': '#00b9fe',
+    'floating-chat.donateButton.text-color': '#fff'
+  });
+</script>
 </body>
 </html>

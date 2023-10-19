@@ -171,14 +171,15 @@
                                             <div class="form-group">
                                                 Port  :
                                                 <input
-                                                    type="text"
+                                                    type="number"
+                                                    step="1"
                                                     class="form-control form-control-user"
                                                     id="port"
                                                     placeholder="%PORT%"
                                                 >
                                             </div>
                                             <div class="form-group">
-                                                Topic DOMOTICZ :
+                                                Topic Domoticz :
                                                 <input
                                                     type="text"
                                                     class="form-control form-control-user"
@@ -204,8 +205,8 @@
                                                     placeholder="%PASSWORD%"
                                                 >
                                             </div>
-
                                         </div>
+                                    </div>
                                     <input type="submit" value=" Application des parametres" class="btn btn-primary btn-user btn-block">
                                 </form>
                                 <hr>
@@ -274,28 +275,19 @@ $( "#formulaire" ).submit(function() {
 });
 
 
-
-
-var recupconfig = $.get ({
-		url : 'getmqtt',
-		type : 'GET',
-		dataType: "text",
-		async: false }).responseText; 
-				  
-    var config = recupconfig.split(";");
-      i=0;
-      document.getElementById("server").value = config[i];
-      i++;
-      document.getElementById("topic").value = config[i];	
-      i++;  
-      document.getElementById("user").value = config[i];
-      i++;
-      document.getElementById("password").value = config[i];
-      i++;
-      document.getElementById("MQTT").checked = config[i];
-	  document.getElementById("MQTT").value = config[i];
-      i++;
-      document.getElementById("port").value = config[i];
+var recupconfig =  $.getJSON('/getmqtt', function(data) {
+  for (var key in data) {
+    if (data.hasOwnProperty(key)) {
+      var element = document.getElementById(key);
+      if (element) {
+        element.value = data[key];
+        if (element.type === 'checkbox') {
+          element.checked = data[key];
+        }
+      }
+    }
+  }
+});
 
             </script>
         </div>

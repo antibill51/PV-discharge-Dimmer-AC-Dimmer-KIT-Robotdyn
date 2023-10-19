@@ -1,10 +1,15 @@
 #ifndef HA_FUNCTIONS
 #define HA_FUNCTIONS
 
-#include <PubSubClient.h>
+//#include <PubSubClient.h>
+#include <AsyncMqttClient.h>
 
-extern PubSubClient client;
-extern Config config; 
+extern AsyncMqttClient  client;
+extern Config config;
+extern Mqtt mqtt_config;
+extern System sysvar;
+extern dimmerLamp dimmer;
+String stringbool(bool mybool);extern Config config; 
 
 struct MQTT
 {
@@ -152,7 +157,7 @@ struct MQTT
           + expire_after
           + HA_device_declare() + 
           "}";
-    client.publish(String(topic+object_id+"/config").c_str() , device.c_str(), true); // déclaration autoconf PvRouter
+    client.publish(String(topic+object_id+"/config").c_str() ,1, true, device.c_str()); // déclaration autoconf PvRouter
     // Serial.println(device.c_str());    /// sérial pour debug
     
 
@@ -162,7 +167,7 @@ struct MQTT
     if (config.JEEDOM || config.HA) {
       String topic = "Xlyric/"+ node_id +"/sensors/";
       String message = "  { \""+object_id+"\" : \"" + value.c_str() + "\"  } ";
-      client.publish(String(topic + object_id + "/state").c_str() , message.c_str(), retain_flag);
+      client.publish(String(topic + object_id + "/state").c_str() ,1, retain_flag , message.c_str());
     }
   } 
 };

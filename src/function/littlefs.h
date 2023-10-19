@@ -9,7 +9,7 @@
 
 #include "uptime.h"
 
-#ifdef ESP32
+#if defined(ESP32) || defined(ESP32ETH)
   #include <FS.h>
   #include "SPIFFS.h"
   #define LittleFS SPIFFS // Fonctionne, mais est-ce correct? 
@@ -20,8 +20,12 @@
 const char *mqtt_conf = "/mqtt.json";
 const char *filename_conf = "/config.json";
 const char *wifi_conf = "/wifi.json";
+const char *programme_conf = "/programme.json";
+
 
 extern Config config; 
+//extern Programme programme; 
+
 extern String loginit;
 extern String logs; 
 extern String node_mac;
@@ -37,10 +41,10 @@ void saveConfigCallback () {
   shouldSaveConfig = true;
 }
 
-String loguptime() {
+String loguptime(String log) {
   String uptime_stamp;
   uptime::calculateUptime();
-  uptime_stamp = String(uptime::getDays())+":"+String(uptime::getHours())+":"+String(uptime::getMinutes())+":"+String(uptime::getSeconds())+ "\t";
+  uptime_stamp = String(uptime::getDays())+":"+String(uptime::getHours())+":"+String(uptime::getMinutes())+":"+String(uptime::getSeconds())+ "\t"+log +"\r\n";
   return uptime_stamp;
 }
 
@@ -61,7 +65,7 @@ void loadConfiguration(const char *filename, Config &config) {
   DeserializationError error = deserializeJson(doc, configFile);
   if (error) {
     Serial.println(F("Failed to read configuration file, using default configuration"));
-    loginit += loguptime() + "Failed to read file config File, use default\r\n"; 
+    loginit.concat(loguptime("Failed to read file config File, use default")); 
     }
   // Copy values from the JsonDocument to the Config
   
@@ -79,8 +83,9 @@ void loadConfiguration(const char *filename, Config &config) {
   config.startingpow = doc["startingpow"] | 0; 
   config.minpow = doc["minpow"] | 5;
   config.maxpow = doc["maxpow"] | 50; 
+  config.charge = doc["charge"] | 1500; 
   strlcpy(config.child,                  
-          doc["child"] | "192.168.1.20", 
+          doc["child"] | "", 
           sizeof(config.child));         
   strlcpy(config.mode,                  
           doc["mode"] | "off", 
@@ -114,7 +119,7 @@ void saveConfiguration(const char *filename, const Config &config) {
    File configFile = LittleFS.open(filename_conf, "w");
   if (!configFile) {
     Serial.println(F("Failed to open config file for writing"));
-    logs += loguptime() + "Failed to read file config File, use default\r\n"; 
+    logs += loguptime("Failed to read file config File, use default"); 
   
     return;
   }
@@ -146,6 +151,7 @@ void saveConfiguration(const char *filename, const Config &config) {
   doc["DOMOTICZ"] = config.DOMOTICZ;
   doc["PVROUTER"] = config.PVROUTER;
 
+  doc["charge"] = config.charge;
 
   // Serialize JSON to file
   if (serializeJson(doc, configFile) == 0) {
@@ -155,8 +161,8 @@ void saveConfiguration(const char *filename, const Config &config) {
   /// Publish on MQTT 
   char buffer[1024];
   serializeJson(doc, buffer);
-  client.publish(("Xlyric/sauvegarde/"+ node_id).c_str() ,buffer,  true);
-
+  client.publish(("Xlyric/sauvegarde/"+ node_id).c_str() ,0,true, buffer);
+  
   // Close the file
   configFile.close();
 }
@@ -229,7 +235,7 @@ void savemqtt(const char *filename, const Mqtt &mqtt_config) {
   // Serialize JSON to file
   if (serializeJson(doc, configFile) == 0) {
     Serial.println(F("Failed to write to file in function Save configuration "));
-    logs += loguptime() + "Failed to write MQTT config\r\n";
+    logs.concat(loguptime("Failed to write MQTT config"));
   }
 
   // Close the file
@@ -297,11 +303,14 @@ void savewifiIP(const char *wifi_conf, Wifi_struct &wifi_config_fixe) {
   // Serialize JSON to file
   if (serializeJson(doc, configFile) == 0) {
     Serial.println(F("Failed to write to file in function Save configuration "));
-    logs += loguptime() + "Failed to write wifi config\r\n";
+    logs.concat("Failed to write wifi config");
   }
 
   // Close the file
   configFile.close();
 }
+
+
+
 
 #endif
