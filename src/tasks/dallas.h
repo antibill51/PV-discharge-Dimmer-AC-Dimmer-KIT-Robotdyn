@@ -41,8 +41,10 @@ void mqttdallas() {
           if (mqtt_config.mqtt)  { 
             if ( sysvar.celsius != previous_celsius ) {
               // envoie des infos en mqtt dans ce cas
+              // mqtt(String(config.IDXTemp), String(sysvar.celsius),"Temperature");
               Mqtt_send_DOMOTICZ(String(config.IDXTemp), String(sysvar.celsius),"Temperature");
-              device_temp.send(String(sysvar.celsius)); 
+              // if ( mqtt_config.HA ) { device_temp.send(String(sysvar.celsius)); }
+              device_temp.send(String(sysvar.celsius));
               logs += "Dallas temp : "+ String(sysvar.celsius) +"\r\n";
             }
           }
@@ -57,15 +59,20 @@ void mqttdallas() {
             #ifdef OLDSSR
               analogWrite(JOTTA, 0 );
             #elif  defined(SSR_TEST)
-              ssr_burst.calcul(0);
+              ssr_burst.set_power(0);
             #else
               jotta_command(0);
             #endif
         #endif
         
       if ( mqtt_config.mqtt ) {
+        // mqtt(String(config.IDX), "0","pourcent");
         Mqtt_send_DOMOTICZ(String(config.IDX), "0","pourcent");
       }
+      // if ( mqtt_config.HA ) { 
+      //   device_dimmer.send("0"); 
+      //   device_dimmer_power.send("0");
+      // }
       device_dimmer.send("0"); 
       device_dimmer_power.send("0");
     }
@@ -75,6 +82,7 @@ void mqttdallas() {
   // si trop d'erreur dallas, on remonte en mqtt
   if ( dallas_error > 8 ) {
     DEBUG_PRINTLN("détection perte sonde dallas");
+    // mqtt(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
     Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
     dallas_error = 0; // remise à zéro du compteur d'erreur
   }
@@ -118,5 +126,6 @@ float CheckTemperature(String label, byte deviceAddress[12]){
   }  
   return (tempC); 
 }
+
 
 #endif

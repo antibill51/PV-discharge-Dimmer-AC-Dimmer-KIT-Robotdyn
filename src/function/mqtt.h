@@ -77,8 +77,8 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
   StaticJsonDocument<1024> doc2;
   deserializeJson(doc2, payload);
   /// @brief Enregistrement du dimmer sur MQTT pour récuperer les informations remonté par MQTT
-  if (strcmp( Subscribedtopic, config.SubscribePV ) == 0 && doc2.containsKey("power")) { 
-    int puissancemqtt = doc2["power"]; 
+  if (strcmp( Subscribedtopic, config.SubscribePV ) == 0 && doc2.containsKey("dimmer")) { 
+    int puissancemqtt = doc2["dimmer"]; 
     puissancemqtt = puissancemqtt - config.startingpow;
     if (puissancemqtt < 0) puissancemqtt = 0;
     //if (puissancemqtt > config.maxpow) puissancemqtt = config.maxpow;
@@ -249,6 +249,50 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
 
 
 //// envoie de commande MQTT 
+// void mqtt(String idx, String value, String name="")
+// {
+
+//   if (idx != "0" || idx != "" ) { // Autant vérifier qu'une seule fois?
+    
+//   // Grace a l'ajout de "exp_aft" sur le discovery, 
+//   // je préfère envoyer power et temp séparément, à chaque changement de valeur.
+//   // MQTT_INTERVAL à affiner, mais OK selon mes tests.
+//   // Si pas de valeur publiée dans ce délai, la valeur sur HA passe en indisponible.
+//   // Permet de détecter un problème
+
+//     // StaticJsonDocument<256> infojson;
+//     // infojson["power"] = String(puissance);
+//     // infojson["temperature"] = String(celsius);
+//     // char json_string[256];
+//     // serializeJson(infojson, json_string);
+//     // device_dimmer.send2(json_string);
+    
+//     if (mqtt_config.domoticz){
+//       String nvalue = "0" ; 
+//       String retour; 
+//       DynamicJsonDocument doc(128);
+//       if ( value != "0" ) { nvalue = "2" ; }
+//       doc["idx"] = idx.toInt();
+//       doc["nvalue"] = nvalue.toInt();
+//       doc["svalue"] = value;
+//       doc["name"] = name;
+//       serializeJson(doc, retour);
+// //      String message = "  { \"idx\" : \"" + idx +"\" ,   \"svalue\" : \"" + value + "\",  \"nvalue\" : " + nvalue + "  } ";
+//       //client.loop();
+//       //client.publish(config.Publish, 0,true, String(message).c_str());   
+//       // si config.Publish est vide, on ne publie pas
+//       if (strlen(config.Publish) != 0 ) {
+//         client.publish(config.Publish, 0,true, retour.c_str());
+//       }
+//     }
+
+//     if (mqtt_config.jeedom){
+//       if (strlen(config.Publish) != 0 ) {
+//          String jdompub = String(config.Publish) + "/"+idx ;
+//           client.publish(jdompub.c_str() ,0,true, value.c_str());
+//       }
+//       //client.loop();
+
 void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
 {
 
@@ -279,8 +323,9 @@ void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
 //// communication avec carte fille ( HTTP )
 
 void child_communication(int delest_power, bool equal = false){
+  int instant_power ;
   String baseurl; 
-  // int instant_power = delest_power*config.charge/100;
+  instant_power = delest_power*config.charge/100;
   baseurl = "/?POWER=" + String(delest_power); 
   //if (sysvar.puissance_dispo !=0 ) {  baseurl = "/?POWER=" + String(delest_power) + "&puissance=" + String(sysvar.puissance_dispo) ; }
   if (sysvar.puissance_dispo !=0 ) {  
@@ -292,7 +337,7 @@ void child_communication(int delest_power, bool equal = false){
   http.begin(domotic_client,config.child,80,baseurl); 
   http.GET();
   http.end(); 
-  logs += "child at " + String(delest_power) + "\r\n";
+  logs += "child at " + String(delest_power) + " " + String(instant_power) +  "\r\n";
 }
 
 
@@ -321,7 +366,8 @@ void reconnect() {
         String node_id = String("Dimmer-") + node_mac; 
         String save_command = String("Xlyric/sauvegarde/"+ node_id );
         //client.subscribe(save_command.c_str());
-         int instant_power = dimmer.getPower();
+        int instant_power = dimmer.getPower();
+        // mqtt(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
         Mqtt_send_DOMOTICZ(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
         device_dimmer.send(String(instant_power)); 
         device_dimmer_power.send(String(instant_power * config.charge/100)); 
@@ -329,7 +375,6 @@ void reconnect() {
     
   } else {  Serial.println(" Filesystem not present "); delay(5000); }
 }
-
 //#define MQTT_HOST IPAddress(192, 168, 1, 20)
 void async_mqtt_init() {
   IPAddress ip;
@@ -365,6 +410,7 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
     connectToMqtt();
   }
 }
+
 
 void onMqttSubscribe(uint16_t packetId, uint8_t qos) {
   Serial.println("Subscribe acknowledged.");

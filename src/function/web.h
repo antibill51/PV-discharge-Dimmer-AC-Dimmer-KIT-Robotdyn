@@ -12,6 +12,7 @@
 #include "function/littlefs.h"
 #include "function/ha.h"
 #include "function/minuteur.h"
+#include "function/jotta.h"
 
 
 
@@ -60,6 +61,7 @@ extern MQTT device_dimmer_charge;
 extern String dimmername;
 
 
+
 const char* PARAM_INPUT_1 = "POWER"; /// paramettre de retour sendmode
 const char* PARAM_INPUT_2 = "OFFSET"; /// paramettre de retour sendmode
 
@@ -77,6 +79,9 @@ String readmqttsave();
 String getMinuteur(const Programme& minuteur);
 extern String getlogs(); 
 
+#ifdef SSR_TEST
+extern SSR_BURST ssr_burst;
+#endif
 
 
 void call_pages() {
@@ -407,7 +412,6 @@ server.on("/get", HTTP_ANY, [] (AsyncWebServerRequest *request) {
     if (!AP && mqtt_config.mqtt) { device_dimmer_on_off.send(String(config.dimmer_on_off));}
    }
    if (request->hasParam("PVROUTER")) { request->getParam("PVROUTER")->value().toCharArray(config.PVROUTER,5);}
-
    if (request->hasParam("mqttuser")) { request->getParam("mqttuser")->value().toCharArray(mqtt_config.username,50);  }
    if (request->hasParam("mqttpassword")) { request->getParam("mqttpassword")->value().toCharArray(mqtt_config.password,50);
    savemqtt(mqtt_conf, mqtt_config); 
@@ -471,8 +475,12 @@ server.on("/get", HTTP_ANY, [] (AsyncWebServerRequest *request) {
 String getState() {
   String state; 
   char buffer[5];
-  #ifdef SSR
-  int instant_power= sysvar.puissance ; 
+  #ifdef  SSR
+    #ifdef SSR_TEST
+      int instant_power= ssr_burst.get_power();
+    #else
+      int instant_power= sysvar.puissance ;
+    #endif
   #else
   int instant_power= dimmer.getPower(); 
   #endif
@@ -618,17 +626,4 @@ String getServermode(String Servermode) {
 
 return String(Servermode);
 }
-
-String stringbool(bool mybool){
-  String truefalse = "true";
-  if (mybool == false ) {truefalse = "";}
-  return String(truefalse);
-  }
-
-// String switchstate(int state){
-//   String statestring ="OFF";
-//   if (state==1) statestring ="ON";
-//   return (statestring);
-// }
-
 #endif

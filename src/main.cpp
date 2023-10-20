@@ -146,8 +146,8 @@ Scheduler runner;
 WiFiClient domotic_client;
 AsyncMqttClient client;
 void Mqtt_send_DOMOTICZ(String idx, String value, String name);
-void dimmer_on();
-void dimmer_off();
+// void dimmer_on();
+// void dimmer_off();
 
 DNSServer dns;
 HTTPClient http;
@@ -217,8 +217,9 @@ Programme programme_relay2;
 String getmqtt(); 
 void savemqtt(const char *filename, const Mqtt &mqtt_config);
 bool pingIP(IPAddress ip) ;
+bool pingIP(IPAddress ip) ;
 String stringbool(bool mybool);
-extern String stringboolMQTT(bool mybool);
+// extern String stringboolMQTT(bool mybool);
 String getServermode(String Servermode);
 String switchstate(int state);
 
@@ -284,8 +285,6 @@ unsigned long Timer_Cooler;
 IPAddress _ip,_gw,_sn,gatewayIP  ;
 
 
-
-
     //***********************************
     //************* Setup 
     //***********************************
@@ -323,6 +322,9 @@ void setup() {
     digitalWrite(RELAY2, LOW);
   #endif
 
+  // cooler init
+  pinMode(COOLER, OUTPUT); 
+  digitalWrite(COOLER, LOW);
 
   //démarrage file system
   LittleFS.begin();
@@ -690,14 +692,15 @@ void setup() {
 
 
   }
-  #ifdef  SSR
+
+ #ifdef  SSR
     #ifdef OLDSSR
       analogWriteFreq(GRIDFREQ) ; 
       analogWriteRange(100);
       analogWrite(JOTTA, 0);
     #elif  defined(SSR_TEST)
       pinMode(JOTTA, OUTPUT);
-      ssr_burst.calcul(0);
+      ssr_burst.set_power(0);
       timer.attach_ms(10, SSR_run); // Attachez la fonction task() au temporisateur pour qu'elle s'exécute toutes les 1000 ms
     #else
       init_jotta(); 
@@ -764,12 +767,30 @@ void loop() {
   if (programme.run) { 
       //  minuteur en cours
       if (programme.stop_progr()) { 
-        dimmer.setPower(0); 
-        dimmer_off();
+            // Robotdyn dimmer
+            #ifdef ROBOTDYN
+            dimmer.setPower(0); 
+            dimmer_off();
+            #endif
+            // SSR dimmer
+            #ifdef  SSR
+              #ifdef SSR_TEST
+                ssr_burst.set_power(0);
+              #else
+                jotta_command(0);
+              #endif
+            #endif
         DEBUG_PRINTLN("programme.run");
         sysvar.puissance=0;
         Serial.print("stop minuteur dimmer");
+        // mqtt(String(config.IDX), String(dimmer.getPower()),"pourcent"); // remonté MQTT de la commande réelle
         Mqtt_send_DOMOTICZ(String(config.IDX), String(dimmer.getPower()),"pourcent"); // remonté MQTT de la commande réelle
+        // if (mqtt_config.HA) {
+        //   int instant_power = dimmer.getPower();
+        //   device_dimmer.send(String(instant_power));
+        //   device_dimmer_power.send(String(instant_power * config.charge/100)); 
+        //   device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+        // } 
         int instant_power = dimmer.getPower();
         device_dimmer.send(String(instant_power));
         device_dimmer_power.send(String(instant_power * config.charge/100)); 
@@ -781,15 +802,34 @@ void loop() {
     // minuteur à l'arret
     if (programme.start_progr()){ 
       sysvar.puissance=config.maxpow; 
-      dimmer_on();
-      dimmer.setPower(config.maxpow); 
-      delay (50);
+          //// robotdyn dimmer
+          #ifdef ROBOTDYN
+              dimmer_on();
+              dimmer.setPower(config.maxpow); 
+              delay (50);
+          #endif
+          //// SSR dimmer
+          #ifdef  SSR
+            #ifdef SSR_TEST
+              ssr_burst.set_power(config.maxpow);
+            #else
+              jotta_command(config.maxpow);
+            #endif
+          #endif
       Serial.print("start minuteur ");
+      // mqtt(String(config.IDX), String(dimmer.getPower()),"pourcent"); // remonté MQTT de la commande réelle
       Mqtt_send_DOMOTICZ(String(config.IDX), String(dimmer.getPower()),"pourcent"); // remonté MQTT de la commande réelle
+      // if (mqtt_config.HA) {
+      //   int instant_power = dimmer.getPower();
+      //   device_dimmer.send(String(instant_power));
+      //   device_dimmer_power.send(String(instant_power * config.charge/100)); 
+      //   device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+      // } 
       int instant_power = dimmer.getPower();
       device_dimmer.send(String(instant_power));
       device_dimmer_power.send(String(instant_power * config.charge/100)); 
       device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+      
       offset_heure_ete(); // on corrige l'heure d'été si besoin
     }
   }
@@ -828,6 +868,7 @@ void loop() {
 
   //// si la sécurité température est active on coupe le dimmer
   if ( sysvar.celsius > ( config.maxtemp + 2) && (!alerte) ) { 
+            // mqtt(String(config.IDXAlarme), String("Alert Temp :" + String(sysvar.celsius) ),"Alerte");  ///send alert to MQTT
             Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Alert Temp :" + String(sysvar.celsius) ),"Alerte");  ///send alert to MQTT
             device_dimmer_alarm_temp.send("Alert temp");
             alerte=true;
@@ -838,10 +879,11 @@ void loop() {
       if (!alerte){
         Serial.println("Alert Temp");
         logs += "Alert Temp\r\n";
-         
       
-        if (!AP && mqtt_config.mqtt) { 
-            Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Alert Temp :" + String(sysvar.celsius) ));  ///send alert to MQTT
+        if (!AP && mqtt_config.mqtt){
+              // mqtt(String(config.IDXAlarme), String("Ballon chaud " ),"Alerte");  ///send alert to MQTT
+              Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Ballon chaud " ),"Alerte");  ///send alert to MQTT
+              device_dimmer_alarm_temp.send("Hot water");
         }
         alerte=true;
         
@@ -849,7 +891,10 @@ void loop() {
     //// Trigger de sécurité température
       if ( sysvar.celsius <= (config.maxtemp - (config.maxtemp*TRIGGER/100)) ) {  
         security = 0 ;
-                if (!AP && mqtt_config.mqtt) { device_dimmer_alarm_temp.send(stringboolMQTT(security)); }
+                if (!AP && mqtt_config.mqtt) {
+                  device_dimmer_alarm_temp.send(stringboolMQTT(security)); 
+                  Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("RAS" ),"Alerte");
+                   }
         sysvar.change = 1 ;
       }
       else {
@@ -861,7 +906,7 @@ void loop() {
     alerte=false;
   }
 
-  ////////////////// control de la puissance /////////////////
+  ////////////////// controle de la puissance /////////////////
 
   if ( sysvar.change == 1  && programme.run == false ) {   /// si changement et pas de minuteur en cours
     sysvar.change = 0; 
@@ -897,10 +942,13 @@ void loop() {
           #ifdef  SSR
             #ifdef OLDSSR
               analogWrite(JOTTA, config.maxpow );
+
             #elif  defined(SSR_TEST)
-              ssr_burst.calcul(config.maxpow);
+              //ssr_burst.calcul(config.maxpow);
+              ssr_burst.set_power(config.maxpow);
             #else 
               jotta_command(config.maxpow);
+              sysvar.puissance = config.maxpow;
             #endif
           #endif
 
@@ -917,29 +965,45 @@ void loop() {
           if ( strcmp(config.child,"") != 0 ) {
               if ( strcmp(config.mode,"equal") == 0) { child_communication(int(sysvar.puissance*FACTEUR_REGULATION),true); }  //si mode equal envoie de la commande vers la carte fille
               if ( strcmp(config.mode,"delester") == 0 && sysvar.puissance < config.maxpow) { child_communication(0,false); }  //si mode délest envoie d'une commande à 0
-          }          
+          }
           #ifdef  SSR
             #ifdef OLDSSR
               analogWrite(JOTTA, sysvar.puissance );
             #elif  defined(SSR_TEST)
-              ssr_burst.calcul(sysvar.puissance);
+              ssr_burst.set_power(sysvar.puissance);
             #else
               jotta_command(sysvar.puissance);
             #endif
           #endif
         }
 
+
+        
+      /// si on est en mode MQTT on remonte les valeurs vers HA et MQTT
       if (!AP && mqtt_config.mqtt) { 
         if (config.dimmer_on_off == 0){
-          Mqtt_send_DOMOTICZ(String(config.IDX), String("0"));  // remonté MQTT de la commande 0
+          // mqtt(String(config.IDX), String("0"),"pourcent");  // remonté MQTT de la commande 0
+          // if (mqtt_config.HA) {device_dimmer.send(String("0"));  device_dimmer_power.send(String("0")); device_dimmer_total_power.send(String(sysvar.puissance_cumul)); 
+          // }  // remonté MQTT HA de la commande 0 
+          Mqtt_send_DOMOTICZ(String(config.IDX), String("0"),"pourcent");  // remonté MQTT de la commande 0
           device_dimmer.send(String("0"));  // remonté MQTT HA de la commande 0
+ 
         }
         else if ( sysvar.puissance > config.maxpow ) {
+          // mqtt(String(config.IDX), String(config.maxpow));  // remonté MQTT de la commande max
+          // if (mqtt_config.HA) {device_dimmer.send(String(config.maxpow));}  // remonté MQTT HA de la commande max
           Mqtt_send_DOMOTICZ(String(config.IDX), String(config.maxpow));  // remonté MQTT de la commande max
           device_dimmer.send(String(config.maxpow));  // remonté MQTT HA de la commande max
         }
         else {
-          Mqtt_send_DOMOTICZ(String(config.IDX), String(sysvar.puissance)); // remonté MQTT de la commande réelle
+          // mqtt(String(config.IDX), String(dimmer.getPower()),"pourcent"); // remonté MQTT de la commande réelle
+          // if (mqtt_config.HA) {
+          //     int instant_power = dimmer.getPower();
+          //     device_dimmer.send(String(instant_power));
+          //     device_dimmer_power.send(String(instant_power * config.charge/100)); 
+          //     device_dimmer_total_power.send(String(sysvar.puissance_cumul + (instant_power* config.charge/100)));
+          //   }
+          Mqtt_send_DOMOTICZ(String(config.IDX), String(dimmer.getPower()),"pourcent"); // remonté MQTT de la commande réelle
           // device_dimmer.send(String(sysvar.puissance)); // remonté MQTT HA de la commande réelle
             int instant_power = dimmer.getPower();
             device_dimmer.send(String(instant_power));
@@ -971,8 +1035,13 @@ void loop() {
           }
 
         if ( mqtt_config.mqtt ) {
+          // mqtt(String(config.IDX), "0","pourcent");
           Mqtt_send_DOMOTICZ(String(config.IDX), "0","pourcent");
         }
+        // if ( mqtt_config.HA ) { 
+        //   device_dimmer.send("0"); 
+        //   device_dimmer_power.send("0");
+        // }
         device_dimmer.send("0"); 
         device_dimmer_power.send("0");
 
@@ -986,7 +1055,7 @@ void loop() {
             #ifdef OLDSSR
               analogWrite(JOTTA, 0 );
             #elif  defined(SSR_TEST)
-              ssr_burst.calcul(0);
+              ssr_burst.set_power(0);
             #else
               jotta_command(0);
             #endif
@@ -995,12 +1064,16 @@ void loop() {
 
       if (!AP && mqtt_config.Mqtt::mqtt) {
         int instant_power = dimmer.getPower();
-        Mqtt_send_DOMOTICZ(String(config.IDX), String(instant_power));
+        // mqtt(String(config.IDX), String(instant_power),"Watt");  // correction 19/04
+        Mqtt_send_DOMOTICZ(String(config.IDX), String(instant_power),"Watt");  // correction 19/04
         device_dimmer.send(String(instant_power));
         device_dimmer_power.send(String(instant_power * config.charge/100)); 
         device_dimmer_total_power.send(String(sysvar.puissance_cumul + (instant_power*config.charge/100) ));
       }
+
     }
+
+    
   }
 
  ///// dallas présent >> mesure 
@@ -1055,12 +1128,18 @@ if ( sysvar.celsius >= config.maxtemp && security == 0 ) {
   dimmer.setPower(0);
   dimmer_off();
   float temp = sysvar.celsius + 0.2; /// pour être sur que la dernière consigne envoyé soit au moins égale au max.temp  
+  // mqtt(String(config.IDXTemp), String(temp),"Temperature");  /// remonté MQTT de la température
+  // if ( mqtt_config.HA ) { 
+  //         device_temp.send(String(temp)); 
+  //         device_dimmer_alarm_temp.send(stringbool(security));
+  //         device_dimmer_power.send(String(0));
+  //         device_dimmer_total_power.send(String(sysvar.puissance_cumul));
+  //         }  /// si HA remonté MQTT HA de la température
   Mqtt_send_DOMOTICZ(String(config.IDXTemp), String(temp),"Temperature");  /// remonté MQTT de la température
   device_temp.send(String(temp)); 
   device_dimmer_alarm_temp.send(stringbool(security));
   device_dimmer_power.send(String(0));
   device_dimmer_total_power.send(String(sysvar.puissance_cumul));
-
 
 }
 
@@ -1143,3 +1222,10 @@ String getlogs(){
   
     return logs ; 
 } 
+
+String stringbool(bool mybool){
+  String truefalse = "true";
+  if (mybool == false ) {truefalse = "false";}
+  return String(truefalse);
+  }
+

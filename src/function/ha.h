@@ -9,14 +9,12 @@ extern Config config;
 extern Mqtt mqtt_config;
 extern System sysvar;
 extern dimmerLamp dimmer;
-String stringbool(bool mybool);extern Config config; 
+String stringbool(bool mybool);
 
 struct MQTT
 {
 
   private:int MQTT_INTERVAL = 60;
-  // private:String IPaddress = String(WiFi.localIP().toString());
-
     /* MQTT */
   private:String name; 
   public:void Set_name(String setter) {name=setter; }

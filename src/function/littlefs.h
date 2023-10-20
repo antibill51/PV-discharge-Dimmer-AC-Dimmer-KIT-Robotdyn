@@ -94,7 +94,7 @@ void loadConfiguration(const char *filename, Config &config) {
         doc["SubscribePV"] | "Xlyric/+/sensors/dimmer/state", 
         sizeof(config.SubscribePV));    
   strlcpy(config.SubscribeTEMP,                 
-        doc["SubscribeTEMP"] | "", 
+        doc["SubscribeTEMP"] | "none", 
         sizeof(config.SubscribeTEMP));
   //config.dimmer_on_off = doc["dimmer_on_off"] | 1; 
   config.HA = doc["HA"] | true; 
@@ -146,13 +146,11 @@ void saveConfiguration(const char *filename, const Config &config) {
   doc["SubscribePV"] = config.SubscribePV;
   doc["SubscribeTEMP"] = config.SubscribeTEMP;
 //  doc["dimmer_on_off"] = config.dimmer_on_off;
+  doc["charge"] = config.charge;
   doc["HA"] = config.HA;
   doc["JEEDOM"] = config.JEEDOM;
   doc["DOMOTICZ"] = config.DOMOTICZ;
   doc["PVROUTER"] = config.PVROUTER;
-
-  doc["charge"] = config.charge;
-
   // Serialize JSON to file
   if (serializeJson(doc, configFile) == 0) {
     Serial.println(F("Failed to write to file"));
