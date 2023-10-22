@@ -63,7 +63,7 @@ String stringboolMQTT(bool mybool);
   String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
   // String node_ids = WiFi.macAddress().substring(0,2)+ WiFi.macAddress().substring(4,6)+ WiFi.macAddress().substring(8,10) + WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
   String node_id = String("Dimmer-") + node_mac; 
-  String topic = "homeassistant/sensor/"+ node_id +"/status";  
+  // String topic = "homeassistant/sensor/"+ node_id +"/status";  
   String topic_Xlyric = "Xlyric/"+ node_id +"/";
 
   String command_switch = String(topic_Xlyric + "command/switch");
@@ -349,7 +349,8 @@ void reconnect() {
       
       Serial.print("Attempting MQTT connection...");
       logs.concat(loguptime("Reconnect MQTT"));
-        client.publish(String(topic).c_str() ,0,true, "online"); // status Online
+        // client.publish(String(topic).c_str() ,0,true, "online"); // status Online
+        client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online
         Serial.println("connected");
         logs.concat("Connected\r\n");
         if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
@@ -375,13 +376,18 @@ void reconnect() {
     
   } else {  Serial.println(" Filesystem not present "); delay(5000); }
 }
+
+char arrayWill[64];
 //#define MQTT_HOST IPAddress(192, 168, 1, 20)
 void async_mqtt_init() {
+	const String LASTWILL_TOPIC = topic_Xlyric + "status";
+	LASTWILL_TOPIC.toCharArray(arrayWill, 64);
   IPAddress ip;
   ip.fromString(config.hostname);
   DEBUG_PRINTLN(ip);
   client.setClientId(node_id.c_str());
-  client.setKeepAlive(60);
+  client.setKeepAlive(30);
+  client.setWill(arrayWill, 2, true, "offline");
   client.setCredentials(mqtt_config.username, mqtt_config.password);
   client.onDisconnect(onMqttDisconnect);
   client.onSubscribe(onMqttSubscribe);
@@ -401,6 +407,7 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to MQTT.");
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
+  client.publish(String(topic_Xlyric +"status").c_str(),1,true, "online");         // Once connected, publish online to the availability topic
 
 }
 
