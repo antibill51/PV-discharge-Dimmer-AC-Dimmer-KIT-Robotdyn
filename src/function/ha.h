@@ -8,7 +8,8 @@ extern AsyncMqttClient  client;
 extern Config config;
 extern Mqtt mqtt_config;
 extern System sysvar;
-extern dimmerLamp dimmer;
+
+//extern dimmerLamp dimmer;
 String stringbool(bool mybool);
 
 struct MQTT
