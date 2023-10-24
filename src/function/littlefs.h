@@ -94,7 +94,7 @@ void loadConfiguration(const char *filename, Config &config) {
         doc["SubscribePV"] | "Xlyric/+/sensors/dimmer/state", 
         sizeof(config.SubscribePV));    
   strlcpy(config.SubscribeTEMP,                 
-        doc["SubscribeTEMP"] | "none", 
+        doc["SubscribeTEMP"] | "", 
         sizeof(config.SubscribeTEMP));
   //config.dimmer_on_off = doc["dimmer_on_off"] | 1; 
   config.HA = doc["HA"] | true; 

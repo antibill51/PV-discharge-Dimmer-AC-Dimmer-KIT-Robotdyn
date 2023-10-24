@@ -132,9 +132,9 @@ env.AddPreAction('$BUILD_DIR/spiffs.bin', prepare_www_files) # ESP32
 
 
 # Uncomment for normal use
-env.AddPostAction('$BUILD_DIR/littlefs.bin', delete_data) # ESP8266
-env.AddPostAction('$BUILD_DIR/spiffs.bin', delete_data) # ESP32
+# env.AddPostAction('$BUILD_DIR/littlefs.bin', delete_data) # ESP8266
+# env.AddPostAction('$BUILD_DIR/spiffs.bin', delete_data) # ESP32
 
 # Uncomment to easily merge from official repo
-# env.AddPostAction('$BUILD_DIR/littlefs.bin', prepare_merging_files) # ESP8266
-# env.AddPostAction('$BUILD_DIR/spiffs.bin', prepare_merging_files) # ESP32
+env.AddPostAction('$BUILD_DIR/littlefs.bin', prepare_merging_files) # ESP8266
+env.AddPostAction('$BUILD_DIR/spiffs.bin', prepare_merging_files) # ESP32

@@ -526,9 +526,9 @@ String getconfig() {
   String configweb;  
   DynamicJsonDocument doc(512);  
   //   +  config.mode + ";" + config.SubscribePV + ";" + config.SubscribeTEMP + ";" + config.dimmer_on_off ;
-    doc["IDX"] = config.IDX;
-    doc["idxtemp"] = config.IDXTemp;
-    doc["IDXAlarme"] = config.IDXAlarme;
+    // doc["IDX"] = config.IDX;
+    // doc["idxtemp"] = config.IDXTemp;
+    // doc["IDXAlarme"] = config.IDXAlarme;
 
     doc["maxtemp"] = config.maxtemp;
 
@@ -543,11 +543,11 @@ String getconfig() {
     doc["SubscribeTEMP"] = config.SubscribeTEMP;
     doc["dimmer_on_off"] = config.dimmer_on_off;
     doc["charge"] = config.charge;
-    doc["HA"] = config.HA;
-    doc["JEEDOM"] = config.JEEDOM;
-    doc["DOMOTICZ"] = config.DOMOTICZ;
+    // doc["HA"] = config.HA;
+    // doc["JEEDOM"] = config.JEEDOM;
+    // doc["DOMOTICZ"] = config.DOMOTICZ;
     doc["PVROUTER"] = config.PVROUTER;
-    doc["mqtt"] = mqtt_config.mqtt;
+    // doc["mqtt"] = mqtt_config.mqtt;
 
 
 
@@ -593,6 +593,12 @@ String getmqtt() {
     doc["user"] = mqtt_config.username;
     doc["password"] = mqtt_config.password;
     doc["MQTT"] = mqtt_config.mqtt;
+    doc["HA"] = config.HA;
+    doc["JEEDOM"] = config.JEEDOM;
+    doc["DOMOTICZ"] = config.DOMOTICZ;
+    doc["IDX"] = config.IDX;
+    doc["idxtemp"] = config.IDXTemp;
+    doc["IDXAlarme"] = config.IDXAlarme;
   serializeJson(doc, retour);
   return String(retour) ;
 }
