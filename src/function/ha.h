@@ -88,7 +88,7 @@ struct MQTT
     } 
     else if (entity_type == "number") { 
             info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
-          "\"cmd_t\": \""+ topic_Xlyric + entity_type + "/command\","
+          "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
           "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : {{ value }} } \"," 
           "\"entity_category\": \""+ entity_category + "\","
           "\"max\": \""+max+"\","
@@ -97,7 +97,7 @@ struct MQTT
     } 
     else if (entity_type == "select") { 
             info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
-          "\"cmd_t\": \""+ topic_Xlyric + entity_type + "/command\","
+          "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
           "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : \\\"{{ value }}\\\" } \","
           "\"entity_category\": \""+ entity_category + "\","
           "\"options\": ["+ entity_option + "],";
@@ -110,7 +110,7 @@ struct MQTT
     }
     else if (entity_type == "button") { 
             info =            "\"entity_category\": \""+ entity_category + "\","
-          "\"cmd_t\": \""+ topic_Xlyric + entity_type + "/command\","
+          "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
           "\"pl_prs\": \"{ \\\""+object_id+"\\\" : \\\"1\\\"  } \",";
     }
     return info;

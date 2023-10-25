@@ -238,6 +238,7 @@ void savemqtt(const char *filename, const Mqtt &mqtt_config) {
 
   // Close the file
   configFile.close();
+  config.restart = true;
 }
 
 

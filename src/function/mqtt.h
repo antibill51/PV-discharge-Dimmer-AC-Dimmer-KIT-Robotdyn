@@ -73,9 +73,9 @@ String stringboolMQTT(bool mybool);
   String topic_Xlyric = "Xlyric/"+ node_id +"/";
 
   String command_switch = String(topic_Xlyric + "command/switch");
-  String command_number = String(topic_Xlyric + "number/command");
-  String command_select = String(topic_Xlyric + "select/command");
-  String command_button = String(topic_Xlyric + "button/command");
+  String command_number = String(topic_Xlyric + "command/number");
+  String command_select = String(topic_Xlyric + "command/select");
+  String command_button = String(topic_Xlyric + "command/button");
   String command_save = String("Xlyric/sauvegarde/"+ node_id );
 
 void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
@@ -146,7 +146,8 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
     }
   } 
 //#endif
-  if (strcmp( Subscribedtopic, command_number.c_str() ) == 0) { 
+  if (strstr( Subscribedtopic, command_number.c_str() ) != NULL) { 
+  // if (strcmp( Subscribedtopic, command_number.c_str() ) == 0) { 
     if (doc2.containsKey("starting_power")) { 
       int startingpow = doc2["starting_power"]; 
       if (config.startingpow != startingpow ) {
@@ -204,7 +205,8 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
     }
   }
 //save
-  if (strcmp( Subscribedtopic, command_button.c_str() ) == 0) { 
+  if (strstr( Subscribedtopic, command_button.c_str() ) != NULL) { 
+  // if (strcmp( Subscribedtopic, command_button.c_str() ) == 0) { 
     if (doc2.containsKey("save")) { 
       if (doc2["save"] == "1" ) {
         logs += "MQTT save command \r\n";
@@ -213,7 +215,8 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
     }
   }
 //child mode
-  if (strcmp( Subscribedtopic, command_select.c_str() ) == 0) { 
+  if (strstr( Subscribedtopic, command_select.c_str() ) != NULL) { 
+  // if (strcmp( Subscribedtopic, command_select.c_str() ) == 0) { 
     if (doc2.containsKey("child_mode")) { 
       String childmode = doc2["child_mode"]; 
       if (config.mode != doc2["child_mode"] ) {
