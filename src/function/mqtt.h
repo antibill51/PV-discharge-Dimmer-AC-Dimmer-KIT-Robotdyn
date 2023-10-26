@@ -364,9 +364,9 @@ void reconnect() {
         logs.concat("Connected\r\n");
         if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
         if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
-        client.subscribe(command_button.c_str(),1);
-        client.subscribe(command_number.c_str(),1);
-        client.subscribe(command_select.c_str(),1);
+        client.subscribe((command_button + "/#").c_str(),1);
+        client.subscribe((command_number + "/#").c_str(),1);
+        client.subscribe((command_select + "/#").c_str(),1);
         client.subscribe((command_switch + "/#").c_str(),1);
 
         client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online

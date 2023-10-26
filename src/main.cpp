@@ -527,7 +527,7 @@ void setup() {
     device_dimmer.Set_dev_cla("power_factor"); // fix is using native unit of measurement '%' which is not a valid unit for the device class ('power') it is using
     device_dimmer.Set_icon("mdi:percent");
     device_dimmer.Set_entity_type("sensor");
-    device_dimmer.Set_retain_flag(true);
+    device_dimmer.Set_retain_flag(false);
     // device_dimmer.Set_expire_after(true);
 
     device_dimmer_power.Set_name("Watt");
@@ -537,7 +537,7 @@ void setup() {
     device_dimmer_power.Set_dev_cla("power");
     device_dimmer_power.Set_icon("mdi:home-lightning-bolt-outline");
     device_dimmer_power.Set_entity_type("sensor");
-    device_dimmer_power.Set_retain_flag(true);
+    device_dimmer_power.Set_retain_flag(false);
 
     device_dimmer_total_power.Set_name("Watt total");
     device_dimmer_total_power.Set_object_id("watt_total");
@@ -546,7 +546,7 @@ void setup() {
     device_dimmer_total_power.Set_dev_cla("power");
     device_dimmer_total_power.Set_icon("mdi:home-lightning-bolt-outline");
     device_dimmer_total_power.Set_entity_type("sensor");
-    device_dimmer_total_power.Set_retain_flag(true);
+    device_dimmer_total_power.Set_retain_flag(false);
 
     device_temp.Set_name("Température");
     device_temp.Set_object_id("temperature");
@@ -554,7 +554,7 @@ void setup() {
     device_temp.Set_stat_cla("measurement");
     device_temp.Set_dev_cla("temperature");
     device_temp.Set_entity_type("sensor");
-    device_temp.Set_retain_flag(true);
+    device_temp.Set_retain_flag(false);
     // device_dimmer.Set_expire_after(true);
 
     /// création des switch
@@ -591,7 +591,7 @@ void setup() {
     device_dimmer_starting_pow.Set_entity_valuemin("-100");
     device_dimmer_starting_pow.Set_entity_valuemax("500"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_starting_pow.Set_entity_valuestep("1");
-    device_dimmer_starting_pow.Set_retain_flag(true);
+    device_dimmer_starting_pow.Set_retain_flag(false);
 
     device_dimmer_minpow.Set_name("Puissance mini");
     device_dimmer_minpow.Set_object_id("minpow");
@@ -600,7 +600,7 @@ void setup() {
     device_dimmer_minpow.Set_entity_valuemin("0");
     device_dimmer_minpow.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_minpow.Set_entity_valuestep("1");
-    device_dimmer_minpow.Set_retain_flag(true);
+    device_dimmer_minpow.Set_retain_flag(false);
 
     device_dimmer_maxpow.Set_name("Puissance maxi");
     device_dimmer_maxpow.Set_object_id("maxpow");
@@ -609,7 +609,7 @@ void setup() {
     device_dimmer_maxpow.Set_entity_valuemin("0");
     device_dimmer_maxpow.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_maxpow.Set_entity_valuestep("1");
-    device_dimmer_maxpow.Set_retain_flag(true);
+    device_dimmer_maxpow.Set_retain_flag(false);
 
     device_dimmer_maxtemp.Set_name("Température maxi");
     device_dimmer_maxtemp.Set_object_id("maxtemp");
@@ -618,7 +618,7 @@ void setup() {
     device_dimmer_maxtemp.Set_entity_valuemin("0");
     device_dimmer_maxtemp.Set_entity_valuemax("75"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_maxtemp.Set_entity_valuestep("1");
-    device_dimmer_maxtemp.Set_retain_flag(true);
+    device_dimmer_maxtemp.Set_retain_flag(false);
 
     device_dimmer_send_power.Set_name("Puissance dimmer");
     device_dimmer_send_power.Set_object_id("powdimmer");
@@ -627,7 +627,7 @@ void setup() {
     device_dimmer_send_power.Set_entity_valuemin("0");
     device_dimmer_send_power.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_send_power.Set_entity_valuestep("1");
-    device_dimmer_send_power.Set_retain_flag(true);
+    device_dimmer_send_power.Set_retain_flag(false);
 
     device_dimmer_charge.Set_name("Charge");
     device_dimmer_charge.Set_object_id("charge");
@@ -636,7 +636,7 @@ void setup() {
     device_dimmer_charge.Set_entity_valuemin("0");
     device_dimmer_charge.Set_entity_valuemax("3000");
     device_dimmer_charge.Set_entity_valuestep("50");
-    device_dimmer_charge.Set_retain_flag(true);
+    device_dimmer_charge.Set_retain_flag(false);
 
     /// création des select
     device_dimmer_child_mode.Set_name("Mode");
@@ -644,7 +644,7 @@ void setup() {
     device_dimmer_child_mode.Set_entity_type("select");
     device_dimmer_child_mode.Set_entity_category("config");
     device_dimmer_child_mode.Set_entity_option("\"off\",\"delester\",\"equal\"");
-    device_dimmer_child_mode.Set_retain_flag(true);
+    device_dimmer_child_mode.Set_retain_flag(false);
 
     // création des binary_sensor
     device_dimmer_alarm_temp.Set_name("Surchauffe");
@@ -659,7 +659,7 @@ void setup() {
     device_cooler.Set_entity_type("binary_sensor");
     device_cooler.Set_entity_category("diagnostic");
     device_cooler.Set_dev_cla("running");
-    device_cooler.Set_retain_flag(true);
+    device_cooler.Set_retain_flag(false);
   }
 
   //Serial.println(device_temp.name);
