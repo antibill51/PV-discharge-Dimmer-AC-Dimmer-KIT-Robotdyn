@@ -349,9 +349,8 @@ void setup() {
   loginit.concat(loguptime("Start filesystem")); 
   #ifdef ROBOTDYN
   // configuration dimmer
-    #ifndef outputPin2
-      dimmer.begin(NORMAL_MODE, ON); //dimmer initialisation: name.begin(MODE, STATE) 
-    #else 
+    dimmer.begin(NORMAL_MODE, ON); //dimmer initialisation: name.begin(MODE, STATE) 
+    #ifdef outputPin2
       dimmer2.begin(NORMAL_MODE, ON); //dimmer initialisation: name.begin(MODE, STATE) 
     #endif
 

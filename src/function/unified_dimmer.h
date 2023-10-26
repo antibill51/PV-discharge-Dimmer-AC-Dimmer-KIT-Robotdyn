@@ -32,6 +32,9 @@ void set_power(int power){
   /// pour le dimmer robotdyn
   #ifdef ROBOTDYN
     dimmer.setPower(power);
+    #ifdef outputPin2
+      dimmer2.setPower(power);
+    #endif
   #endif
 
 
