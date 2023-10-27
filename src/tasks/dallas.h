@@ -45,7 +45,7 @@ void mqttdallas() {
               Mqtt_send_DOMOTICZ(String(config.IDXTemp), String(sysvar.celsius),"Temperature");
               // if ( mqtt_config.HA ) { device_temp.send(String(sysvar.celsius)); }
               device_temp.send(String(sysvar.celsius));
-              logs += "Dallas temp : "+ String(sysvar.celsius) +"\r\n";
+              logging.Set_log_init("Dallas temp : "+ String(sysvar.celsius) +"\r\n");
             }
           }
          } 
