@@ -42,7 +42,7 @@ extern MQTT device_dimmer_power;
 extern MQTT device_dimmer_send_power; 
 extern MQTT device_dimmer_total_power;
 extern MQTT device_dimmer_charge;
-extern MQTT device_temp;
+extern MQTT device_temp[15];
 extern MQTT device_relay1;
 extern MQTT device_relay2;
 
@@ -51,7 +51,7 @@ extern bool discovery_temp;
 extern bool alerte; 
 extern Logs logging; 
 //extern char buffer[1024];
-
+extern String devAddrNames[15];
 extern AsyncMqttClient client; 
 
 void onMqttConnect(bool sessionPresent);
@@ -90,9 +90,9 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
     //if (puissancemqtt > config.maxpow) puissancemqtt = config.maxpow;
     if (sysvar.puissance != puissancemqtt ) {
       sysvar.puissance = puissancemqtt;
-      logging.Set_log_init("MQTT power at "); 
-      logging.Set_log_init(String(sysvar.puissance).c_str());
-      logging.Set_log_init("\r\n");
+      // logging.Set_log_init("MQTT power at "); 
+      // logging.Set_log_init(String(sysvar.puissance).c_str());
+      // logging.Set_log_init("\r\n");
       sysvar.change=1; 
     }
     else {
@@ -101,21 +101,24 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
     }
   }
   /// @brief Enregistrement temperature
-  if (strcmp( Subscribedtopic, config.SubscribeTEMP ) == 0  && doc2.containsKey("temperature")) { 
-    float temperaturemqtt = doc2["temperature"]; 
+  if (strcmp( Subscribedtopic, config.SubscribeTEMP ) == 0 ){ // && doc2.containsKey("temperature")) { 
+    // float temperaturemqtt = doc2["temperature"]; 
+    float temperaturemqtt = doc2[0]; 
+    sysvar.dallas_maitre= deviceCount+1;
+    devAddrNames[deviceCount+1] = "MQTT";
     if (!discovery_temp) {
       discovery_temp = true;
       device_dimmer_alarm_temp.HA_discovery();
-      device_temp.HA_discovery();
+      device_temp[sysvar.dallas_maitre].HA_discovery();
       device_dimmer_maxtemp.HA_discovery();
       device_dimmer_alarm_temp.send(stringboolMQTT(false));
       device_dimmer_maxtemp.send(String(config.maxtemp));
     }
-    device_temp.send(String(sysvar.celsius));
-    if (sysvar.celsius != temperaturemqtt ) {
-      sysvar.celsius = temperaturemqtt;
+    device_temp[sysvar.dallas_maitre].send(String(sysvar.celsius[sysvar.dallas_maitre]));
+    if (sysvar.celsius[sysvar.dallas_maitre] != temperaturemqtt ) {
+      sysvar.celsius[sysvar.dallas_maitre] = temperaturemqtt;
       logging.Set_log_init("MQTT temp at ");
-      logging.Set_log_init(String(sysvar.celsius).c_str());
+      logging.Set_log_init(String(sysvar.celsius[sysvar.dallas_maitre]));
       logging.Set_log_init("\r\n");
     }
   }
@@ -130,7 +133,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           if ( relay == 0) { digitalWrite(RELAY1 , LOW); }
           else { digitalWrite(RELAY1 , HIGH); } 
           logging.Set_log_init("RELAY1 at ");
-          logging.Set_log_init(String(relay).c_str());
+          logging.Set_log_init(String(relay));
           logging.Set_log_init("\r\n"); 
           device_relay1.send(String(relay));
       }
@@ -141,7 +144,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           if ( relay == 0) { digitalWrite(RELAY2 , LOW); }
           else { digitalWrite(RELAY2 , HIGH); } 
           logging.Set_log_init("RELAY2 at ");
-          logging.Set_log_init(String(relay).c_str());
+          logging.Set_log_init(String(relay));
           logging.Set_log_init("\r\n"); 
           device_relay2.send(String(relay));      
       }
@@ -149,7 +152,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
     if (doc2.containsKey("on_off")) { 
         config.dimmer_on_off = doc2["on_off"]; 
         logging.Set_log_init("Dimmer ON_OFF at " );
-        logging.Set_log_init(String(config.dimmer_on_off).c_str());
+        logging.Set_log_init(String(config.dimmer_on_off));
         logging.Set_log_init("\r\n"); 
         device_dimmer_on_off.send(String(config.dimmer_on_off));      
         sysvar.change=1; 
@@ -163,7 +166,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       if (config.startingpow != startingpow ) {
         config.startingpow = startingpow;
         logging.Set_log_init("MQTT starting_pow at ");
-        logging.Set_log_init(String(startingpow).c_str());
+        logging.Set_log_init(String(startingpow));
         logging.Set_log_init("\r\n");
         device_dimmer_starting_pow.send(String(startingpow));
         sysvar.change=1; 
@@ -174,7 +177,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       if (config.minpow != minpow ) {
         config.minpow = minpow;
         logging.Set_log_init("MQTT minpow at " );
-        logging.Set_log_init(String(minpow).c_str()); 
+        logging.Set_log_init(String(minpow)); 
         logging.Set_log_init("\r\n");
         device_dimmer_minpow.send(String(minpow));
         sysvar.change=1; 
@@ -185,7 +188,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       if (config.maxpow != maxpow ) {
         config.maxpow = maxpow;
         logging.Set_log_init("MQTT maxpow at ");
-        logging.Set_log_init(String(maxpow).c_str());
+        logging.Set_log_init(String(maxpow));
         logging.Set_log_init("\r\n");
         device_dimmer_maxpow.send(String(maxpow));
         sysvar.change=1; 
@@ -198,7 +201,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         sysvar.puissance = powdimmer;
         sysvar.change=1; 
         logging.Set_log_init("MQTT power at ");
-        logging.Set_log_init(String(powdimmer).c_str());
+        logging.Set_log_init(String(powdimmer));
         logging.Set_log_init("\r\n");
        
       }
@@ -208,7 +211,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       if (config.maxtemp != maxtemp ) {
         config.maxtemp = maxtemp;
         logging.Set_log_init("MQTT maxtemp at ");  
-        logging.Set_log_init(String(maxtemp).c_str());
+        logging.Set_log_init(String(maxtemp));
         logging.Set_log_init("\r\n");
         device_dimmer_maxtemp.send(String(maxtemp));
         sysvar.change=1; 
@@ -219,7 +222,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       if (config.charge != charge ) {
         config.charge = charge;
         logging.Set_log_init("MQTT charge at ");
-        logging.Set_log_init("String(charge).c_str()");
+        logging.Set_log_init(String(charge));
         logging.Set_log_init("\r\n");
         device_dimmer_charge.send(String(charge));
         sysvar.change=1; 
@@ -245,7 +248,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         strlcpy(config.mode, doc2["child_mode"], sizeof(config.mode));
         device_dimmer_child_mode.send(String(config.mode));
         logging.Set_log_init("MQTT child mode at ");
-        logging.Set_log_init(String(childmode).c_str());
+        logging.Set_log_init(String(childmode));
         logging.Set_log_init("\r\n");
 
       }

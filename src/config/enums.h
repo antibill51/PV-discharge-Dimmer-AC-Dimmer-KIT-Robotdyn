@@ -62,6 +62,8 @@ struct Config {
   bool JEEDOM;
   bool DOMOTICZ;
   char PVROUTER[5];
+  char DALLAS[17];
+
 };
 
 struct Mqtt {
@@ -82,7 +84,7 @@ struct Wifi_struct {
 ///variables globales 
 struct System {
 /// @brief  température actuelle
-float celsius=0.00; 
+float celsius[15] = {0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00};
 /// @brief  puissance actuelle en %
 int puissance; 
 /// @brief  puissance actuelle en Watt
@@ -98,6 +100,8 @@ bool cooler=0;
 /// @brief  puissance cumulée en Watt (remonté par l'enfant toute les 10 secondes)
 int puissance_cumul=0;
 /// @brief etat de la surchauffe
+int dallas_maitre=0;
+/// @brief sonde principale
 byte security=0;
 };
 

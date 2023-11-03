@@ -25,6 +25,7 @@ const char *programme_conf = "/programme.json";
 
 extern Config config; 
 //extern Programme programme; 
+extern int deviceCount; 
 
 extern Logs logging; 
 extern String node_mac;
@@ -102,7 +103,9 @@ void loadConfiguration(const char *filename, Config &config) {
   strlcpy(config.PVROUTER,
         doc["PVROUTER"] | "mqtt", 
         sizeof(config.PVROUTER)); 
-
+  strlcpy(config.DALLAS,
+        doc["DALLAS"] | "28b1255704e13c62", 
+        sizeof(config.DALLAS)); 
   configFile.close();
   
       
@@ -150,6 +153,7 @@ void saveConfiguration(const char *filename, const Config &config) {
   doc["JEEDOM"] = config.JEEDOM;
   doc["DOMOTICZ"] = config.DOMOTICZ;
   doc["PVROUTER"] = config.PVROUTER;
+  doc["DALLAS"] = config.DALLAS;
   // Serialize JSON to file
   if (serializeJson(doc, configFile) == 0) {
     Serial.println(F("Failed to write to file"));

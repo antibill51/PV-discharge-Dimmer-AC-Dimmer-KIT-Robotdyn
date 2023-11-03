@@ -22,6 +22,7 @@ NTPClient timeClient(ntpUDP);
 #include "config/enums.h"
 
 extern System sysvar;
+extern Config config;
 
 void offset_heure_ete();
 void timeclientEpoch_to_date(time_t epoch) ;
@@ -139,7 +140,7 @@ bool start_progr() {
   }
       
   if(timeClient.isTimeSet()) {
-    if (heures == timeClient.getHours() && minutes == timeClient.getMinutes() && sysvar.celsius < temperature ) { // correction bug #19  
+    if (heures == timeClient.getHours() && minutes == timeClient.getMinutes() && sysvar.celsius[sysvar.dallas_maitre] < temperature ) { // correction bug #19  
         run=true; 
         timeClient.update();
         return true; 
@@ -151,7 +152,7 @@ return false;
 bool stop_progr() {
   int heures, minutes;
   /// sécurité temp
-  if ( sysvar.celsius >= temperature ) { 
+  if ( sysvar.celsius[sysvar.dallas_maitre] >= temperature ) { 
     run=false; 
      // protection flicking
     sscanf(heure_demarrage, "%d:%d", &heures, &minutes);  

@@ -21,7 +21,7 @@ void cooler() {
 
     /// controle du cooler 
     if (config.dimmer_on_off == 1){
-        if ( ( sysvar.puissance > config.minpow && sysvar.celsius < config.maxtemp && security == 0 ) || ( programme.run == true )) {
+        if ( ( sysvar.puissance > config.minpow && sysvar.celsius[sysvar.dallas_maitre] < config.maxtemp && security == 0 ) || ( programme.run == true )) {
             sysvar.cooler = 1;
         } else {
             sysvar.cooler = 0;

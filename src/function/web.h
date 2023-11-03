@@ -46,7 +46,7 @@ AsyncWiFiManager wifiManager(&server,&dns);
 extern bool AP; 
 
 extern MQTT device_dimmer; 
-extern MQTT device_temp; 
+extern MQTT device_temp[15]; 
 extern MQTT device_relay1;
 extern MQTT device_relay2;
 // extern MQTT device_cooler;
@@ -60,7 +60,7 @@ extern MQTT device_dimmer_charge;
 
 extern String dimmername;
 
-
+extern DeviceAddress addr[15];
 
 const char* PARAM_INPUT_1 = "POWER"; /// paramettre de retour sendmode
 const char* PARAM_INPUT_2 = "OFFSET"; /// paramettre de retour sendmode
@@ -83,6 +83,7 @@ extern Logs Logging;
 extern SSR_BURST ssr_burst;
 #endif
 
+void dallaspresent ();
 
 void call_pages() {
 
@@ -415,10 +416,15 @@ server.on("/get", HTTP_ANY, [] (AsyncWebServerRequest *request) {
    }
    if (request->hasParam("PVROUTER")) { request->getParam("PVROUTER")->value().toCharArray(config.PVROUTER,5);}
    if (request->hasParam("mqttuser")) { request->getParam("mqttuser")->value().toCharArray(mqtt_config.username,50);  }
-   if (request->hasParam("mqttpassword")) { request->getParam("mqttpassword")->value().toCharArray(mqtt_config.password,50);
-   savemqtt(mqtt_conf, mqtt_config); 
-   saveConfiguration(filename_conf, config);
+   if (request->hasParam("mqttpassword")) { 
+    request->getParam("mqttpassword")->value().toCharArray(mqtt_config.password,50);
+    savemqtt(mqtt_conf, mqtt_config); 
+    saveConfiguration(filename_conf, config);
    }
+   if (request->hasParam("DALLAS")) { 
+    request->getParam("DALLAS")->value().toCharArray(config.DALLAS,17);
+    dallaspresent();
+    }
 
 //// minuteur 
    if (request->hasParam("heure_demarrage")) { request->getParam("heure_demarrage")->value().toCharArray(programme.heure_demarrage,6);  }
@@ -489,7 +495,7 @@ String getState() {
 
   //state = String(instant_power) + "% " +  String(instant_power * config.charge) + "W"; 
    
-  dtostrf(sysvar.celsius,2, 1, buffer); // conversion en n.1f 
+  dtostrf(sysvar.celsius[sysvar.dallas_maitre],2, 1, buffer); // conversion en n.1f 
   
   DynamicJsonDocument doc(128);
     doc["dimmer"] = instant_power;
@@ -553,6 +559,7 @@ String getconfig() {
     // doc["DOMOTICZ"] = config.DOMOTICZ;
     doc["PVROUTER"] = config.PVROUTER;
     // doc["mqtt"] = mqtt_config.mqtt;
+    doc["DALLAS"] = config.DALLAS;
 
 
 
