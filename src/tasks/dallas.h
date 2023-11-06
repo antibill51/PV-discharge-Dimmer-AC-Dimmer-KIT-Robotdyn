@@ -25,7 +25,7 @@ int dallas_error = 0; // compteur d'erreur dallas
 int gw_error = 0;   // compteur d'erreur gateway
 
 float CheckTemperature(String label, byte deviceAddress[12]);
-void dallaspresent ();
+// void dallaspresent ();
 
 /// @brief / task executé toute les n secondes pour publier la température ( voir déclaration task dans main )
 void mqttdallas() {

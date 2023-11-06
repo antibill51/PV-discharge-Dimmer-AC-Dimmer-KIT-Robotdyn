@@ -272,6 +272,7 @@ MQTT device_dimmer_child_mode;
 MQTT device_dimmer_alarm_temp;
 MQTT device_cooler;
 
+void HA_discover();
 
 /***************************
  * init Dimmer
@@ -680,31 +681,9 @@ void setup() {
     async_mqtt_init();
     connectToMqtt();
     delay(1000);  
-    // HA_discover(); // Hello des devices HA
     reconnect();
+    HA_discover(); // Hello des devices HA, condition HA directement dans la fonction.
 
-    if (config.HA) {
-      device_dimmer_on_off.HA_discovery();
-      device_dimmer.HA_discovery();
-      device_dimmer_power.HA_discovery();
-      if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_total_power.HA_discovery();}
-
-      device_cooler.HA_discovery();
-      #ifdef RELAY1
-        device_relay1.HA_discovery();
-      #endif
-      #ifdef RELAY2
-        device_relay2.HA_discovery();
-      #endif
-      device_dimmer_starting_pow.HA_discovery();
-      device_dimmer_minpow.HA_discovery();
-      device_dimmer_maxpow.HA_discovery();
-      device_dimmer_charge.HA_discovery();
-      device_dimmer_send_power.HA_discovery();
-      if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.HA_discovery();}
-      device_dimmer_save.HA_discovery();
-
-    }
     if (config.HA || config.JEEDOM) {
       // device_dimmer_on_off.send(String(config.dimmer_on_off));
       device_dimmer.send(String(sysvar.puissance));
@@ -785,6 +764,8 @@ void loop() {
   if ( mqtt_config.mqtt && !AP ) {
     if (!client.connected() ) {
       connectToMqtt();
+      HA_discover();
+      discovery_temp = false;
     }
   }
 
@@ -1142,7 +1123,7 @@ void loop() {
 //***********************************
 
 void dallaspresent () {
-  byte type_s;
+  // byte type_s;
   for (int i = 0; i < deviceCount; i++) {
     if (!ds.search(addr[i])) {
       logging.Set_log_init("Unable to find temperature sensors address \r\n");
@@ -1173,7 +1154,26 @@ void dallaspresent () {
     logging.Set_log_init(String(address).c_str()); 
     logging.Set_log_init("\r\n");
 
-    delay(250);
+    // delay(250);
+
+
+
+    ds.reset();
+    ds.select(addr[a]);
+
+    ds.write(0x44, 1);        // start conversion, with parasite power on at the end
+    
+    delay(1000);     // maybe 750ms is enough, maybe not
+    // we might do a ds.depower() here, but the reset will take care of it.
+    
+    present = ds.reset();    ///  byte 0 > 1 si present
+    ds.select(addr[a]);    
+    ds.write(0xBE);         // Read Scratchpad
+
+    // Serial.print("  present = ");
+    // Serial.println(present, HEX);
+    // logging.Set_log_init("Dallas present at "+ String(present, HEX)+"\r\n");
+
 
   }
   ds.reset_search();
@@ -1197,44 +1197,50 @@ void dallaspresent () {
 //  Serial.println();
 
 // the first ROM byte indicates which chip
-  for (int a = 0; a < deviceCount; a++) {
-    switch (addr[a][0]) {
-      case 0x10:
-        DEBUG_PRINTLN("  Chip = DS18S20");  // or old DS1820
-        type_s = 1;
-        break;
-      case 0x28:
-        DEBUG_PRINTLN("  Chip = DS18B20");
-        type_s = 0;
-        break;
-      case 0x22:
-        DEBUG_PRINTLN("  Chip = DS1822");
-        type_s = 0;
-        break;
-      default:
-        DEBUG_PRINTLN("Device is not a DS18x20 family device.");
-        return ;
-    } 
+  // for (int a = 0; a < deviceCount; a++) {
+  // //   switch (addr[a][0]) {
+  // //     case 0x10:
+  // //       DEBUG_PRINTLN("  Chip = DS18S20");  // or old DS1820
+  // //       logging.Set_log_init("  Chip = DS18S20 (OLD) \r\n");
+  // //       type_s = 1;
+  // //       break;
+  // //     case 0x28:
+  // //       DEBUG_PRINTLN("  Chip = DS18B20");
+  // //       logging.Set_log_init("  Chip = DS18B20 \r\n");
+  // //       type_s = 0;
+  // //       break;
+  // //     case 0x22:
+  // //       DEBUG_PRINTLN("  Chip = DS1822");
+  // //       logging.Set_log_init("  Chip = DS1822 \r\n");
+  // //       type_s = 0;
+  // //       break;
+  // //     default:
+  // //       DEBUG_PRINTLN("Device is not a DS18x20 family device.");
+  // //       logging.Set_log_init("Device is not a DS18x20 family device. \r\n");
+  // //       return ;
+  // //   } 
 
-    ds.reset();
-    ds.select(addr[a]);
+  //   ds.reset();
+  //   ds.select(addr[a]);
 
-    ds.write(0x44, 1);        // start conversion, with parasite power on at the end
+  //   ds.write(0x44, 1);        // start conversion, with parasite power on at the end
     
-    delay(1000);     // maybe 750ms is enough, maybe not
-    // we might do a ds.depower() here, but the reset will take care of it.
+  //   delay(1000);     // maybe 750ms is enough, maybe not
+  //   // we might do a ds.depower() here, but the reset will take care of it.
     
-    present = ds.reset();    ///  byte 0 > 1 si present
-    ds.select(addr[a]);    
-    ds.write(0xBE);         // Read Scratchpad
+  //   present = ds.reset();    ///  byte 0 > 1 si present
+  //   ds.select(addr[a]);    
+  //   ds.write(0xBE);         // Read Scratchpad
 
-    Serial.print("  present = ");
-    Serial.println(present, HEX);
-    logging.Set_log_init("Dallas present at "+ String(present, HEX)+"\r\n");
+  //   Serial.print("  present = ");
+  //   Serial.println(present, HEX);
+  //   logging.Set_log_init("Dallas present at "+ String(present, HEX)+"\r\n");
 
-    return ;
+  // //   return ;
     
-  }
+  // }
+  // ds.reset_search();
+
 }
 
 
@@ -1244,3 +1250,27 @@ String stringbool(bool mybool){
   return String(truefalse);
 }
 
+
+void HA_discover(){
+  if (config.HA) {
+    device_dimmer_on_off.HA_discovery();
+    device_dimmer.HA_discovery();
+    device_dimmer_power.HA_discovery();
+    if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_total_power.HA_discovery();}
+
+    device_cooler.HA_discovery();
+    #ifdef RELAY1
+      device_relay1.HA_discovery();
+    #endif
+    #ifdef RELAY2
+      device_relay2.HA_discovery();
+    #endif
+    device_dimmer_starting_pow.HA_discovery();
+    device_dimmer_minpow.HA_discovery();
+    device_dimmer_maxpow.HA_discovery();
+    device_dimmer_charge.HA_discovery();
+    device_dimmer_send_power.HA_discovery();
+    if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.HA_discovery();}
+    device_dimmer_save.HA_discovery();
+  }
+}
