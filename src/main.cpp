@@ -76,7 +76,7 @@
   #include <RBDdimmer.h>   /// the corrected librairy  in personal depot , the original has a bug
 #endif
 // Web services
-#include <ESPAsyncWiFiManager.h>    
+#include <ESPAsyncWiFiManager.h> 
 #include <ESPAsyncWebServer.h>
 
 #include <Wire.h>  // Only needed for Arduino 1.6.5 and earlier
@@ -100,6 +100,7 @@
 #include "function/mqtt.h"
 #include "function/minuteur.h"
 
+
 #ifdef ROBOTDYN
   #include "function/dimmer.h"
 #endif
@@ -113,12 +114,16 @@
 #include "tasks/dallas.h"
 #include "tasks/cooler.h"
 #include "tasks/get_power.h"
+#include "tasks/relais.h"
 
 
 // taches
 Task Task_dallas(15000, TASK_FOREVER, &mqttdallas);
 Task Task_Cooler(15000, TASK_FOREVER, &cooler);
 Task Task_GET_POWER(10000, TASK_FOREVER, &get_dimmer_child_power);
+#ifdef RELAY1
+Task Task_relay(20000, TASK_FOREVER, &relais_controle);
+#endif
 Scheduler runner;
 
 #if defined(ESP32) || defined(ESP32ETH)
@@ -419,6 +424,8 @@ void setup() {
     //***********************************
   Serial.print("start Wifiautoconnect");
   logging.Set_log_init("Start Wifiautoconnect \r\n"); 
+
+
 
   // préparation  configuration IP fixe 
 
@@ -796,12 +803,6 @@ void loop() {
       Serial.print("stop minuteur dimmer");
       // mqtt(String(config.IDX), String(unified_dimmer.get_power()),"pourcent"); // remonté MQTT de la commande réelle
       Mqtt_send_DOMOTICZ(String(config.IDX), String(dimmer.getPower()),"pourcent"); // remonté MQTT de la commande réelle
-      // if (mqtt_config.HA) {
-      //   int instant_power = dimmer.getPower();
-      //   device_dimmer.send(String(instant_power));
-      //   device_dimmer_power.send(String(instant_power * config.charge/100)); 
-      //   device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-      // } 
       int instant_power = unified_dimmer.get_power();
       device_dimmer.send(String(instant_power));
       device_dimmer_power.send(String(instant_power * config.charge/100)); 
@@ -823,12 +824,6 @@ void loop() {
       Serial.print("start minuteur ");
       // mqtt(String(config.IDX), String(unified_dimmer.get_power()),"pourcent"); // remonté MQTT de la commande réelle
       Mqtt_send_DOMOTICZ(String(config.IDX), String(dimmer.getPower()),"pourcent"); // remonté MQTT de la commande réelle
-      // if (mqtt_config.HA) {
-      //   int instant_power = dimmer.getPower();
-      //   device_dimmer.send(String(instant_power));
-      //   device_dimmer_power.send(String(instant_power * config.charge/100)); 
-      //   device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-      // } 
       int instant_power = unified_dimmer.get_power();
       device_dimmer.send(String(instant_power));
       device_dimmer_power.send(String(instant_power * config.charge/100)); 
