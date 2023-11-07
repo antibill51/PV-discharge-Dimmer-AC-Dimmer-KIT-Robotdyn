@@ -543,6 +543,7 @@ void setup() {
     device_dimmer.Set_dev_cla("power_factor"); // fix is using native unit of measurement '%' which is not a valid unit for the device class ('power') it is using
     device_dimmer.Set_icon("mdi:percent");
     device_dimmer.Set_entity_type("sensor");
+    device_dimmer.Set_entity_qos(1);
     device_dimmer.Set_retain_flag(false);
     // device_dimmer.Set_expire_after(true);
 
@@ -553,6 +554,7 @@ void setup() {
     device_dimmer_power.Set_dev_cla("power");
     device_dimmer_power.Set_icon("mdi:home-lightning-bolt-outline");
     device_dimmer_power.Set_entity_type("sensor");
+    device_dimmer_power.Set_entity_qos(1);
     device_dimmer_power.Set_retain_flag(false);
 
     device_dimmer_total_power.Set_name("Watt total");
@@ -562,6 +564,7 @@ void setup() {
     device_dimmer_total_power.Set_dev_cla("power");
     device_dimmer_total_power.Set_icon("mdi:home-lightning-bolt-outline");
     device_dimmer_total_power.Set_entity_type("sensor");
+    device_dimmer_total_power.Set_entity_qos(1);
     device_dimmer_total_power.Set_retain_flag(false);
     
     for (int i = 0; i < deviceCount; i++) {
@@ -571,24 +574,28 @@ void setup() {
       device_temp[i].Set_stat_cla("measurement");
       device_temp[i].Set_dev_cla("temperature");
       device_temp[i].Set_entity_type("sensor");
-      device_temp[i].Set_retain_flag(false);
+      device_temp[i].Set_entity_qos(1);
+      device_temp[i].Set_retain_flag(true);
     }
     /// création des switch
     device_relay1.Set_name("Relais 1");
     device_relay1.Set_object_id("relay1");
     device_relay1.Set_entity_type("switch");
+    device_relay1.Set_entity_qos(1);
     device_relay1.Set_retain_flag(true);
     device_relay1.Set_retain(true);
 
     device_relay2.Set_name("Relais 2");
     device_relay2.Set_object_id("relay2");
     device_relay2.Set_entity_type("switch");
+    device_relay2.Set_entity_qos(1);
     device_relay2.Set_retain_flag(true);
     device_relay2.Set_retain(true);
 
     device_dimmer_on_off.Set_name("Dimmer");
     device_dimmer_on_off.Set_object_id("on_off");
     device_dimmer_on_off.Set_entity_type("switch");
+    device_dimmer_on_off.Set_entity_qos(1);
     device_dimmer_on_off.Set_retain_flag(true);
     device_dimmer_on_off.Set_retain(true);
   
@@ -597,6 +604,7 @@ void setup() {
     device_dimmer_save.Set_object_id("save");
     device_dimmer_save.Set_entity_type("button");
     device_dimmer_save.Set_entity_category("config");
+    device_dimmer_save.Set_entity_qos(1);
     device_dimmer_save.Set_retain_flag(false);
 
     /// création des number
@@ -607,6 +615,7 @@ void setup() {
     device_dimmer_starting_pow.Set_entity_valuemin("-100");
     device_dimmer_starting_pow.Set_entity_valuemax("500"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_starting_pow.Set_entity_valuestep("1");
+    device_dimmer_starting_pow.Set_entity_qos(1);
     device_dimmer_starting_pow.Set_retain_flag(false);
 
     device_dimmer_minpow.Set_name("Puissance mini");
@@ -616,6 +625,7 @@ void setup() {
     device_dimmer_minpow.Set_entity_valuemin("0");
     device_dimmer_minpow.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_minpow.Set_entity_valuestep("1");
+    device_dimmer_minpow.Set_entity_qos(1);
     device_dimmer_minpow.Set_retain_flag(false);
 
     device_dimmer_maxpow.Set_name("Puissance maxi");
@@ -625,6 +635,7 @@ void setup() {
     device_dimmer_maxpow.Set_entity_valuemin("0");
     device_dimmer_maxpow.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_maxpow.Set_entity_valuestep("1");
+    device_dimmer_maxpow.Set_entity_qos(1);
     device_dimmer_maxpow.Set_retain_flag(false);
 
     device_dimmer_maxtemp.Set_name("Température maxi");
@@ -634,6 +645,7 @@ void setup() {
     device_dimmer_maxtemp.Set_entity_valuemin("0");
     device_dimmer_maxtemp.Set_entity_valuemax("75"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_maxtemp.Set_entity_valuestep("1");
+    device_dimmer_maxtemp.Set_entity_qos(1);
     device_dimmer_maxtemp.Set_retain_flag(false);
 
     device_dimmer_send_power.Set_name("Puissance dimmer");
@@ -643,6 +655,7 @@ void setup() {
     device_dimmer_send_power.Set_entity_valuemin("0");
     device_dimmer_send_power.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
     device_dimmer_send_power.Set_entity_valuestep("1");
+    device_dimmer_send_power.Set_entity_qos(1);
     device_dimmer_send_power.Set_retain_flag(false);
 
     device_dimmer_charge.Set_name("Charge");
@@ -652,6 +665,7 @@ void setup() {
     device_dimmer_charge.Set_entity_valuemin("0");
     device_dimmer_charge.Set_entity_valuemax("3000");
     device_dimmer_charge.Set_entity_valuestep("50");
+    device_dimmer_charge.Set_entity_qos(1);
     device_dimmer_charge.Set_retain_flag(false);
 
     /// création des select
@@ -660,6 +674,7 @@ void setup() {
     device_dimmer_child_mode.Set_entity_type("select");
     device_dimmer_child_mode.Set_entity_category("config");
     device_dimmer_child_mode.Set_entity_option("\"off\",\"delester\",\"equal\"");
+    device_dimmer_child_mode.Set_entity_qos(1);
     device_dimmer_child_mode.Set_retain_flag(false);
 
     // création des binary_sensor
@@ -668,6 +683,7 @@ void setup() {
     device_dimmer_alarm_temp.Set_entity_type("binary_sensor");
     device_dimmer_alarm_temp.Set_entity_category("diagnostic");
     device_dimmer_alarm_temp.Set_dev_cla("problem");
+    device_dimmer_alarm_temp.Set_entity_qos(1);
     device_dimmer_alarm_temp.Set_retain_flag(true);
 
     device_cooler.Set_name("Ventillateur");
@@ -675,6 +691,7 @@ void setup() {
     device_cooler.Set_entity_type("binary_sensor");
     device_cooler.Set_entity_category("diagnostic");
     device_cooler.Set_dev_cla("running");
+    device_cooler.Set_entity_qos(1);
     device_cooler.Set_retain_flag(false);
   }
 
@@ -1074,10 +1091,10 @@ void loop() {
           device_dimmer_alarm_temp.send(stringboolMQTT(security));
           device_dimmer_maxtemp.send(String(config.maxtemp)); 
         }
-        for (int i = 0; i < deviceCount; i++) {
-          device_temp[i].send(String(sysvar.celsius[i]));
-          previous_celsius[i]=sysvar.celsius[i];
-        }
+        // for (int i = 0; i < deviceCount; i++) {
+        //   device_temp[i].send(String(sysvar.celsius[i]));
+        //   previous_celsius[i]=sysvar.celsius[i];
+        // }
       }
       refreshcount = 0; 
     } 

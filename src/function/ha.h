@@ -56,6 +56,9 @@ struct MQTT
   private:bool retain_flag; 
   public:void Set_retain_flag(bool setter) {retain_flag=setter; }
 
+  private:int qos; 
+  public:void Set_entity_qos(int setter) {qos; }
+
   private:String retain; 
   public:void Set_retain(bool setter) {
     if (setter) {retain="\"ret\":true,"; }
@@ -166,7 +169,7 @@ struct MQTT
     if (config.JEEDOM || config.HA) {
       String topic = "Xlyric/"+ node_id +"/sensors/";
       String message = "  { \""+object_id+"\" : \"" + value.c_str() + "\"  } ";
-      client.publish(String(topic + object_id + "/state").c_str() ,1, retain_flag , message.c_str());
+      client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
     }
   } 
 };
