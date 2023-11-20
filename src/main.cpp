@@ -277,6 +277,8 @@ MQTT device_dimmer_child_mode;
 MQTT device_dimmer_alarm_temp;
 MQTT device_cooler;
 
+bool HA_reconnected = false;
+
 void HA_discover();
 
 /***************************

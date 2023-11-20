@@ -45,14 +45,17 @@ extern MQTT device_dimmer_charge;
 extern MQTT device_temp[15];
 extern MQTT device_relay1;
 extern MQTT device_relay2;
+extern MQTT device_cooler;
 
-
+extern bool HA_reconnected;
 extern bool discovery_temp; 
 extern bool alerte; 
 extern Logs logging; 
 //extern char buffer[1024];
 extern String devAddrNames[15];
 extern AsyncMqttClient client; 
+
+extern void HA_discover();
 
 void onMqttConnect(bool sessionPresent);
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
@@ -76,6 +79,7 @@ String stringboolMQTT(bool mybool);
   String command_number = String(topic_Xlyric + "command/number");
   String command_select = String(topic_Xlyric + "command/select");
   String command_button = String(topic_Xlyric + "command/button");
+  const String HA_status = String("homeassistant/status");
   String command_save = String("Xlyric/sauvegarde/"+ node_id );
 
 void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
@@ -273,11 +277,49 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         Serial.println("sauvegarde conf mqtt ");
         serializeJson(doc2, buffer);
         Serial.println(config.hostname);
-        Serial.println(buffer);
-        
-      }
+        Serial.println(buffer); 
+  }
 
 
+  if (strcmp( Subscribedtopic, HA_status.c_str() ) == 0) { 
+        String fixedpayload = ((String)payload).substring(0,len);
+        logging.Set_log_init("MQTT HA_status ");
+        logging.Set_log_init(fixedpayload);
+        logging.Set_log_init("\r\n");
+        if (strcmp( fixedpayload.c_str(), "online" ) == 0) { 
+          logging.Set_log_init("MQTT resend HA discovery \r\n");
+          HA_discover();
+          logging.Set_log_init("MQTT resend all values \r\n");
+          device_dimmer.send(String(sysvar.puissance));
+          device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+          if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) { device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));}
+          int coolerstate = digitalRead(COOLER); 
+          device_cooler.send(stringboolMQTT(coolerstate));
+          device_dimmer_starting_pow.send(String(config.startingpow));
+          device_dimmer_minpow.send(String(config.minpow));
+          device_dimmer_maxpow.send(String(config.maxpow));
+          device_dimmer_charge.send(String(config.charge));
+          device_dimmer_send_power.send(String(sysvar.puissance));
+          if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.send(String(config.mode));}
+          device_dimmer_on_off.send(String(config.dimmer_on_off));
+
+          #ifdef RELAY1
+            int relaystate = digitalRead(RELAY1); 
+            device_relay1.send(String(relaystate));
+          #endif
+          #ifdef RELAY2
+            relaystate = digitalRead(RELAY2); 
+            device_relay2.send(String(relaystate));
+          #endif
+          if (discovery_temp) {
+            for (int i = 0; i < deviceCount; i++) {
+              device_temp[i].send(String(sysvar.celsius[i]));
+            }
+            device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
+            device_dimmer_maxtemp.send(String(config.maxtemp)); 
+          }
+        }
+  }
 }
 
 
@@ -400,6 +442,7 @@ void reconnect() {
         client.subscribe((command_number + "/#").c_str(),1);
         client.subscribe((command_select + "/#").c_str(),1);
         client.subscribe((command_switch + "/#").c_str(),1);
+        client.subscribe((HA_status).c_str(),1);
 
         client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online
         
