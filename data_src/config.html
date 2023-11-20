@@ -135,14 +135,12 @@
                     <!-- Begin Page Content -->
                     <div class="container-fluid">
                         <!-- Page Heading -->
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800">CONFIG</h1>
-                        </div>
-                        <!-- Page Heading -->
-                        <!--	  <h1 class="h3 mb-2 text-gray-800">Configuration</h1>
-          <p class="mb-4">Page de configuration de votre pv routeur, pensez à sauvegarder votre configuration sur la flash après l'avoir appliqué.</p>
-		  <p class="mb-4">page rapide d'aide : <a href="doc.txt" target="_blank"> ici </a></p>
-  -->
+                        <h1 class="h3 mb-2 text-gray-800">Configuration</h1>
+						<p class="mb-4">Page de configuration de votre pv dimmer, pensez à sauvegarder votre configuration sur la flash après l'avoir appliquée.</p>
+                        <p class="mb-4">page rapide d'aide : <a href="https://wiki.apper-solaire.org/" target="_blank"> ici </a></p>
+
+ 
+
                         <!-- Content Row -->
                         <div class="row">
                             <!-- Earnings (Monthly) Card Example -->
@@ -212,7 +210,7 @@
                         <div class="col-lg-6">
                             <div class="card position-relative">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Configuration</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Paramètres</h6>
                                     <span id="saveform"></span>
                                 </div>
                                 <div class="card-body">
@@ -395,8 +393,8 @@
                                                         <div class="col-sm-4">
                                                             <select id="delester" class="form-control form-control-user">
                                                                 <option value="off">off</option>
-                                                                <option value="delester">delester</option>
-                                                                <option value="equal">equal</option>
+                                                                <option value="delester">délester</option>
+                                                                <option value="equal">égal</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -483,7 +481,8 @@
                                     </div>
                                     <!-- </div> -->
                                     <!--  fin du formumaire et envoie -->
-                                    <input type="submit" value=" Application des parametres" class="btn btn-primary btn-user btn-block">
+                                    <input type="submit" value=" Application des paramètres" class="btn btn-primary btn-user btn-block">
+                                    
                                     <hr>
                                 </div>
                                 <hr>
@@ -529,7 +528,7 @@ function sendservermode (mode) {
 
 // 		$.get( "/get", { mode: mode } )
 // 		.done(function(data) { 
-// 		$( "#saveform" ).text( "Configuration appliqué" ).show().fadeOut( 5000 );
+// 		$( "#saveform" ).text( "Configuration appliquée" ).show().fadeOut( 5000 );
 // 		var config = data.split(";");
 //     document.getElementsById("delester").value = config[9];
     
@@ -574,7 +573,7 @@ $( "#formulaire" ).submit(function() {
             url: "get",
 
             success: function(retour){
-                $( "#saveform" ).text( "Configuration appliqué" ).show().fadeOut( 5000 );
+                $( "#saveform" ).text( "Configuration appliquée" ).show().fadeOut( 5000 );
                      
             }
         });
@@ -643,26 +642,26 @@ var recupconfig =  $.getJSON('/config', function(data) {
     </div>
     <!-- </div>
 </div> -->
-    <!-- /.container-fluid -->
-    <!-- </div> -->
-    <!-- End of Main Content -->
-    <!-- Footer -->
-    <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-                <span>https://github.com/xlyric/  - 2022</span>
-            </div>
+<!-- /.container-fluid -->
+<!-- </div> -->
+<!-- End of Main Content -->
+<!-- Footer -->
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>https://github.com/xlyric/  - 2023</span>
         </div>
-    </footer>
-    <!-- End of Footer -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
-    <!-- Core plugin JavaScript-->
-    <script src="https://ota.apper-solaire.org/css/jquery.easing.min.js"></script>
-    <!-- Custom scripts for all pages-->
-    <script src="https://ota.apper-solaire.org/css/sb-admin-2.js"></script>
-    <script src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
-    <script>
+    </div>
+</footer>
+<!-- End of Footer -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+<!-- Core plugin JavaScript-->
+<script src="https://ota.apper-solaire.org/css/jquery.easing.min.js"></script>
+<!-- Custom scripts for all pages-->
+<script src="https://ota.apper-solaire.org/css/sb-admin-2.js"></script>
+<script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+<script>
   kofiWidgetOverlay.draw('clyric', {
     'type': 'floating-chat',
     'floating-chat.donateButton.text': 'Support me',
