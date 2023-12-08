@@ -21,7 +21,7 @@ extern MQTT devicetemp[15];
 extern String devAddrNames[15];
 extern int deviceCount; // nombre de sonde(s) dallas détectée(s)
 
-int dallas_error = 0; // compteur d'erreur dallas
+int dallas_error[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // compteur d'erreur dallas
 int gw_error = 0;   // compteur d'erreur gateway
 
 float CheckTemperature(String label, byte deviceAddress[12]);
@@ -37,12 +37,12 @@ void mqttdallas() {
       //gestion des erreurs DS18B20
       if ( (sysvar.celsius[a] == -127.00) || (sysvar.celsius[a] == -255.00) ) {
         sysvar.celsius[a]=previous_celsius[a];
-        dallas_error ++; // incrémente le compteur d'erreur
-
+        dallas_error[a] ++; // incrémente le compteur d'erreur
+        logging.Set_log_init("Problème de lecture Dallas : échec "+ String(dallas_error[a]) + "\r\n");
       }
       else {
         sysvar.celsius[a] = (roundf(sysvar.celsius[a] * 10) / 10 ) + 0.1; // pour les valeurs min
-        dallas_error = 0; // remise à zéro du compteur d'erreur
+        dallas_error[a] = 0; // remise à zéro du compteur d'erreur
       }   
     }
     if (!AP && mqtt_config.mqtt) {
@@ -101,12 +101,23 @@ void mqttdallas() {
   previous_celsius[sysvar.dallas_maitre]=sysvar.celsius[sysvar.dallas_maitre];
 
   // si trop d'erreur dallas, on remonte en mqtt
-  if ( dallas_error > 8 ) {
-    DEBUG_PRINTLN("détection perte sonde dallas");
-    // mqtt(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
-    Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
-    dallas_error = 0; // remise à zéro du compteur d'erreur
-  }
+  for (int a = 0; a < deviceCount; a++) {
+    if ( dallas_error[a] > 5 ) {
+      DEBUG_PRINTLN("détection perte sonde dallas");
+      // mqtt(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
+      Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
+      logging.Set_log_init("Dallas perdue !!!\r\n");
+      dallas_error[a] = 0; // remise à zéro du compteur d'erreur
+      ///mise en sécurité
+      // float code_error = 99.99;
+      // sysvar.celsius[a] = code_error;
+      sysvar.celsius[a] = float(99.99);  
+      previous_celsius[a]=sysvar.celsius[a];
+      if (a == sysvar.dallas_maitre) {
+        unified_dimmer.set_power(0);
+      }
+      }
+   }
 
   #ifdef STANDALONE
     if ( pinger.Ping(WiFi.gatewayIP())) {
