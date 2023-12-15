@@ -823,6 +823,7 @@ void loop() {
   if ( mqtt_config.mqtt && !AP ) {
     if (!client.connected() ) {
       connectToMqtt();
+      reconnect();
       HA_discover();
       discovery_temp = false;
     }

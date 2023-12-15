@@ -136,6 +136,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           int relay = doc2["relay1"]; 
           if ( relay == 0) { digitalWrite(RELAY1 , LOW); }
           else { digitalWrite(RELAY1 , HIGH); } 
+          delay(1000); //TEST reboot aléatoire
           logging.Set_log_init("RELAY1 at ");
           logging.Set_log_init(String(relay));
           logging.Set_log_init("\r\n"); 
@@ -147,6 +148,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           int relay = doc2["relay2"]; 
           if ( relay == 0) { digitalWrite(RELAY2 , LOW); }
           else { digitalWrite(RELAY2 , HIGH); } 
+          delay(1000); //TEST reboot aléatoire
           logging.Set_log_init("RELAY2 at ");
           logging.Set_log_init(String(relay));
           logging.Set_log_init("\r\n"); 
@@ -428,34 +430,32 @@ void child_communication(int delest_power, bool equal = false){
 
 void reconnect() {
   if  (LittleFS.exists("/mqtt.json"))
-  {
-      
-      Serial.print("Attempting MQTT connection...");
-      logging.Set_log_init("Reconnect MQTT");
-        // client.publish(String(topic).c_str() ,0,true, "online"); // status Online
-        client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online
-        Serial.println("connected");
-        logging.Set_log_init("Connected\r\n");
-        if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
-        if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
-        client.subscribe((command_button + "/#").c_str(),1);
-        client.subscribe((command_number + "/#").c_str(),1);
-        client.subscribe((command_select + "/#").c_str(),1);
-        client.subscribe((command_switch + "/#").c_str(),1);
-        client.subscribe((HA_status).c_str(),1);
+  { 
+    Serial.print("Attempting MQTT connection...");
+    logging.Set_log_init("Reconnect MQTT");
+    // client.publish(String(topic).c_str() ,0,true, "online"); // status Online
+    client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online
+    Serial.println("connected");
+    logging.Set_log_init("Connected\r\n");
+    if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
+    if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
+    client.subscribe((command_button + "/#").c_str(),1);
+    client.subscribe((command_number + "/#").c_str(),1);
+    client.subscribe((command_select + "/#").c_str(),1);
+    client.subscribe((command_switch + "/#").c_str(),1);
+    client.subscribe((HA_status).c_str(),1);
 
-        client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online
-        
-        String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-        String node_id = String("Dimmer-") + node_mac; 
-        String save_command = String("Xlyric/sauvegarde/"+ node_id );
-        //client.subscribe(save_command.c_str());
-        int instant_power = sysvar.puissance;  // 
-        // mqtt(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
-        Mqtt_send_DOMOTICZ(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
-        device_dimmer.send(String(instant_power)); 
-        device_dimmer_power.send(String(instant_power * config.charge/100)); 
-           
+    client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online
+    
+    String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
+    String node_id = String("Dimmer-") + node_mac; 
+    String save_command = String("Xlyric/sauvegarde/"+ node_id );
+    //client.subscribe(save_command.c_str());
+    int instant_power = sysvar.puissance;  // 
+    // mqtt(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
+    Mqtt_send_DOMOTICZ(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
+    device_dimmer.send(String(instant_power)); 
+    device_dimmer_power.send(String(instant_power * config.charge/100));       
     
   } else {  Serial.println(" Filesystem not present "); delay(5000); }
 }
