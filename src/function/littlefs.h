@@ -65,7 +65,7 @@ void loadConfiguration(const char *filename, Config &config) {
   DeserializationError error = deserializeJson(doc, configFile);
   if (error) {
     Serial.println(F("Failed to read configuration file, using default configuration"));
-    logging.Set_log_init("Failed to read file config File, use default\r\n" ); 
+    logging.Set_log_init("Failed to read file config File, use default\r\n" ,true); 
     }
   // Copy values from the JsonDocument to the Config
   
@@ -121,7 +121,7 @@ void saveConfiguration(const char *filename, const Config &config) {
    File configFile = LittleFS.open(filename_conf, "w");
   if (!configFile) {
     Serial.println(F("Failed to open config file for writing"));
-    logging.Set_log_init("Failed to read file config File, use default\r\n"); 
+    logging.Set_log_init("Failed to read file config File, use default\r\n",true); 
   
     return;
   }
@@ -236,7 +236,7 @@ void savemqtt(const char *filename, const Mqtt &mqtt_config) {
   // Serialize JSON to file
   if (serializeJson(doc, configFile) == 0) {
     Serial.println(F("Failed to write to file in function Save configuration "));
-    logging.Set_log_init("Failed to write MQTT config\r\n");
+    logging.Set_log_init("Failed to write MQTT config\r\n",true);
   }
 
   // Close the file
@@ -305,7 +305,7 @@ void savewifiIP(const char *wifi_conf, Wifi_struct &wifi_config_fixe) {
   // Serialize JSON to file
   if (serializeJson(doc, configFile) == 0) {
     Serial.println(F("Failed to write to file in function Save configuration "));
-    logging.Set_log_init("Failed to write wifi config\r\n");
+    logging.Set_log_init("Failed to write wifi config\r\n",true);
   }
 
   // Close the file

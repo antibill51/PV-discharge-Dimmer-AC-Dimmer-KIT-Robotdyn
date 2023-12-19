@@ -108,7 +108,8 @@
 #define TRIGGER 10   /// 
 #define TIMERDELAY 5 // delay before switch off
 
-#define LOG_MAX_STRING_LENGTH 512 // taille max des logs stockées
+/// taille max des logs stockée
+#define LOG_MAX_STRING_LENGTH 254
 
 #define FACTEUR_REGULATION 0.7 // facteur de régulation pour l'enfant
 
@@ -119,6 +120,14 @@
   #else
     #define DEBUG_PRINTLN(x)
   #endif
+
+/**
+ * Syncing time with an NTP server
+ */
+#define NTP_TIME_SYNC_ENABLED true
+#define NTP_SERVER "europe.pool.ntp.org"
+#define NTP_OFFSET_SECONDS 3600
+#define NTP_UPDATE_INTERVAL_MS 3600000 /// synch de l'heure toute les heures
 
 #endif
 

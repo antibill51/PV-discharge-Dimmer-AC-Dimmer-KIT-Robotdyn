@@ -6,6 +6,7 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <TimeLib.h>
+#include "config/enums.h"
 
 #if defined(ESP32) || defined(ESP32ETH)
   #include <FS.h>
@@ -16,8 +17,8 @@
 #endif
 
 //// NTP 
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
+// WiFiUDP ntpUDP;
+// NTPClient timeClient(ntpUDP);
 
 #include "config/enums.h"
 #include "function/unified_dimmer.h"

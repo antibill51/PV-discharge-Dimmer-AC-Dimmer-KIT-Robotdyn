@@ -8,6 +8,10 @@
 #else
   #include <ESP8266WiFi.h>
 #endif
+#include <NTPClient.h>
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, NTP_SERVER, NTP_OFFSET_SECONDS, NTP_UPDATE_INTERVAL_MS);
 
 //extern String logs;
 
@@ -16,18 +20,39 @@ struct Logs {
   private:char log_init[LOG_MAX_STRING_LENGTH];
 
   ///setter log_init
-  public:void Set_log_init(String setter) {strcat(log_init,setter.c_str()); }
+  // public:void Set_log_init(String setter) {strcat(log_init,setter.c_str()); }
+  public:void Set_log_init(String setter, bool logtime=false) {
+      // vérification qu'il y ai encore de la taille pour stocker la log 
+      if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/50)) ) {
+        reset_log_init();
+      }
+      if ((strlen(setter.c_str()) + strlen(log_init) > LOG_MAX_STRING_LENGTH)) { return; } // si la taille de la log est trop grande, on ne fait rien )*
+      if (logtime) { strcat(log_init,loguptime()); }
+      strcat(log_init,setter.c_str()); 
+    }
 
   ///getter log_init
   public:String Get_log_init() {return log_init; }
 
   //clean log_init
   public:void clean_log_init() {
-      if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/10)) ) {
-      log_init[0] = '\0';
-      strcat(log_init,"197}11}1");
+      if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/50)) ) {
+      reset_log_init();
+      }
+
+      ///si risque de fuite mémoire
+      if (strlen(log_init) >(LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/5)) ) {
+      //savelogs("-- reboot Suite problème de taille logs -- ");   //--> vu que dans une struc, c'est compliqué à mettre en place
+      ESP.restart();
       }
   }
+
+
+  //     if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/10)) ) {
+  //     log_init[0] = '\0';
+  //     strcat(log_init,"197}11}1");
+  //     }
+  // }
 
   //reset log_init
   public:void reset_log_init() {
@@ -35,6 +60,11 @@ struct Logs {
       strcat(log_init,"197}11}1");
   }
 
+  char *loguptime() {
+      static char uptime_stamp[20]; // Vous devrez définir une taille suffisamment grande pour stocker votre temps
+      snprintf(uptime_stamp, sizeof(uptime_stamp), "%s\t", timeClient.getFormattedTime().c_str());
+      return uptime_stamp;
+    }
   
 };
 

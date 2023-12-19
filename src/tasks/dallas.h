@@ -38,7 +38,7 @@ void mqttdallas() {
       if ( (sysvar.celsius[a] == -127.00) || (sysvar.celsius[a] == -255.00) ) {
         sysvar.celsius[a]=previous_celsius[a];
         dallas_error[a] ++; // incrémente le compteur d'erreur
-        logging.Set_log_init("Problème de lecture Dallas : échec "+ String(dallas_error[a]) + "\r\n");
+        logging.Set_log_init("Problème de lecture Dallas : échec "+ String(dallas_error[a]) + "\r\n",true);
       }
       else {
         sysvar.celsius[a] = (roundf(sysvar.celsius[a] * 10) / 10 ) + 0.1; // pour les valeurs min
@@ -53,7 +53,7 @@ void mqttdallas() {
         if ( sysvar.celsius[a] != previous_celsius[a] ) {
           device_temp[a].send(String(sysvar.celsius[a]));
           previous_celsius[a]=sysvar.celsius[a];
-          logging.Set_log_init("Dallas " + String(a) + " temp : "+ String(sysvar.celsius[a]) +"\r\n");
+          // logging.Set_log_init("Dallas " + String(a) + " temp : "+ String(sysvar.celsius[a]) +"\r\n");
         }
       }
     }          
@@ -106,7 +106,7 @@ void mqttdallas() {
       DEBUG_PRINTLN("détection perte sonde dallas");
       // mqtt(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
       Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
-      logging.Set_log_init("Dallas perdue !!!\r\n");
+      logging.Set_log_init("Dallas perdue !!!\r\n",true);
       dallas_error[a] = 0; // remise à zéro du compteur d'erreur
       ///mise en sécurité
       // float code_error = 99.99;
@@ -134,7 +134,8 @@ void mqttdallas() {
   /// si GW perdu, reboot de l'ESP après 2 minutes
     if ( gw_error > 8 ) {
       DEBUG_PRINTLN("détection perte gateway");
-      ESP.restart();
+      // ESP.restart();
+      config.restart = true;
     }
   #endif
 

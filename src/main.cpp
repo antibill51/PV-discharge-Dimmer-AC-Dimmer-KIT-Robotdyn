@@ -514,7 +514,8 @@ void setup() {
       Serial.println(WiFi.localIP());
 
       Serial.print("Application de la nouvelle configuration Ip   ");
-      ESP.restart();
+      // ESP.restart();
+      config.restart = true;
     }
   }
   //Si connexion affichage info dans console
@@ -740,7 +741,7 @@ void setup() {
     async_mqtt_init();
     connectToMqtt();
     delay(1000);  
-    reconnect();
+    // reconnect();
     HA_discover(); // Hello des devices HA, condition HA directement dans la fonction.
 
     if (config.HA || config.JEEDOM) {
@@ -823,7 +824,8 @@ void loop() {
   if ( mqtt_config.mqtt && !AP ) {
     if (!client.connected() ) {
       connectToMqtt();
-      reconnect();
+      delay(1000);
+      // reconnect();
       HA_discover();
       discovery_temp = false;
     }
@@ -838,7 +840,8 @@ void loop() {
   if (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print("NO WIFI - Restarting Dimmer");
-    ESP.restart();
+    // ESP.restart();
+    config.restart = true;
   }
 
   ///////////////// gestion des activité minuteur 
@@ -847,7 +850,7 @@ void loop() {
     //  minuteur en cours
     if (programme.stop_progr()) { 
       // Robotdyn dimmer
-      logging.Set_log_init("stop minuteur dimmer\r\n");
+      logging.Set_log_init("stop minuteur dimmer\r\n",true);
       unified_dimmer.set_power(0); 
       unified_dimmer.dimmer_off();
 
@@ -869,7 +872,7 @@ void loop() {
     if (programme.start_progr()){ 
       sysvar.puissance=config.maxpow; 
       //// robotdyn dimmer
-      logging.Set_log_init("start minuteur dimmer\r\n");
+      logging.Set_log_init("start minuteur dimmer\r\n",true);
       unified_dimmer.dimmer_on();
       unified_dimmer.set_power(config.maxpow); 
       delay (50);
@@ -890,26 +893,26 @@ void loop() {
     //// relay 1 
     if (programme_relay1.run) { 
       if (programme_relay1.stop_progr()) { 
-        logging.Set_log_init("stop minuteur relay1\r\n");
+        logging.Set_log_init("stop minuteur relay1\r\n",true);
         digitalWrite(RELAY1 , LOW);
       }
     }
     else {
       if (programme_relay1.start_progr()){ 
-        logging.Set_log_init("start minuteur relay1\r\n");
+        logging.Set_log_init("start minuteur relay1\r\n",true);
         digitalWrite(RELAY1 , HIGH);
       }
     }
 
     if (programme_relay2.run) { 
       if (programme_relay2.stop_progr()) { 
-        logging.Set_log_init("stop minuteur relay2\r\n");
+        logging.Set_log_init("stop minuteur relay2\r\n",true);
         digitalWrite(RELAY2 , LOW);
       }
     }
     else {
       if (programme_relay2.start_progr()){ 
-        logging.Set_log_init("start minuteur relay2\r\n");
+        logging.Set_log_init("start minuteur relay2\r\n",true);
         digitalWrite(RELAY2 , HIGH);
       }
     }
@@ -934,7 +937,7 @@ void loop() {
   if ( security == 1 ) { 
     if (!alerte){
       Serial.println("Alert Temp");
-      logging.Set_log_init("Alert Temp\r\n");
+      logging.Set_log_init("Alert Temp\r\n",true);
     
       if (!AP && mqtt_config.mqtt){
         // mqtt(String(config.IDXAlarme), String("Ballon chaud " ),"Alerte");  ///send alert to MQTT
@@ -1000,7 +1003,7 @@ void loop() {
             dimmer2.setPower(sysvar.puissance);
           #endif
         }
-        logging.Set_log_init("dimmer at " );
+        logging.Set_log_init("dimmer at " ,true);
         logging.Set_log_init(String(sysvar.puissance)); 
         logging.Set_log_init("\r\n");
 
@@ -1174,7 +1177,7 @@ void dallaspresent () {
   // byte type_s;
   for (int i = 0; i < deviceCount; i++) {
     if (!ds.search(addr[i])) {
-      logging.Set_log_init("Unable to find temperature sensors address \r\n");
+      logging.Set_log_init("Unable to find temperature sensors address \r\n",true);
       ds.reset_search();
       delay(250);
       return ;
