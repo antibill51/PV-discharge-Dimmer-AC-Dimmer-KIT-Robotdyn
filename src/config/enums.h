@@ -23,7 +23,7 @@ struct Logs {
   // public:void Set_log_init(String setter) {strcat(log_init,setter.c_str()); }
   public:void Set_log_init(String setter, bool logtime=false) {
       // vérification qu'il y ai encore de la taille pour stocker la log 
-      if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/50)) ) {
+      if (strlen(log_init) > ((LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/5))) ) {
         reset_log_init();
       }
       if ((strlen(setter.c_str()) + strlen(log_init) > LOG_MAX_STRING_LENGTH)) { return; } // si la taille de la log est trop grande, on ne fait rien )*
@@ -36,13 +36,15 @@ struct Logs {
 
   //clean log_init
   public:void clean_log_init() {
-      if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/50)) ) {
+      if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/5)) ) {
       reset_log_init();
       }
 
       ///si risque de fuite mémoire
-      if (strlen(log_init) >(LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/5)) ) {
+      if (strlen(log_init) >((LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/10))) ) {
       //savelogs("-- reboot Suite problème de taille logs -- ");   //--> vu que dans une struc, c'est compliqué à mettre en place
+      strcat(log_init,"LOG need restart"); 
+      delay(1000);
       ESP.restart();
       }
   }

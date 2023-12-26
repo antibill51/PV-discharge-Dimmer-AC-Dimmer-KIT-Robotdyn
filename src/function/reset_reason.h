@@ -90,7 +90,7 @@
             Serial.println(cpu);
             esp32_cpu_error(i, bootReasonMessage, BOOT_REASON_MESSAGE_SIZE);
             Serial.println(bootReasonMessage);
-            logging.Set_log_init("Reason for reset ",true);
+            logging.Set_log_init("Reason for reset ",false);
             logging.Set_log_init(cpu.c_str());
             logging.Set_log_init(" : ");
             logging.Set_log_init(String(bootReasonMessage).c_str());
@@ -140,7 +140,7 @@
             break;
         };
         Serial.println(bootReasonMessage);
-        logging.Set_log_init("Reason for reset: ",true);
+        logging.Set_log_init("Reason for reset: ",false);
         logging.Set_log_init(String(bootReasonMessage).c_str());
         logging.Set_log_init("\r\n");
     #endif

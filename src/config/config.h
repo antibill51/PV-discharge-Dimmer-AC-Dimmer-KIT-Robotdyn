@@ -109,7 +109,7 @@
 #define TIMERDELAY 5 // delay before switch off
 
 /// taille max des logs stockée
-#define LOG_MAX_STRING_LENGTH 254
+#define LOG_MAX_STRING_LENGTH 1500
 
 #define FACTEUR_REGULATION 0.7 // facteur de régulation pour l'enfant
 

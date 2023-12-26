@@ -84,9 +84,9 @@ String stringboolMQTT(bool mybool);
 
 void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
   //char* Subscribedtopic, byte* message, unsigned int length
-  // logging.Set_log_init("Subscribedtopic : " + String(Subscribedtopic)+ "\r\n",true);
+  logging.Set_log_init("Subscribedtopic : " + String(Subscribedtopic)+ "\r\n",true);
   String fixedpayload = ((String)payload).substring(0,len);
-  // logging.Set_log_init("Payload : " + String(fixedpayload)+ "\r\n",true);
+  logging.Set_log_init("Payload : " + String(fixedpayload)+ "\r\n",true);
   StaticJsonDocument<1024> doc2;
   deserializeJson(doc2, payload);
   /// @brief Enregistrement du dimmer sur MQTT pour récuperer les informations remonté par MQTT
