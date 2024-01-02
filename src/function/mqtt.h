@@ -104,6 +104,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
     }
     else {
       device_dimmer.send(String(sysvar.puissance));
+      device_dimmer_send_power.send(String(sysvar.puissance));
       device_dimmer_power.send(String(sysvar.puissance*config.charge/100));
     }
   }
@@ -293,6 +294,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           HA_discover();
           logging.Set_log_init("MQTT resend all values \r\n",true);
           device_dimmer.send(String(sysvar.puissance));
+          device_dimmer_send_power.send(String(sysvar.puissance));
           device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
           if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) { device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));}
           // int coolerstate = digitalRead(COOLER); 

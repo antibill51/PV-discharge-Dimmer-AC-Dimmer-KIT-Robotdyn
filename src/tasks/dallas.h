@@ -95,6 +95,7 @@ void mqttdallas() {
     //   device_dimmer_power.send("0");
     // }
     device_dimmer.send("0"); 
+    device_dimmer_send_power.send("0");
     device_dimmer_power.send("0");
   }
   
