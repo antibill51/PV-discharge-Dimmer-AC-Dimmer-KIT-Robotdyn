@@ -976,30 +976,33 @@ void loop() {
     }
     
     /// si on dépasse la puissance mini demandé 
-    DEBUG_PRINTLN("694------------------");
+    DEBUG_PRINTLN(("%d------------------",__LINE__));
     DEBUG_PRINTLN(sysvar.puissance);
     
-    if (sysvar.puissance > config.minpow && sysvar.puissance != 0 && security == 0) {
-      DEBUG_PRINTLN("699------------------");
-      if (config.dimmer_on_off == 1){unified_dimmer.dimmer_on();}  // if off, switch on 
-      DEBUG_PRINTLN("701------------------");
-      /// si au dessus de la consigne max configuré alors config.maxpow. 
-      if ( sysvar.puissance > config.maxpow || sysvar.puissance_cumul > sysvar.puissancemax ) { 
-        if (config.dimmer_on_off == 1){
-          unified_dimmer.set_power(config.maxpow);
-          #ifdef outputPin2
-            dimmer2.setPower(config.maxpow);
-          #endif
+    if (sysvar.puissance > config.minpow && sysvar.puissance != 0 && security == 0) 
+    {
+         DEBUG_PRINTLN(("%d------------------",__LINE__));
+        if (config.dimmer_on_off == 1){unified_dimmer.dimmer_on();}  // if off, switch on 
+         DEBUG_PRINTLN(("%d------------------",__LINE__));
+        /// si au dessus de la consigne max configuré alors config.maxpow. 
+        if ( sysvar.puissance > config.maxpow || sysvar.puissance_cumul > sysvar.puissancemax )  
+        { 
+          if (config.dimmer_on_off == 1){
+            unified_dimmer.set_power(config.maxpow);
+            
+            #ifdef outputPin2
+              dimmer2.setPower(config.maxpow);
+            #endif
+          }
+          /// si on a une carte fille, on envoie la commande 
+          if ( strcmp(config.child,"none") != 0 || strcmp(config.mode,"off") != 0 ) {
+              if ( strcmp(config.mode,"delester") == 0 ) { child_communication(int((sysvar.puissance-config.maxpow)*FACTEUR_REGULATION),true ); } // si mode délest, envoi du surplus
+              if ( strcmp(config.mode,"equal") == 0) { child_communication(sysvar.puissance,true); }  //si mode equal envoie de la commande vers la carte fille
+          }
+        DEBUG_PRINTLN(("%d------------------",__LINE__));
         }
-        /// si on a une carte fille, on envoie la commande 
-        if ( strcmp(config.child,"none") != 0 || strcmp(config.mode,"off") != 0 ) {
-            if ( strcmp(config.mode,"delester") == 0 ) { child_communication(int((sysvar.puissance-config.maxpow)*FACTEUR_REGULATION),true ); } // si mode délest, envoi du surplus
-            if ( strcmp(config.mode,"equal") == 0) { child_communication(sysvar.puissance,true); }  //si mode equal envoie de la commande vers la carte fille
-        }
-        DEBUG_PRINTLN("716------------------");
-      }
-      /// fonctionnement normal
-      else { 
+        /// fonctionnement normal
+        else { 
         if (config.dimmer_on_off == 1){
           unified_dimmer.set_power(sysvar.puissance);
           #ifdef outputPin2
@@ -1010,12 +1013,12 @@ void loop() {
         logging.Set_log_init(String(sysvar.puissance)); 
         logging.Set_log_init("\r\n");
 
-        if ( strcmp(config.child,"") != 0 ) {
-            if ( strcmp(config.mode,"equal") == 0) { child_communication(int(sysvar.puissance*FACTEUR_REGULATION),true); }  //si mode equal envoie de la commande vers la carte fille
-            if ( strcmp(config.mode,"delester") == 0 && sysvar.puissance < config.maxpow) { child_communication(0,false); }  //si mode délest envoie d'une commande à 0
+          if ( strcmp(config.child,"") != 0 ) {
+              if ( strcmp(config.mode,"equal") == 0) { child_communication(int(sysvar.puissance*FACTEUR_REGULATION),true); }  //si mode equal envoie de la commande vers la carte fille
+              if ( strcmp(config.mode,"delester") == 0 && sysvar.puissance < config.maxpow) { child_communication(0,false); }  //si mode délest envoie d'une commande à 0
+          }
         }
-      }
-      DEBUG_PRINTLN("732------------------");
+         DEBUG_PRINTLN(("%d------------------",__LINE__));
 
         
       /// si on est en mode MQTT on remonte les valeurs vers HA et MQTT

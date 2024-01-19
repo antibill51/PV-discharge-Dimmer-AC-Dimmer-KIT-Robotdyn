@@ -142,8 +142,12 @@ void call_pages() {
             }
          }
          else
-         { sysvar.puissance = input;  config.dispo = 0; DEBUG_PRINTLN("141-input="+String(input));}
-        
+         {
+           sysvar.puissance = input;
+           config.dispo = 0;
+           DEBUG_PRINTLN(("%d-input=" + String(input),__LINE__));
+         }
+
         // si config.child = 0.0.0.0 alors max = 100 
         int max = 200;
         if (strcmp(config.child,"none") == 0 || strcmp(config.mode,"off") ==0 ) { max = 100; } 
@@ -183,7 +187,7 @@ void call_pages() {
     }
     
     DEBUG_PRINTLN(sysvar.puissance);
-    DEBUG_PRINTLN("182------------------");
+    DEBUG_PRINTLN(("%d------------------",__LINE__));
   }); 
 
 /// page de config et récupération des requetes de config
