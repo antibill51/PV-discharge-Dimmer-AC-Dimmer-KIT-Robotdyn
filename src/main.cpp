@@ -412,9 +412,9 @@ void setup() {
 
   /// init de sécurité     
   unified_dimmer.set_power(0); 
-  #ifdef outputPin2
-    dimmer2.setPower(0); 
-  #endif
+  // #ifdef outputPin2
+  //   dimmer2.setPower(0); 
+  // #endif
     
   USE_SERIAL.println("Dimmer Program is starting...");
 
@@ -990,9 +990,9 @@ void loop() {
           if (config.dimmer_on_off == 1){
             unified_dimmer.set_power(config.maxpow);
             
-            #ifdef outputPin2
-              dimmer2.setPower(config.maxpow);
-            #endif
+            // #ifdef outputPin2
+            //   dimmer2.setPower(config.maxpow);
+            // #endif
           }
           /// si on a une carte fille, on envoie la commande 
           if ( strcmp(config.child,"none") != 0 || strcmp(config.mode,"off") != 0 ) {
@@ -1005,14 +1005,14 @@ void loop() {
         else { 
         if (config.dimmer_on_off == 1){
           unified_dimmer.set_power(sysvar.puissance);
-          #ifdef outputPin2
-            dimmer2.setPower(sysvar.puissance);
-          #endif
-        }
+          // #ifdef outputPin2
+          //   dimmer2.setPower(sysvar.puissance);
+          // #endif
+        
         logging.Set_log_init("dimmer at " ,true);
         logging.Set_log_init(String(sysvar.puissance)); 
         logging.Set_log_init("\r\n");
-
+        }
           if ( strcmp(config.child,"") != 0 ) {
               if ( strcmp(config.mode,"equal") == 0) { child_communication(int(sysvar.puissance*FACTEUR_REGULATION),true); }  //si mode equal envoie de la commande vers la carte fille
               if ( strcmp(config.mode,"delester") == 0 && sysvar.puissance < config.maxpow) { child_communication(0,false); }  //si mode délest envoie d'une commande à 0
@@ -1030,13 +1030,16 @@ void loop() {
           Mqtt_send_DOMOTICZ(String(config.IDX), String("0"),"pourcent");  // remonté MQTT de la commande 0
           device_dimmer.send("0");  // remonté MQTT HA de la commande 0
           device_dimmer_send_power.send("0");
+          device_dimmer_power.send("0"); 
+          
         }
         else if ( sysvar.puissance > config.maxpow ) {
           // mqtt(String(config.IDX), String(config.maxpow));  // remonté MQTT de la commande max
           // if (mqtt_config.HA) {device_dimmer.send(String(config.maxpow));}  // remonté MQTT HA de la commande max
           Mqtt_send_DOMOTICZ(String(config.IDX), String(config.maxpow));  // remonté MQTT de la commande max
-          device_dimmer.send(String(config.maxpow));  // remonté MQTT HA de la commande max
+          device_dimmer.send(String(config.maxpow));
           device_dimmer_send_power.send(String(config.maxpow));
+          device_dimmer_power.send(String(config.maxpow * config.charge/100)); 
         }
         else {
           // mqtt(String(config.IDX), String(unified_dimmer.get_power()),"pourcent"); // remonté MQTT de la commande réelle
@@ -1087,9 +1090,9 @@ void loop() {
       device_dimmer_send_power.send("0");
       device_dimmer_power.send("0");
 
-      #ifdef outputPin2
-        dimmer2.setPower(0);
-      #endif
+      // #ifdef outputPin2
+      //   dimmer2.setPower(0);
+      // #endif
       unified_dimmer.dimmer_off();
       if ( strcmp(config.mode,"off") != 0) {  if (childsend>2) { child_communication(0,false); childsend++; }}
 
