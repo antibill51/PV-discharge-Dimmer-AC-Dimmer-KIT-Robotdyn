@@ -27,7 +27,7 @@ extern Config config;
 extern System sysvar;
 extern HTTPClient http;
 extern WiFiClient domotic_client;
-
+// extern bool mqttConnected;
 extern MQTT device_dimmer_child_mode;
 
 extern MQTT device_dimmer;
@@ -57,6 +57,7 @@ extern AsyncMqttClient client;
 
 extern void HA_discover();
 
+// void connectToMqtt();
 void onMqttConnect(bool sessionPresent);
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
 void onMqttSubscribe(uint16_t packetId, uint8_t qos);
@@ -431,6 +432,46 @@ void child_communication(int delest_power, bool equal = false){
 
 //////////// reconnexion MQTT
 
+// void connect_and_subscribe() {
+//   if  (LittleFS.exists("/mqtt.json"))
+//   {
+//       if (!client.connected() && WiFi.isConnected()) {
+//         Serial.print("Attempting MQTT connection...");
+//         connectToMqtt();
+//         delay(1000); // Attente d'avoir le callback de connexion MQTT avant de faire les subscriptions
+//       }
+      
+      
+//       if (mqttConnected) {
+//         logging.Set_log_init("Subscribe and publish to MQTT topics\r\n");
+//         client.publish(String(topic).c_str() ,0,true, "online"); // status Online
+//         Serial.println("connected");
+//         logging.Set_log_init("Connected\r\n");
+
+//         logging.Set_log_init("Call HA discover\r\n");
+//         Serial.println("Call HA discover");
+//         HA_discover();
+
+//         logging.Set_log_init("Other subscriptions...\r\n");
+//         Serial.println("Other subscriptions...");
+//         if (mqtt_config.mqtt && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
+//         if (mqtt_config.mqtt && strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
+//         client.subscribe(switch_command.c_str(),1);
+//         client.subscribe(number_command.c_str(),1);
+//         client.subscribe(select_command.c_str(),1);
+//         client.subscribe(button_command.c_str(),1);
+
+//         String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
+//         String node_id = String("dimmer-") + node_mac; 
+//         String save_command = String("Xlyric/sauvegarde/"+ node_id );
+//         //client.subscribe(save_command.c_str());
+//         int instant_power = sysvar.puissance;  // 
+//         mqtt(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
+//         device_dimmer.send(String(instant_power)); 
+//         device_dimmer_power.send(String(instant_power * config.charge/100)); 
+//       }
+//   } else {  Serial.println(" Filesystem not present "); delay(5000); }
+// }
 // void reconnect() {
 //   if  (LittleFS.exists("/mqtt.json"))
 //   { 
@@ -496,6 +537,7 @@ void connectToMqtt() {
 
 void onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to MQTT.");
+  logging.Set_log_init("Connected to MQTT.\r\n");
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
   client.publish(String(topic_Xlyric +"status").c_str(),1,true, "online");         // Once connected, publish online to the availability topic
@@ -508,11 +550,14 @@ void onMqttConnect(bool sessionPresent) {
   client.subscribe((command_switch + "/#").c_str(),1);
   client.subscribe((HA_status).c_str(),1);
   logging.Set_log_init("MQTT connected \r\n",true);
+  // mqttConnected = true;
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
   Serial.println("Disconnected from MQTT.");
   logging.Set_log_init("MQTT disconnected \r\n",true);
+  // mqttConnected = false;
+
   if (WiFi.isConnected()) {
     connectToMqtt();
   }

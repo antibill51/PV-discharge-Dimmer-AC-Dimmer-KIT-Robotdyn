@@ -160,6 +160,7 @@ Scheduler runner;
 // Create AsyncWebServer object on port 80
 WiFiClient domotic_client;
 AsyncMqttClient client;
+// bool mqttConnected = false;
 void Mqtt_send_DOMOTICZ(String idx, String value, String name);
 // void dimmer_on();
 // void dimmer_off();
@@ -735,9 +736,9 @@ void setup() {
   /// MQTT 
   if (!AP && mqtt_config.mqtt) {
     Serial.println("Connection MQTT" );
-    logging.Set_log_init("MQTT connexion \r\n"); 
+    logging.Set_log_init("Attempting MQTT connexion \r\n"); 
     
-      /// connexion MQTT 
+    /// Configuration et connexion MQTT 
     async_mqtt_init();
     connectToMqtt();
     delay(1000);  
@@ -770,6 +771,10 @@ void setup() {
     }
   }
 
+  //   connect_and_subscribe() ;
+  // }
+  
+ 
   #ifdef  SSR
     #ifdef OLDSSR
       analogWriteFreq(GRIDFREQ) ; 
@@ -822,6 +827,8 @@ void loop() {
   //Serial.print(time_tempo);Serial.print("-");
 
   /// connexion MQTT
+  // if (!mqttConnected) {
+  //   connect_and_subscribe();
   if ( mqtt_config.mqtt && !AP ) {
     if (!client.connected() ) {
       connectToMqtt();
@@ -985,11 +992,11 @@ void loop() {
         if (config.dimmer_on_off == 1){unified_dimmer.dimmer_on();}  // if off, switch on 
          DEBUG_PRINTLN(("%d------------------",__LINE__));
         /// si au dessus de la consigne max configuré alors config.maxpow. 
-        if ( sysvar.puissance > config.maxpow || sysvar.puissance_cumul > sysvar.puissancemax )  
+        if ( sysvar.puissance > config.maxpow ) //|| sysvar.puissance_cumul > sysvar.puissancemax )  
         { 
           if (config.dimmer_on_off == 1){
             unified_dimmer.set_power(config.maxpow);
-            
+            DEBUG_PRINTLN("744------------------");
             // #ifdef outputPin2
             //   dimmer2.setPower(config.maxpow);
             // #endif
@@ -1000,6 +1007,7 @@ void loop() {
               if ( strcmp(config.mode,"equal") == 0) { child_communication(sysvar.puissance,true); }  //si mode equal envoie de la commande vers la carte fille
           }
         DEBUG_PRINTLN(("%d------------------",__LINE__));
+        DEBUG_PRINTLN(sysvar.puissance);
         }
         /// fonctionnement normal
         else { 
@@ -1016,10 +1024,12 @@ void loop() {
           if ( strcmp(config.child,"") != 0 ) {
               if ( strcmp(config.mode,"equal") == 0) { child_communication(int(sysvar.puissance*FACTEUR_REGULATION),true); }  //si mode equal envoie de la commande vers la carte fille
               if ( strcmp(config.mode,"delester") == 0 && sysvar.puissance < config.maxpow) { child_communication(0,false); }  //si mode délest envoie d'une commande à 0
+              DEBUG_PRINTLN("773 -----------------");
+              DEBUG_PRINTLN(sysvar.puissance);
           }
         }
          DEBUG_PRINTLN(("%d------------------",__LINE__));
-
+         DEBUG_PRINTLN(sysvar.puissance);
         
       /// si on est en mode MQTT on remonte les valeurs vers HA et MQTT
       if (!AP && mqtt_config.mqtt) { 
@@ -1061,7 +1071,9 @@ void loop() {
       }
     }
     /// si la sécurité est active on déleste 
-    else if ( sysvar.puissance != 0 && security == 1) {
+    else if ( sysvar.puissance != 0 && security == 1)
+    {
+
       if ( strcmp(config.child,"") != 0 || strcmp(config.mode,"off") != 0) {
         if (sysvar.puissance > 200 ) {sysvar.puissance = 200 ;}
         if ( strcmp(config.mode,"delester") == 0 ) { child_communication(int(FACTEUR_REGULATION*sysvar.puissance) ,true); childsend =0 ;} // si mode délest, envoi du surplus
