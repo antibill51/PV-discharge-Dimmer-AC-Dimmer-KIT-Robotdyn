@@ -1,4 +1,6 @@
-Import('env', 'projenv')
+# Import('env', 'projenv')
+Import("env")
+Import("projenv")
 
 env.Replace(
     PROJECTDATA_DIR='data',
@@ -14,6 +16,54 @@ def gzip_file( src_path, dst_path ):
     with open( src_path, 'rb' ) as src, gzip.open( dst_path, 'wb' ) as dst:
         for chunk in iter( lambda: src.read(4096), b"" ):
             dst.write( chunk )
+
+
+
+def delete_data(source, target, env):
+    #WARNING -  this script will DELETE your 'data' dir and recreate an empty one to copy/gzip files from 'data_src'
+    
+    print('[DELETE DATA FILES]')
+
+    data_dir = env.get('PROJECTDATA_DIR')
+    data_src_dir = os.path.join(env.get('PROJECT_DIR'), 'data_src')
+
+    if(os.path.exists(data_dir) and not os.path.exists(data_src_dir) ):
+        print('  "data" dir exists, "data_src" not found.')
+        print('  renaming "' + data_dir + '" to "' + data_src_dir + '"')
+        os.rename(data_dir, data_src_dir)
+
+    if(os.path.exists(data_dir)):
+        print('  Deleting data dir ' + data_dir)
+        shutil.rmtree(data_dir)
+
+    # print('  Re-creating empty data dir ' + data_dir)
+    # os.mkdir(data_dir)
+
+
+
+
+
+def prepare_merging_files(source, target, env):
+  
+    filetypes_to_gzip = ['js', 'html']
+    source_file_prefix = '_'
+
+    data_dir = env.get('PROJECTDATA_DIR')
+    data_src_dir = os.path.join(env.get('PROJECT_DIR'), 'data_src')
+
+    files_to_gzip = []
+    for extension in filetypes_to_gzip:
+        files_to_gzip.extend(glob.glob(os.path.join(data_src_dir, '**', source_file_prefix + '*.' + extension), recursive=True))
+    
+    print('  files to gzip: ' + str(files_to_gzip))
+
+
+    for file in files_to_gzip:
+        base_file_path = file.replace( data_src_dir, data_dir)
+        base_file_path = base_file_path.replace( source_file_prefix, '' )
+        os.makedirs(os.path.dirname(base_file_path), exist_ok=True)
+        shutil.copy(file, base_file_path)
+
 
 
 def prepare_www_files(source, target, env):
@@ -77,4 +127,14 @@ def prepare_www_files(source, target, env):
 
     print('[/COPY/GZIP DATA FILES]')
     
-env.AddPreAction('$BUILD_DIR/spiffs.bin', prepare_www_files)
+env.AddPreAction('$BUILD_DIR/littlefs.bin', prepare_www_files) # ESP8266
+env.AddPreAction('$BUILD_DIR/spiffs.bin', prepare_www_files) # ESP32
+
+
+# Uncomment for normal use
+# env.AddPostAction('$BUILD_DIR/littlefs.bin', delete_data) # ESP8266
+# env.AddPostAction('$BUILD_DIR/spiffs.bin', delete_data) # ESP32
+
+# Uncomment to easily merge from official repo
+env.AddPostAction('$BUILD_DIR/littlefs.bin', prepare_merging_files) # ESP8266
+env.AddPostAction('$BUILD_DIR/spiffs.bin', prepare_merging_files) # ESP32

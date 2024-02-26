@@ -1,0 +1,105 @@
+#ifndef UNIFIED_DIMMER_FUNCTIONS
+#define UNIFIED_DIMMER_FUNCTIONS
+
+// le but de cette fonction est de centraliser les commandes de dimmer  ( robotdyn et SSR ) de façon uniforme 
+
+#include <Arduino.h>
+#ifdef ROBOTDYN
+  #include "function/dimmer.h"
+#else
+    #include "function/jotta.h"
+#endif
+
+
+
+// @brief  structure pour uniformiser les commandes de puissances entre robotdyn et SSR
+struct gestion_puissance
+{
+public:int power;
+
+// setter
+void set_power(int power){
+  if ( sysvar.celsius[sysvar.dallas_maitre] > config.maxtemp ) { power = 0; sysvar.puissance = 0; } /// si la température est supérieur à la température max on coupe tout
+  else if ( power > config.maxpow )  { power = config.maxpow;  sysvar.puissance = config.maxpow; }
+
+  /// vérification de la température 
+  
+  this->power = power;
+  /// pour le SSR
+  #ifdef SSR_ZC
+    ssr_burst.set_power(power);
+  #endif
+ 
+  #ifdef SSR_RANDOM
+    jotta_command(power);
+  #endif
+
+  /// pour le dimmer robotdyn
+  #ifdef ROBOTDYN
+    dimmer.setPower(power);
+    #ifdef outputPin2
+      dimmer2.setPower(power);
+    #endif
+  #endif
+   
+}
+
+//getter
+int get_power(){
+  // pour le ssr 
+    #ifdef SSR_ZC
+      power = ssr_burst.get_power();
+    #endif
+
+    #ifdef SSR_RANDOM
+      power = sysvar.puissance;
+    #endif
+
+    // pour le dimmer robotdyn
+    #ifdef ROBOTDYN
+      power = dimmer.getPower();
+    #endif
+  return power;
+}
+
+/// @brief  migration des function de coupures des dimmers Robotdyn 
+
+void dimmer_on()
+{
+  #ifdef ROBOTDYN
+    if (dimmer.getState()==0) {
+      dimmer.setState(ON);
+      logging.Set_log_init("Dimmer On\r\n",true);
+      delay(50);
+    }
+    #ifdef outputPin2
+      if (dimmer2.getState()==0) {
+        dimmer2.setState(ON);
+        logging.Set_log_init("Dimmer2 On\r\n",true);
+        delay(50);
+      }  
+    #endif
+  #endif
+}
+
+void dimmer_off()
+{
+  #ifdef ROBOTDYN
+    if (dimmer.getState()==1) {
+      dimmer.setPower(0);
+      dimmer.setState(OFF);
+      logging.Set_log_init("Dimmer Off\r\n",true);
+      delay(50);
+    }
+    #ifdef outputPin2 /// désactivé pour le moment
+      dimmer2.setPower(0);
+      dimmer2.setState(OFF);
+      logging.Set_log_init("Dimmer2 Off\r\n",true);
+      delay(50);
+    #endif
+  #endif
+}
+
+};
+
+#endif

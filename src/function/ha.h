@@ -1,17 +1,21 @@
 #ifndef HA_FUNCTIONS
 #define HA_FUNCTIONS
 
-#include <PubSubClient.h>
+//#include <PubSubClient.h>
+#include <AsyncMqttClient.h>
 
-extern PubSubClient client;
-extern Config config; 
+extern AsyncMqttClient  client;
+extern Config config;
+extern Mqtt mqtt_config;
+extern System sysvar;
+
+//extern dimmerLamp dimmer;
+String stringbool(bool mybool);
 
 struct MQTT
 {
 
   private:int MQTT_INTERVAL = 60;
-  // private:String IPaddress = String(WiFi.localIP().toString());
-
     /* MQTT */
   private:String name; 
   public:void Set_name(String setter) {name=setter; }
@@ -52,6 +56,9 @@ struct MQTT
   private:bool retain_flag; 
   public:void Set_retain_flag(bool setter) {retain_flag=setter; }
 
+  private:int qos; 
+  public:void Set_entity_qos(int setter) {qos; }
+
   private:String retain; 
   public:void Set_retain(bool setter) {
     if (setter) {retain="\"ret\":true,"; }
@@ -79,11 +86,12 @@ struct MQTT
           "\"pl_off\": \"{ \\\""+object_id+"\\\" : \\\"0\\\"  } \","
           "\"stat_on\":1,"
           "\"stat_off\":0,"
-          "\"cmd_t\": \""+ topic_Xlyric + entity_type + "/command\",";
+          "\"qos\":1,"
+          "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\",";
     } 
     else if (entity_type == "number") { 
             info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
-          "\"cmd_t\": \""+ topic_Xlyric + entity_type + "/command\","
+          "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
           "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : {{ value }} } \"," 
           "\"entity_category\": \""+ entity_category + "\","
           "\"max\": \""+max+"\","
@@ -92,7 +100,7 @@ struct MQTT
     } 
     else if (entity_type == "select") { 
             info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
-          "\"cmd_t\": \""+ topic_Xlyric + entity_type + "/command\","
+          "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
           "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : \\\"{{ value }}\\\" } \","
           "\"entity_category\": \""+ entity_category + "\","
           "\"options\": ["+ entity_option + "],";
@@ -105,7 +113,7 @@ struct MQTT
     }
     else if (entity_type == "button") { 
             info =            "\"entity_category\": \""+ entity_category + "\","
-          "\"cmd_t\": \""+ topic_Xlyric + entity_type + "/command\","
+          "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
           "\"pl_prs\": \"{ \\\""+object_id+"\\\" : \\\"1\\\"  } \",";
     }
     return info;
@@ -151,8 +159,9 @@ struct MQTT
           + expire_after
           + HA_device_declare() + 
           "}";
-    client.publish(String(topic+object_id+"/config").c_str() , device.c_str(), true); // déclaration autoconf PvRouter
+    client.publish(String(topic+object_id+"/config").c_str() ,1, true, device.c_str()); // déclaration autoconf PvRouter
     // Serial.println(device.c_str());    /// sérial pour debug
+    
 
   }
 
@@ -160,7 +169,7 @@ struct MQTT
     if (config.JEEDOM || config.HA) {
       String topic = "Xlyric/"+ node_id +"/sensors/";
       String message = "  { \""+object_id+"\" : \"" + value.c_str() + "\"  } ";
-      client.publish(String(topic + object_id + "/state").c_str() , message.c_str(), retain_flag);
+      client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
     }
   } 
 };
