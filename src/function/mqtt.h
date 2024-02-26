@@ -100,7 +100,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       sysvar.puissance = puissancemqtt;
       // logging.Set_log_init("MQTT power at "); 
       // logging.Set_log_init(String(sysvar.puissance).c_str());
-      // logging.Set_log_init("\r\n");
+      // logging.Set_log_init("%\r\n");
       sysvar.change=1; 
     }
     else if (config.dimmer_on_off == 1){
@@ -128,7 +128,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       sysvar.celsius[sysvar.dallas_maitre] = temperaturemqtt;
       logging.Set_log_init("MQTT temp at ",true);
       logging.Set_log_init(String(sysvar.celsius[sysvar.dallas_maitre]));
-      logging.Set_log_init("\r\n");
+      logging.Set_log_init("°C\r\n");
     }
   }
     // logs += loguptime() + "Subscribedtopic : " + String(Subscribedtopic)+ "\r\n";
@@ -176,7 +176,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         config.startingpow = startingpow;
         logging.Set_log_init("MQTT starting_pow at ",true);
         logging.Set_log_init(String(startingpow));
-        logging.Set_log_init("\r\n");
+        logging.Set_log_init("%\r\n");
         device_dimmer_starting_pow.send(String(startingpow));
         sysvar.change=1; 
       }
@@ -187,7 +187,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         config.minpow = minpow;
         logging.Set_log_init("MQTT minpow at " ,true);
         logging.Set_log_init(String(minpow)); 
-        logging.Set_log_init("\r\n");
+        logging.Set_log_init("%\r\n");
         device_dimmer_minpow.send(String(minpow));
         sysvar.change=1; 
       }
@@ -198,7 +198,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         config.maxpow = maxpow;
         logging.Set_log_init("MQTT maxpow at ",true);
         logging.Set_log_init(String(maxpow));
-        logging.Set_log_init("\r\n");
+        logging.Set_log_init("%\r\n");
         device_dimmer_maxpow.send(String(maxpow));
         sysvar.change=1; 
       }
@@ -211,7 +211,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         sysvar.change=1; 
         logging.Set_log_init("MQTT power at ",true);
         logging.Set_log_init(String(powdimmer));
-        logging.Set_log_init("\r\n");
+        logging.Set_log_init("%\r\n");
        
       }
     }
@@ -221,7 +221,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         config.maxtemp = maxtemp;
         logging.Set_log_init("MQTT maxtemp at ",true);  
         logging.Set_log_init(String(maxtemp));
-        logging.Set_log_init("\r\n");
+        logging.Set_log_init("°C\r\n");
         device_dimmer_maxtemp.send(String(maxtemp));
         sysvar.change=1; 
       }
@@ -232,7 +232,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         config.charge = charge;
         logging.Set_log_init("MQTT charge at ",true);
         logging.Set_log_init(String(charge));
-        logging.Set_log_init("\r\n");
+        logging.Set_log_init("W\r\n");
         device_dimmer_charge.send(String(charge));
         sysvar.change=1; 
       }
@@ -407,26 +407,33 @@ void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
 //// communication avec carte fille ( HTTP )
 
 void child_communication(int delest_power, bool equal = false){
-  int instant_power ;
+  //int instant_power ;
+  int tmp_puissance_dispo=0 ;
   String baseurl; 
-  instant_power = delest_power*config.charge/100;
+  //instant_power = delest_power*config.charge/100;
   baseurl = "/?POWER=" + String(delest_power); 
-  //if (sysvar.puissance_dispo !=0 ) {  baseurl = "/?POWER=" + String(delest_power) + "&puissance=" + String(sysvar.puissance_dispo) ; }
-  if (sysvar.puissance_dispo !=0 ) {  
+  
+  /// Modif RV 20240219
+  /// Ajout de " delest_power != 0" pour ne pas envoyer une demande de puissance si on le passe de toutes façons à 0
+  if (sysvar.puissance_dispo !=0 && delest_power != 0) {  
     baseurl.concat("&puissance=");
-    if (strcmp(config.mode,"equal") == 0) { baseurl.concat(String(sysvar.puissance_dispo/2)); }
-    else { baseurl.concat(String(sysvar.puissance_dispo)); }
-   }
-    //else {  }  /// ça posera problème si il y a pas de commandes de puissance en W comme le 2eme dimmer se calque sur la puissance du 1er 
+    //if (strcmp(config.mode,"equal") == 0) { baseurl.concat(String(sysvar.puissance_dispo/2)); }
+    //else { baseurl.concat(String(sysvar.puissance_dispo)); }
+    if ( strcmp(config.child,"") != 0 && strcmp(config.mode,"equal") == 0 ) { tmp_puissance_dispo = sysvar.puissance_dispo/2;}
+    else { tmp_puissance_dispo = sysvar.puissance_dispo; }
+      baseurl.concat(String(tmp_puissance_dispo)); 
+  }
+  //else {  }  /// ça posera problème si il y a pas de commandes de puissance en W comme le 2eme dimmer se calque sur la puissance du 1er 
 
   http.begin(domotic_client,config.child,80,baseurl); 
   http.GET();
   http.end(); 
+  
   logging.Set_log_init("child at ",true);
   logging.Set_log_init(String(delest_power).c_str());
-  logging.Set_log_init(" ");
-  logging.Set_log_init(String(instant_power).c_str());
-  logging.Set_log_init("\r\n");
+  logging.Set_log_init("% _ ");
+  logging.Set_log_init(String(tmp_puissance_dispo).c_str());
+  logging.Set_log_init("W\r\n");
 }
 
 
@@ -472,40 +479,8 @@ void child_communication(int delest_power, bool equal = false){
 //       }
 //   } else {  Serial.println(" Filesystem not present "); delay(5000); }
 // }
-// void reconnect() {
-//   if  (LittleFS.exists("/mqtt.json"))
-//   { 
-//     Serial.print("Attempting MQTT connection...");
-//     logging.Set_log_init("Reconnect MQTT");
-//     // client.publish(String(topic).c_str() ,0,true, "online"); // status Online
-//     client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online
-//     Serial.println("connected");
-//     logging.Set_log_init("Connected\r\n");
-//     // if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
-//     // if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
-//     // client.subscribe((command_button + "/#").c_str(),1);
-//     // client.subscribe((command_number + "/#").c_str(),1);
-//     // client.subscribe((command_select + "/#").c_str(),1);
-//     // client.subscribe((command_switch + "/#").c_str(),1);
-//     // client.subscribe((HA_status).c_str(),1);
-
-//     // client.publish(String(topic_Xlyric +"status").c_str() ,1,true, "online"); // status Online
-    
-//     // String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-//     // String node_id = String("Dimmer-") + node_mac; 
-//     // String save_command = String("Xlyric/sauvegarde/"+ node_id );
-//     //client.subscribe(save_command.c_str());
-//     int instant_power = sysvar.puissance;  // 
-//     // mqtt(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
-//     Mqtt_send_DOMOTICZ(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf
-//     device_dimmer.send(String(instant_power)); 
-//     device_dimmer_power.send(String(instant_power * config.charge/100));       
-    
-//   } else {  Serial.println(" Filesystem not present "); delay(5000); }
-// }
-
-char arrayWill[64];
 //#define MQTT_HOST IPAddress(192, 168, 1, 20)
+char arrayWill[64];
 void async_mqtt_init() {
 	const String LASTWILL_TOPIC = topic_Xlyric + "status";
 	LASTWILL_TOPIC.toCharArray(arrayWill, 64);

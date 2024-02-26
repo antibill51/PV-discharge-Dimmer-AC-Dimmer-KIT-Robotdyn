@@ -35,10 +35,10 @@ void mqttdallas() {
     for (int a = 0; a < deviceCount; a++) {
       sysvar.celsius[a]=CheckTemperature("temp_" + devAddrNames[a],addr[a]);
       //gestion des erreurs DS18B20
-      if ( (sysvar.celsius[a] == -127.00) || (sysvar.celsius[a] == -255.00) ) {
+      if ( (sysvar.celsius[a] == -127.00) || (sysvar.celsius[a] == -255.00) || (sysvar.celsius[a] > 200.00) ) {
         sysvar.celsius[a]=previous_celsius[a];
         dallas_error[a] ++; // incrémente le compteur d'erreur
-        logging.Set_log_init("Problème de lecture Dallas : échec "+ String(dallas_error[a]) + "\r\n",true);
+        logging.Set_log_init("Dallas : échec "+ String(dallas_error[a]) + "\r\n",true);
       }
       else {
         sysvar.celsius[a] = (roundf(sysvar.celsius[a] * 10) / 10 ) + 0.1; // pour les valeurs min
@@ -46,11 +46,11 @@ void mqttdallas() {
       }   
     }
     if (!AP && mqtt_config.mqtt) {
-      if ( sysvar.celsius[sysvar.dallas_maitre] != previous_celsius[sysvar.dallas_maitre] ) {
+      if ( sysvar.celsius[sysvar.dallas_maitre] != previous_celsius[sysvar.dallas_maitre]  || sysvar.celsius[sysvar.dallas_maitre] != 0.99) {
         Mqtt_send_DOMOTICZ(String(config.IDXTemp), String(sysvar.celsius[sysvar.dallas_maitre]),"Temperature");
       }
       for (int a = 0; a < deviceCount; a++) {
-        if ( sysvar.celsius[a] != previous_celsius[a] ) {
+        if ( sysvar.celsius[a] != previous_celsius[a] || sysvar.celsius[a] != 0.99) {
           device_temp[a].send(String(sysvar.celsius[a]));
           previous_celsius[a]=sysvar.celsius[a];
           // logging.Set_log_init("Dallas " + String(a) + " temp : "+ String(sysvar.celsius[a]) +"\r\n");
@@ -82,9 +82,20 @@ void mqttdallas() {
   if  ( sysvar.celsius[sysvar.dallas_maitre] >= config.maxtemp ) {
     // coupure du dimmer
     DEBUG_PRINTLN("détection sécurité température");
-    sysvar.puissance=0;
-    unified_dimmer.set_power(0);
 
+        unified_dimmer.set_power(0);
+        unified_dimmer.dimmer_off();
+        
+      
+      if ( strcmp(config.child,"") != 0 && strcmp(config.mode,"off") != 0){
+        //sysvar.puissance=0;
+        //logging.Set_log_init( "Consigne temp atteinte - Puissance locale à 0 - le reste va aux enfants\r\n" );
+      }
+      else {
+        sysvar.puissance=0;
+        unified_dimmer.set_power(0);
+              //logging.Set_log_init( "Consigne temp atteinte - Puissance locale à 0 - pas d'enfant à servir\r\n" );
+      }
     
     if ( mqtt_config.mqtt ) {
       // mqtt(String(config.IDX), "0","pourcent");
@@ -110,8 +121,6 @@ void mqttdallas() {
       logging.Set_log_init("Dallas perdue !!!\r\n",true);
       dallas_error[a] = 0; // remise à zéro du compteur d'erreur
       ///mise en sécurité
-      // float code_error = 99.99;
-      // sysvar.celsius[a] = code_error;
       sysvar.celsius[a] = float(99.99);  
       previous_celsius[a]=sysvar.celsius[a];
       if (a == sysvar.dallas_maitre) {
