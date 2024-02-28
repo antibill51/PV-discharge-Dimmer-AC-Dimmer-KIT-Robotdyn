@@ -92,7 +92,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
   deserializeJson(doc2, payload);
   /// @brief Enregistrement du dimmer sur MQTT pour récuperer les informations remonté par MQTT
   if (strcmp( Subscribedtopic, config.SubscribePV ) == 0 && doc2.containsKey("dimmer")) { 
-    int puissancemqtt = doc2["dimmer"]; 
+    float puissancemqtt = doc2["dimmer"]; 
     puissancemqtt = puissancemqtt - config.startingpow;
     if (puissancemqtt < 0) puissancemqtt = 0;
     //if (puissancemqtt > config.maxpow) puissancemqtt = config.maxpow;

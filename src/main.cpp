@@ -313,6 +313,7 @@ IPAddress _ip,_gw,_sn,gatewayIP  ;
 
 void setup() {
   Serial.begin(115200);
+  // Serial.setDebugOutput(true);
 
   #ifdef ESP32ETH
     ETH.begin(ETH_ADDR, ETH_POWER_PIN, ETH_MDC_PIN, ETH_MDIO_PIN, ETH_TYPE, ETH_CLK_MODE);
