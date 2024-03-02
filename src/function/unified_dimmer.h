@@ -45,7 +45,7 @@ void set_power(float power){
 }
 
 //getter
-int get_power(){
+float get_power(){
   // pour le ssr 
     #ifdef SSR_ZC
       power = ssr_burst.get_power();

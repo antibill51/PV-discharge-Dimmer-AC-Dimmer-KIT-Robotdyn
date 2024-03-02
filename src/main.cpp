@@ -759,6 +759,8 @@ void setup() {
       device_dimmer_send_power.send(String(sysvar.puissance));
       if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.send(String(config.mode));}
       device_dimmer_on_off.send(String(config.dimmer_on_off));
+      device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
+
 
       #ifdef RELAY1
         int relaystate = digitalRead(RELAY1); 
