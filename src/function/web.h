@@ -480,10 +480,7 @@ server.on("/get", HTTP_ANY, [] (AsyncWebServerRequest *request) {
     savemqtt(mqtt_conf, mqtt_config); 
     saveConfiguration(filename_conf, config);
    }
-   if (request->hasParam("DALLAS")) { 
-    request->getParam("DALLAS")->value().toCharArray(config.DALLAS,17);
-    dallaspresent();
-    }
+   if (request->hasParam("DALLAS")) { request->getParam("DALLAS")->value().toCharArray(config.DALLAS,17);}
 
 //// minuteur 
    if (request->hasParam("heure_demarrage")) { request->getParam("heure_demarrage")->value().toCharArray(programme.heure_demarrage,6);  }
