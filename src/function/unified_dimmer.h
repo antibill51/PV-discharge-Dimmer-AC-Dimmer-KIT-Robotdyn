@@ -45,7 +45,7 @@ void set_power(float power){
 }
 
 //getter
-float get_power(){
+int get_power(){
   // pour le ssr 
     #ifdef SSR_ZC
       power = ssr_burst.get_power();
@@ -92,10 +92,12 @@ void dimmer_off()
       delay(50);
     }
     #ifdef outputPin2 /// désactivé pour le moment
-      dimmer2.setPower(0);
-      dimmer2.setState(OFF);
-      logging.Set_log_init("Dimmer2 Off\r\n",true);
-      delay(50);
+      if (dimmer2.getState()==1) {
+        dimmer2.setPower(0);
+        dimmer2.setState(OFF);
+        logging.Set_log_init("Dimmer2 Off\r\n",true);
+        delay(50);
+      }
     #endif
   #endif
 }
