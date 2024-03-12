@@ -92,7 +92,7 @@ void call_pages() {
   server.on("/",HTTP_ANY, [](AsyncWebServerRequest *request){
     
     if  (LittleFS.exists("/index.html")) {
-      DEBUG_PRINTLN("91------------------");
+      DEBUG_PRINTLN(("%d------------------",__LINE__));
       DEBUG_PRINTLN(sysvar.puissance);
       /// si requete sur POWER
 

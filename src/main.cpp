@@ -894,7 +894,7 @@ void loop() {
       device_dimmer_power.send(String(instant_power * config.charge/100)); 
       if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));}
       
-      offset_heure_ete(); // on corrige l'heure d'été si besoin
+      // offset_heure_ete(); // on corrige l'heure d'été si besoin
     }
   }
 
@@ -1004,7 +1004,7 @@ void loop() {
         { 
           if (config.dimmer_on_off == 1){
             unified_dimmer.set_power(config.maxpow);
-            DEBUG_PRINTLN("744------------------");
+            DEBUG_PRINTLN(("%d------------------",__LINE__));
             // #ifdef outputPin2
             //   dimmer2.setPower(config.maxpow);
             // #endif
@@ -1027,9 +1027,9 @@ void loop() {
           //   dimmer2.setPower(sysvar.puissance);
           // #endif
         
-        logging.Set_log_init("dimmer at " ,true);
-        logging.Set_log_init(String(sysvar.puissance)); 
-        logging.Set_log_init("\r\n");
+        // logging.Set_log_init("dimmer at " ,true);
+        // logging.Set_log_init(String(sysvar.puissance)); 
+        // logging.Set_log_init("\r\n");
         }
 
           if ( strcmp(config.child,"") != 0 ) {

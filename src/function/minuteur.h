@@ -27,7 +27,7 @@ extern System sysvar;
 extern Config config;
 extern gestion_puissance unified_dimmer; 
 
-void offset_heure_ete();
+// void offset_heure_ete();
 void timeclientEpoch_to_date(time_t epoch) ;
 
 epoc actual_time; 
@@ -38,7 +38,8 @@ void ntpinit() {
   timeClient.begin();
   timeClient.update();
   //Serial.println(timeClient.getFormattedTime());
-  offset_heure_ete();
+  // offset_heure_ete();
+  configTzTime("CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00", NTP_SERVER);  //Voir Time-Zone: https://sites.google.com/a/usapiens.com/opnode/time-zones
   Serial.println(timeClient.getFormattedTime());
   
 }
@@ -53,26 +54,26 @@ void timeclientEpoch_to_date(time_t epoch)  { // convert epoch to date
   }
 
 
-void offset_heure_ete() {
-  timeclientEpoch_to_date(timeClient.getEpochTime());
+// void offset_heure_ete() {
+//   timeclientEpoch_to_date(timeClient.getEpochTime());
 
-  // Date de début de l'heure d'été (dernier dimanche de mars)
-  int debut_heure_ete_jour = (31 - ((5 * actual_time.annee / 4 + 4) % 7));
-  if (actual_time.mois == 3 && actual_time.jour >= debut_heure_ete_jour && actual_time.heure >= 2) {
-    timeClient.setTimeOffset(7200); // Fuseau horaire (en secondes, ici GMT+2)
-    return;
-  }
+//   // Date de début de l'heure d'été (dernier dimanche de mars)
+//   int debut_heure_ete_jour = (31 - ((5 * actual_time.annee / 4 + 4) % 7));
+//   if (actual_time.mois == 3 && actual_time.jour >= debut_heure_ete_jour && actual_time.heure >= 2) {
+//     timeClient.setTimeOffset(7200); // Fuseau horaire (en secondes, ici GMT+2)
+//     return;
+//   }
 
-  // Date de fin de l'heure d'été (dernier dimanche d'octobre)
-  int fin_heure_ete_jour = (31 - ((5 * actual_time.annee / 4 + 1) % 7));
-  if (actual_time.mois == 10 && actual_time.jour >= fin_heure_ete_jour && actual_time.heure >= 3) {
-    timeClient.setTimeOffset(3600); // Fuseau horaire (en secondes, ici GMT+1)
-    return;
-  }
+//   // Date de fin de l'heure d'été (dernier dimanche d'octobre)
+//   int fin_heure_ete_jour = (31 - ((5 * actual_time.annee / 4 + 1) % 7));
+//   if (actual_time.mois == 10 && actual_time.jour >= fin_heure_ete_jour && actual_time.heure >= 3) {
+//     timeClient.setTimeOffset(3600); // Fuseau horaire (en secondes, ici GMT+1)
+//     return;
+//   }
 
-  // Si on n'est ni en heure d'été ni en heure normale, le fuseau horaire standard est appliqué
-  timeClient.setTimeOffset(3600); // Fuseau horaire (en secondes, ici GMT+1)
-}
+//   // Si on n'est ni en heure d'été ni en heure normale, le fuseau horaire standard est appliqué
+//   timeClient.setTimeOffset(3600); // Fuseau horaire (en secondes, ici GMT+1)
+// }
 
 //////// structure pour les programmateurs. 
 struct Programme {
@@ -226,7 +227,7 @@ bool stop_progr() {
     if (heures == timeClient.getHours() && minutes == timeClient.getMinutes()) {
         run=false; 
         timeClient.update();
-        offset_heure_ete();     
+        // offset_heure_ete();     
         return true; 
     }
   }
