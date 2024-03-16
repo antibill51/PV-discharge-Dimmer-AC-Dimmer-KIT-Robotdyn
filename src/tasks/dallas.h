@@ -38,7 +38,7 @@ void mqttdallas() {
       if ( (sysvar.celsius[a] == -127.00) || (sysvar.celsius[a] == -255.00) || (sysvar.celsius[a] > 200.00) ) {
         sysvar.celsius[a]=previous_celsius[a];
         dallas_error[a] ++; // incrémente le compteur d'erreur
-        logging.Set_log_init("Dallas : échec "+ String(dallas_error[a]) + "\r\n",true);
+        logging.Set_log_init("Dallas" + String(a) + " : échec "+ String(dallas_error[a]) + "\r\n",true);
       }
       else {
         sysvar.celsius[a] = (roundf(sysvar.celsius[a] * 10) / 10 ) + 0.1; // pour les valeurs min
