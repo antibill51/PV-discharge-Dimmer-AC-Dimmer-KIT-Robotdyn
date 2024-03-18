@@ -74,6 +74,7 @@ String stringboolMQTT(bool mybool);
   String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
   // String node_ids = WiFi.macAddress().substring(0,2)+ WiFi.macAddress().substring(4,6)+ WiFi.macAddress().substring(8,10) + WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
   String node_id = String("Dimmer-") + node_mac; 
+  
   // String topic = "homeassistant/sensor/"+ node_id +"/status";  
   String topic_Xlyric = "Xlyric/"+ node_id +"/";
 
@@ -305,6 +306,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           device_dimmer_minpow.send(String(config.minpow));
           device_dimmer_maxpow.send(String(config.maxpow));
           device_dimmer_charge.send(String(config.charge));
+          device_dimmer_maxtemp.send(String(config.maxtemp));
           device_dimmer_send_power.send(String(sysvar.puissance));
           if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.send(String(config.mode));}
           device_dimmer_on_off.send(String(config.dimmer_on_off));
@@ -409,23 +411,15 @@ void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
 
 void child_communication(int delest_power, bool equal = false){
 
-  
-  
-  logging.Set_log_init(" -> ");
-  logging.Set_log_init(String(delest_power).c_str());
-  //int instant_power ;
-  int tmp_puissance_dispo=0 ;
+    int tmp_puissance_dispo=0 ;
   String baseurl; 
-  //instant_power = delest_power*config.charge/100;
-  baseurl = "/?POWER=" + String(delest_power); 
+    baseurl = "/?POWER=" + String(delest_power); 
   
   /// Modif RV 20240219
   /// Ajout de " delest_power != 0" pour ne pas envoyer une demande de puissance si on le passe de toutes façons à 0
   if (sysvar.puissance_dispo !=0 && delest_power != 0) {  
     baseurl.concat("&puissance=");
-    //if (strcmp(config.mode,"equal") == 0) { baseurl.concat(String(sysvar.puissance_dispo/2)); }
-    //else { baseurl.concat(String(sysvar.puissance_dispo)); }
-    if ( strcmp(config.child,"") != 0 && strcmp(config.mode,"equal") == 0 ) { tmp_puissance_dispo = sysvar.puissance_dispo/2;}
+    if ( strcmp(config.child,"") != 0 && strcmp(config.child,"none") != 0 && strcmp(config.mode,"equal") == 0 ) { tmp_puissance_dispo = sysvar.puissance_dispo/2;}
     else { tmp_puissance_dispo = sysvar.puissance_dispo; }
       baseurl.concat(String(tmp_puissance_dispo)); 
   }
@@ -434,13 +428,13 @@ void child_communication(int delest_power, bool equal = false){
   http.begin(domotic_client,config.child,80,baseurl); 
   http.GET();
   http.end(); 
-  
+  /*
   logging.Set_log_init("child at ",true);
   logging.Set_log_init(String(delest_power).c_str());
   logging.Set_log_init("% _ ");
   logging.Set_log_init(String(tmp_puissance_dispo).c_str());
   logging.Set_log_init("W\r\n");
-  
+  */
 }
 
 
@@ -475,9 +469,10 @@ void child_communication(int delest_power, bool equal = false){
 //         client.subscribe(select_command.c_str(),1);
 //         client.subscribe(button_command.c_str(),1);
 
-//         String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-//         String node_id = String("dimmer-") + node_mac; 
-//         String save_command = String("Xlyric/sauvegarde/"+ node_id );
+//         //String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
+//         //String node_id = String("dimmer-") + node_mac; 
+//         String node_id = config.say_my_name;
+        String save_command = String("Xlyric/sauvegarde/"+ node_id );
 //         //client.subscribe(save_command.c_str());
 //         int instant_power = sysvar.puissance;  // 
 //         mqtt(String(config.IDX), String(String(instant_power)));   /// correction 19/04 valeur remonté au dessus du max conf

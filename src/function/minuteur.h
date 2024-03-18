@@ -87,6 +87,7 @@ struct Programme {
   public:int seuil_start;
   public:int seuil_stop;
   public:int seuil_temperature;
+  private:bool security = false;
 
 
   /// @brief sauvegarde
@@ -165,6 +166,10 @@ struct Programme {
   }
 
 bool start_progr() {
+  /// test de la sécurité avant relance
+  if (security && ( sysvar.celsius[sysvar.dallas_maitre] > float(temperature*0.95) ) )  { return false; }
+  security = false;
+
   int heures, minutes;
   sscanf(heure_demarrage, "%d:%d", &heures, &minutes);
 
@@ -210,6 +215,7 @@ bool stop_progr() {
   /// sécurité temp
   if ( sysvar.celsius[sysvar.dallas_maitre] >= temperature ) { 
     run=false; 
+    security = true;
      // protection flicking
     sscanf(heure_demarrage, "%d:%d", &heures, &minutes);  
 

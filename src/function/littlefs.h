@@ -105,7 +105,11 @@ void loadConfiguration(const char *filename, Config &config) {
         sizeof(config.PVROUTER)); 
   strlcpy(config.DALLAS,
         doc["DALLAS"] | "28b1255704e13c62", 
-        sizeof(config.DALLAS)); 
+        sizeof(config.DALLAS));   
+  strlcpy(config.say_my_name,                 
+        doc["name"] | "", 
+        sizeof(config.say_my_name));
+
   configFile.close();
   
       
@@ -154,6 +158,8 @@ void saveConfiguration(const char *filename, const Config &config) {
   doc["DOMOTICZ"] = config.DOMOTICZ;
   doc["PVROUTER"] = config.PVROUTER;
   doc["DALLAS"] = config.DALLAS;
+  doc["name"] = config.say_my_name;
+
   // Serialize JSON to file
   if (serializeJson(doc, configFile) == 0) {
     Serial.println(F("Failed to write to file"));

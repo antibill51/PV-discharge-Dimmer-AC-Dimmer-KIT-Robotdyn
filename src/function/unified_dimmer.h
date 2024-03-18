@@ -27,11 +27,11 @@ void set_power(float power){
   this->power = power;
   /// pour le SSR
   #ifdef SSR_ZC
-    ssr_burst.set_power(power);
+    ssr_burst.set_power(int(power));
   #endif
  
   #ifdef SSR_RANDOM
-    jotta_command(power);
+    jotta_command(int(power));
   #endif
 
   /// pour le dimmer robotdyn
@@ -75,7 +75,7 @@ void dimmer_on()
     #ifdef outputPin2
       if (dimmer2.getState()==0) {
         dimmer2.setState(ON);
-        logging.Set_log_init("Dimmer2 On\r\n",true);
+        // logging.Set_log_init("Dimmer2 On\r\n",true);
         delay(50);
       }  
     #endif
@@ -95,7 +95,7 @@ void dimmer_off()
       if (dimmer2.getState()==1) {
         dimmer2.setPower(0);
         dimmer2.setState(OFF);
-        logging.Set_log_init("Dimmer2 Off\r\n",true);
+        // logging.Set_log_init("Dimmer2 Off\r\n",true);
         delay(50);
       }
     #endif

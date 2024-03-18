@@ -8,13 +8,11 @@ extern AsyncMqttClient  client;
 extern Config config;
 extern Mqtt mqtt_config;
 extern System sysvar;
-
 //extern dimmerLamp dimmer;
 String stringbool(bool mybool);
 
 struct MQTT
 {
-
   private:int MQTT_INTERVAL = 60;
     /* MQTT */
   private:String name; 
@@ -126,7 +124,6 @@ struct MQTT
   //private:String state_topic; 
   //private:String stat_t; 
   //private:String avty_t;
-
 
   private:String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
   private:String node_id = String("Dimmer-") + node_mac; 

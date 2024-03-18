@@ -49,6 +49,19 @@ void mqttdallas() {
       if ( sysvar.celsius[sysvar.dallas_maitre] != previous_celsius[sysvar.dallas_maitre]  || sysvar.celsius[sysvar.dallas_maitre] != 0.99) {
         Mqtt_send_DOMOTICZ(String(config.IDXTemp), String(sysvar.celsius[sysvar.dallas_maitre]),"Temperature");
       }
+
+      if (!discovery_temp) {
+        discovery_temp = true;
+        device_dimmer_alarm_temp.HA_discovery();
+        for (int i = 0; i < deviceCount; i++) {
+          device_temp[i].HA_discovery();
+        }
+        device_dimmer_maxtemp.HA_discovery();
+        device_dimmer_alarm_temp.send(stringboolMQTT(security));
+        device_dimmer_maxtemp.send(String(config.maxtemp)); 
+      }
+
+
       for (int a = 0; a < deviceCount; a++) {
         if ( sysvar.celsius[a] != previous_celsius[a] || sysvar.celsius[a] != 0.99) {
           device_temp[a].send(String(sysvar.celsius[a]));
@@ -87,13 +100,12 @@ void mqttdallas() {
         unified_dimmer.dimmer_off();
         
       
-      if ( strcmp(config.child,"") != 0 && strcmp(config.mode,"off") != 0){
-        //sysvar.puissance=0;
-        //logging.Set_log_init( "Consigne temp atteinte - Puissance locale à 0 - le reste va aux enfants\r\n" );
+      if ( strcmp(config.child,"") != 0 && strcmp(config.child,"none") != 0 && strcmp(config.mode,"off") != 0){
+                //logging.Set_log_init( "Consigne temp atteinte - Puissance locale à 0 - le reste va aux enfants\r\n" );
       }
       else {
         sysvar.puissance=0;
-        unified_dimmer.set_power(0);
+        //unified_dimmer.set_power(0); // déjà fait 8 lignes au dessus
               //logging.Set_log_init( "Consigne temp atteinte - Puissance locale à 0 - pas d'enfant à servir\r\n" );
       }
     
