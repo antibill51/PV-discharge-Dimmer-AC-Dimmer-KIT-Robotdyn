@@ -50,6 +50,7 @@ extern MQTT device_cooler;
 extern bool HA_reconnected;
 extern bool discovery_temp; 
 extern bool alerte; 
+extern byte security; // sécurité
 extern Logs logging; 
 //extern char buffer[1024];
 extern String devAddrNames[15];
@@ -122,7 +123,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       device_dimmer_alarm_temp.HA_discovery();
       device_temp[sysvar.dallas_maitre].HA_discovery();
       device_dimmer_maxtemp.HA_discovery();
-      device_dimmer_alarm_temp.send(stringboolMQTT(false));
+      device_dimmer_alarm_temp.send(stringboolMQTT(security));
       device_dimmer_maxtemp.send(String(config.maxtemp));
     }
     device_temp[sysvar.dallas_maitre].send(String(sysvar.celsius[sysvar.dallas_maitre]));

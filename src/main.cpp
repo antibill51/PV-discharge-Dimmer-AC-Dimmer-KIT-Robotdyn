@@ -949,8 +949,9 @@ void loop() {
   if ( sysvar.celsius[sysvar.dallas_maitre] > ( config.maxtemp + 2) && (!alerte) ) { 
     // mqtt(String(config.IDXAlarme), String("Alert Temp :" + String(sysvar.celsius) ),"Alerte");  ///send alert to MQTT
     Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Alert Temp :" + String(sysvar.celsius[sysvar.dallas_maitre]) ),"Alerte");  ///send alert to MQTT
-    device_dimmer_alarm_temp.send("Alert temp");
+    // device_dimmer_alarm_temp.send("Alert temp");
     alerte=true;
+    device_dimmer_alarm_temp.send(stringboolMQTT(alerte)); 
     unified_dimmer.dimmer_off();
   }
 
