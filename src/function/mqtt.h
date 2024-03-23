@@ -91,7 +91,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
   // logging.Set_log_init("Subscribedtopic : " + String(Subscribedtopic)+ "\r\n",true);
   String fixedpayload = ((String)payload).substring(0,len);
   // logging.Set_log_init("Payload : " + String(fixedpayload)+ "\r\n",true);
-  StaticJsonDocument<1024> doc2;
+  StaticJsonDocument<1152> doc2;
   deserializeJson(doc2, payload);
   /// @brief Enregistrement du dimmer sur MQTT pour récuperer les informations remonté par MQTT
   if (strcmp( Subscribedtopic, config.SubscribePV ) == 0 && doc2.containsKey("dimmer")) { 
@@ -123,7 +123,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       device_dimmer_alarm_temp.HA_discovery();
       device_temp[sysvar.dallas_maitre].HA_discovery();
       device_dimmer_maxtemp.HA_discovery();
-      device_dimmer_alarm_temp.send(stringboolMQTT(security));
+      device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
       device_dimmer_maxtemp.send(String(config.maxtemp));
     }
     device_temp[sysvar.dallas_maitre].send(String(sysvar.celsius[sysvar.dallas_maitre]));

@@ -951,11 +951,11 @@ void loop() {
     Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Alert Temp :" + String(sysvar.celsius[sysvar.dallas_maitre]) ),"Alerte");  ///send alert to MQTT
     // device_dimmer_alarm_temp.send("Alert temp");
     alerte=true;
-    device_dimmer_alarm_temp.send(stringboolMQTT(alerte)); 
+    // device_dimmer_alarm_temp.send(stringboolMQTT(alerte)); 
     unified_dimmer.dimmer_off();
   }
 
-  if ( security == 1 ) { 
+  if ( sysvar.security == 1 ) { 
     if (!alerte){
       Serial.println("Alert Temp");
       logging.Set_log_init("Alert Temp\r\n",true);
@@ -964,7 +964,7 @@ void loop() {
         // mqtt(String(config.IDXAlarme), String("Ballon chaud " ),"Alerte");  ///send alert to MQTT
         Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Ballon chaud " ),"Alerte");  ///send alert to MQTT
         // device_dimmer_alarm_temp.send("Hot water");
-        device_dimmer_alarm_temp.send(stringboolMQTT(security)); 
+        device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security)); 
 
       }
       alerte=true;
@@ -972,9 +972,9 @@ void loop() {
     }
     //// Trigger de sécurité température
     if ( sysvar.celsius[sysvar.dallas_maitre] <= (config.maxtemp - (config.maxtemp*TRIGGER/100)) ) {  
-      security = 0 ;
+      sysvar.security = 0 ;
       if (!AP && mqtt_config.mqtt) {
-        device_dimmer_alarm_temp.send(stringboolMQTT(security)); 
+        device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security)); 
         Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("RAS" ),"Alerte");
       }
       sysvar.change = 1 ;
@@ -1008,7 +1008,7 @@ void loop() {
         //logging.Set_log_init("Child running and mode set to off - Child power at 0\r\n");
       }
     }    
-    if (sysvar.puissance > config.minpow && sysvar.puissance != 0 && security == 0) 
+    if (sysvar.puissance > config.minpow && sysvar.puissance != 0 && sysvar.security == 0) 
     {
          DEBUG_PRINTLN(("%d------------------",__LINE__));
         if (config.dimmer_on_off == 1){unified_dimmer.dimmer_on();}  // if off, switch on 
@@ -1117,7 +1117,7 @@ void loop() {
       }
     }
     /// si la sécurité est active on déleste 
-    else if ( sysvar.puissance != 0 && security == 1)
+    else if ( sysvar.puissance != 0 && sysvar.security == 1)
     {
 
       if ( strcmp(config.child,"") != 0 && strcmp(config.child,"none") != 0  && strcmp(config.mode,"off") != 0) {
@@ -1224,8 +1224,8 @@ void loop() {
     //***********************************
     //************* LOOP - Activation de la sécurité --> doublon partiel avec la fonction sécurité ?  
     //***********************************
-  if ( sysvar.celsius[sysvar.dallas_maitre] >= config.maxtemp && security == 0 ) {
-    security = 1 ; 
+  if ( sysvar.celsius[sysvar.dallas_maitre] >= config.maxtemp && sysvar.security == 0 ) {
+    sysvar.security = 1 ; 
     unified_dimmer.set_power(0);
     unified_dimmer.dimmer_off();
     float temp = sysvar.celsius[sysvar.dallas_maitre] + 0.2; /// pour être sur que la dernière consigne envoyé soit au moins égale au max.temp  
@@ -1238,7 +1238,7 @@ void loop() {
     //         }  /// si HA remonté MQTT HA de la température
     Mqtt_send_DOMOTICZ(String(config.IDXTemp), String(temp),"Temperature");  /// remonté MQTT de la température
     device_temp[sysvar.dallas_maitre].send(String(temp)); 
-    device_dimmer_alarm_temp.send(stringbool(security));
+    device_dimmer_alarm_temp.send(stringbool(sysvar.security));
     device_dimmer_power.send(String(0));
     if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_total_power.send(String(sysvar.puissance_cumul));}
   }
