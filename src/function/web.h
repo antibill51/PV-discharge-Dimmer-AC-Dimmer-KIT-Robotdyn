@@ -612,8 +612,8 @@ String getminuteur(Programme name) {
     doc["heure_demarrage"] = name.heure_demarrage;
     doc["heure_arret"] = name.heure_arret;
     doc["temperature"] = name.temperature;
-    doc["heure"] = timeClient.getHours();
-    doc["minute"] = timeClient.getMinutes();
+    doc["heure"] = timeinfo.tm_hour;
+    doc["minute"] = timeinfo.tm_min;
 
   serializeJson(doc, retour);
   return String(retour) ;
@@ -624,8 +624,8 @@ String getMinuteur(const Programme& minuteur) {
     doc["heure_demarrage"] = minuteur.heure_demarrage;
     doc["heure_arret"] = minuteur.heure_arret;
     doc["temperature"] = minuteur.temperature;
-    doc["heure"] = timeClient.getHours();
-    doc["minute"] = timeClient.getMinutes();
+    doc["heure"] = timeinfo.tm_hour;
+    doc["minute"] = timeinfo.tm_min;
     doc["seuil_start"] = minuteur.seuil_start;
     doc["seuil_stop"] = minuteur.seuil_stop;
     doc["seuil_temp"] = minuteur.seuil_temperature;

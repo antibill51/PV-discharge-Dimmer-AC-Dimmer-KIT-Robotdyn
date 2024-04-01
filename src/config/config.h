@@ -124,10 +124,11 @@
 
 /**
  * Syncing time with an NTP server
+ * // #define NTP_OFFSET_SECONDS 3600
+
  */
 #define NTP_TIME_SYNC_ENABLED true
 #define NTP_SERVER "europe.pool.ntp.org"
-#define NTP_OFFSET_SECONDS 3600
 #define NTP_UPDATE_INTERVAL_MS 3600000 /// synch de l'heure toute les heures
 
 #endif

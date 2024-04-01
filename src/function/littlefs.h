@@ -48,8 +48,6 @@ String loguptime(String log) {
   return uptime_stamp;
 }
 
-
-
 // Loads the configuration from a file
 void loadConfiguration(const char *filename, Config &config) {
   // Open file for reading

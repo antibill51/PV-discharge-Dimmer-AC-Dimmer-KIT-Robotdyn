@@ -308,7 +308,6 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           device_dimmer_maxpow.send(String(config.maxpow));
           device_dimmer_charge.send(String(config.charge));
           device_dimmer_maxtemp.send(String(config.maxtemp));
-          device_dimmer_send_power.send(String(sysvar.puissance));
           if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.send(String(config.mode));}
           device_dimmer_on_off.send(String(config.dimmer_on_off));
 

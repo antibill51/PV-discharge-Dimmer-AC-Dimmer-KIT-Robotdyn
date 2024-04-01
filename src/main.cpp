@@ -767,7 +767,6 @@ void setup() {
       device_dimmer_minpow.send(String(config.minpow));
       device_dimmer_maxpow.send(String(config.maxpow));
       device_dimmer_charge.send(String(config.charge));
-      device_dimmer_send_power.send(String(sysvar.puissance));
       if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.send(String(config.mode));}
       device_dimmer_on_off.send(String(config.dimmer_on_off));
       // device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
@@ -819,7 +818,12 @@ void setup() {
 
 /// affichage de l'heure  GMT +1 dans la log
 logging.Set_log_init("fin du demarrage: ");
-logging.Set_log_init(timeClient.getFormattedTime());
+static char uptime_stamp[20]; // Vous devrez définir une taille suffisamment grande pour stocker votre temps
+// snprintf(uptime_stamp, sizeof(uptime_stamp), "%s:%s:%s\t", timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_sec);
+time_t maintenant;
+time(&maintenant);
+strftime(uptime_stamp, sizeof(uptime_stamp), "%H:%M:%S\t", localtime(&maintenant));
+logging.Set_log_init(uptime_stamp);
 logging.Set_log_init("\r\n");
 
   delay(1000);
@@ -869,6 +873,7 @@ void loop() {
     if (programme.stop_progr()) { 
       // Robotdyn dimmer
       logging.Set_log_init("stop minuteur dimmer\r\n",true);
+      config.dimmer_on_off = 0;
       unified_dimmer.set_power(0); 
       unified_dimmer.dimmer_off();
 
@@ -878,6 +883,7 @@ void loop() {
       // mqtt(String(config.IDX), String(unified_dimmer.get_power()),"pourcent"); // remonté MQTT de la commande réelle
       Mqtt_send_DOMOTICZ(String(config.IDX), String(unified_dimmer.get_power()),"pourcent"); // remonté MQTT de la commande réelle
       int instant_power = unified_dimmer.get_power();
+      device_dimmer_on_off.send(String(config.dimmer_on_off));
       device_dimmer.send(String(instant_power));
       device_dimmer_send_power.send(String(instant_power));
       device_dimmer_power.send(String(instant_power * config.charge/100)); 
@@ -892,6 +898,7 @@ void loop() {
       sysvar.puissance=config.maxpow; 
       //// robotdyn dimmer
       logging.Set_log_init("start minuteur dimmer\r\n",true);
+      config.dimmer_on_off = 1;
       unified_dimmer.dimmer_on();
       unified_dimmer.set_power(config.maxpow); 
       delay (50);
@@ -900,6 +907,7 @@ void loop() {
       // mqtt(String(config.IDX), String(unified_dimmer.get_power()),"pourcent"); // remonté MQTT de la commande réelle
       Mqtt_send_DOMOTICZ(String(config.IDX), String(unified_dimmer.get_power()),"pourcent"); // remonté MQTT de la commande réelle
       int instant_power = unified_dimmer.get_power();
+      device_dimmer_on_off.send(String(config.dimmer_on_off));
       device_dimmer.send(String(instant_power));
       device_dimmer_send_power.send(String(instant_power));
       device_dimmer_power.send(String(instant_power * config.charge/100)); 
@@ -915,12 +923,15 @@ void loop() {
       if (programme_relay1.stop_progr()) { 
         logging.Set_log_init("stop minuteur relay1\r\n",true);
         digitalWrite(RELAY1 , LOW);
+        device_relay1.send(String(0));
+
       }
     }
     else {
       if (programme_relay1.start_progr()){ 
         logging.Set_log_init("start minuteur relay1\r\n",true);
         digitalWrite(RELAY1 , HIGH);
+        device_relay1.send(String(1));
       }
     }
 
@@ -928,12 +939,14 @@ void loop() {
       if (programme_relay2.stop_progr()) { 
         logging.Set_log_init("stop minuteur relay2\r\n",true);
         digitalWrite(RELAY2 , LOW);
+        device_relay2.send(String(0));
       }
     }
     else {
       if (programme_relay2.start_progr()){ 
         logging.Set_log_init("start minuteur relay2\r\n",true);
         digitalWrite(RELAY2 , HIGH);
+        device_relay2.send(String(1));
       }
     }
   #endif

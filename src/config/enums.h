@@ -8,10 +8,11 @@
 #else
   #include <ESP8266WiFi.h>
 #endif
-#include <NTPClient.h>
+// #include <NTPClient.h>
+extern struct tm timeinfo;
 
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, NTP_SERVER, NTP_OFFSET_SECONDS, NTP_UPDATE_INTERVAL_MS);
+// WiFiUDP ntpUDP;
+// NTPClient timeClient(ntpUDP, NTP_SERVER, NTP_OFFSET_SECONDS, NTP_UPDATE_INTERVAL_MS);
 
 //extern String logs;
 
@@ -64,7 +65,10 @@ struct Logs {
 
   char *loguptime() {
       static char uptime_stamp[20]; // Vous devrez définir une taille suffisamment grande pour stocker votre temps
-      snprintf(uptime_stamp, sizeof(uptime_stamp), "%s\t", timeClient.getFormattedTime().c_str());
+      // snprintf(uptime_stamp, sizeof(uptime_stamp), "%s:%s:%s\t", timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_sec);
+      time_t maintenant;
+      time(&maintenant);
+      strftime(uptime_stamp, sizeof(uptime_stamp), "%H:%M:%S\t", localtime(&maintenant));
       return uptime_stamp;
     }
   
