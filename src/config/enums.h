@@ -18,50 +18,43 @@ extern struct tm timeinfo;
 
 /// @brief  partie délicate car pas mal d'action sur la variable log_init et donc protection de la variable ( pour éviter les pb mémoire )
 struct Logs {
-  private:char log_init[LOG_MAX_STRING_LENGTH];
+private:
+      char log_init[LOG_MAX_STRING_LENGTH];
 
+public:
   ///setter log_init
-  // public:void Set_log_init(String setter) {strcat(log_init,setter.c_str()); }
-  public:void Set_log_init(String setter, bool logtime=false) {
-      // vérification qu'il y ai encore de la taille pour stocker la log 
-      if (strlen(log_init) > ((LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/5))) ) {
-        reset_log_init();
+    public:void Set_log_init(String setter, bool logtime=false) {
+        // Vérifier si la longueur de la chaîne ajoutée ne dépasse pas LOG_MAX_STRING_LENGTH
+        if ( strlen(setter.c_str()) + strlen(log_init) < LOG_MAX_STRING_LENGTH)  { 
+            if (logtime) { 
+              if ( strlen(setter.c_str()) + strlen(log_init) + strlen(loguptime()) < LOG_MAX_STRING_LENGTH)  { 
+                strcat(log_init,loguptime()); }
+              }
+          strcat(log_init,setter.c_str());
+        } else {  
+          // Si la taille est trop grande, réinitialiser le log_init
+          log_init[0] = '\0';
+          strcat(log_init,"197}11}1");
+        }     
       }
-      if ((strlen(setter.c_str()) + strlen(log_init) > LOG_MAX_STRING_LENGTH)) { return; } // si la taille de la log est trop grande, on ne fait rien )*
-      if (logtime) { strcat(log_init,loguptime()); }
-      strcat(log_init,setter.c_str()); 
+
+    ///getter log_init
+    String Get_log_init() {return log_init; }
+
+    //clean log_init
+    void clean_log_init() {
+        // Vérifier si la longueur de log_init dépasse 80% de LOG_MAX_STRING_LENGTH
+        if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/5)) ) {
+        log_init[0] = '\0';
+        strcat(log_init,"197}11}1");
+        }
     }
 
-  ///getter log_init
-  public:String Get_log_init() {return log_init; }
-
-  //clean log_init
-  public:void clean_log_init() {
-      if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/5)) ) {
-      reset_log_init();
-      }
-
-      ///si risque de fuite mémoire
-      if (strlen(log_init) >((LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/10))) ) {
-      //savelogs("-- reboot Suite problème de taille logs -- ");   //--> vu que dans une struc, c'est compliqué à mettre en place
-      strcat(log_init,"LOG need restart"); 
-      delay(1000);
-      ESP.restart();
-      }
-  }
-
-
-  //     if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/10)) ) {
-  //     log_init[0] = '\0';
-  //     strcat(log_init,"197}11}1");
-  //     }
-  // }
-
   //reset log_init
-  public:void reset_log_init() {
+    void reset_log_init() {
       log_init[0] = '\0';
       strcat(log_init,"197}11}1");
-  }
+    }
 
   char *loguptime() {
       static char uptime_stamp[20]; // Vous devrez définir une taille suffisamment grande pour stocker votre temps
@@ -92,7 +85,14 @@ struct Config {
   char SubscribeTEMP[100];
   bool restart;
   int dimmer_on_off;
+/// @brief  // Somme des 3 charges déclarées dans la page web
   int charge;
+/// @brief  // Puissance de la charge 1 déclarée dans la page web
+  int charge1; 
+/// @brief  // Puissance de la charge 2 déclarée dans la page web
+  int charge2; 
+/// @brief  // Puissance de la charge 3 déclarée dans la page web
+  int charge3; 
   int dispo; 
   bool HA;
   bool JEEDOM;
@@ -148,6 +148,7 @@ struct epoc {
   public:int jour;
   public:int mois;
   public:int annee;
+  public:int weekday;
 };
 
 
