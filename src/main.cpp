@@ -398,6 +398,7 @@ void setup() {
   delay(1000);
   Serial.println("Demarrage file System");
   logging.Set_log_init("\r\n Start filesystem \r\n"); 
+  test_fs_version();
   #ifdef ROBOTDYN
   // configuration dimmer
     #ifdef outputPin
@@ -779,13 +780,13 @@ void setup() {
       device_dimmer.send(String(sysvar.puissance));
       device_dimmer_send_power.send(String(sysvar.puissance));
       device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-      if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) { device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));}
+      device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
       device_cooler.send(stringboolMQTT(false));
       device_dimmer_starting_pow.send(String(config.startingpow));
       device_dimmer_minpow.send(String(config.minpow));
       device_dimmer_maxpow.send(String(config.maxpow));
       device_dimmer_charge.send(String(config.charge));
-      if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.send(String(config.mode));}
+      device_dimmer_child_mode.send(String(config.mode));
       device_dimmer_on_off.send(String(config.dimmer_on_off));
       // device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
 

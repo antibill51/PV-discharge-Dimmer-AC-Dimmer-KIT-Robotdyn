@@ -104,6 +104,9 @@ def prepare_www_files(source, target, env):
     print('  files to gzip: ' + str(files_to_gzip))
 
     all_files = glob.glob(os.path.join(data_src_dir, '**', '*.*'), recursive=True)
+
+    all_files.extend(glob.glob(os.path.join(data_src_dir, '**', 'version'), recursive=True))
+
     files_to_copy = list(set(all_files) - set(files_to_gzip))
 
     print('  files to copy: ' + str(files_to_copy))

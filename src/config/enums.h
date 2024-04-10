@@ -20,41 +20,40 @@ extern struct tm timeinfo;
 struct Logs {
 private:
       char log_init[LOG_MAX_STRING_LENGTH];
+      int MaxString = LOG_MAX_STRING_LENGTH * .9 ;
 
 public:
   ///setter log_init
     public:void Set_log_init(String setter, bool logtime=false) {
         // Vérifier si la longueur de la chaîne ajoutée ne dépasse pas LOG_MAX_STRING_LENGTH
-        if ( strlen(setter.c_str()) + strlen(log_init) < LOG_MAX_STRING_LENGTH)  { 
+        if ( strlen(setter.c_str()) + strlen(log_init) < static_cast<size_t>(MaxString) )  { 
             if (logtime) { 
-              if ( strlen(setter.c_str()) + strlen(log_init) + strlen(loguptime()) < LOG_MAX_STRING_LENGTH)  { 
+              if ( strlen(setter.c_str()) + strlen(log_init) + strlen(loguptime()) < static_cast<size_t>(MaxString))  { 
                 strcat(log_init,loguptime()); }
               }
           strcat(log_init,setter.c_str());
         } else {  
           // Si la taille est trop grande, réinitialiser le log_init
-          log_init[0] = '\0';
-          strcat(log_init,"197}11}1");
+          reset_log_init();
         }     
       }
 
     ///getter log_init
-    String Get_log_init() {return log_init; }
+      String Get_log_init() {return log_init; }
 
-    //clean log_init
-    void clean_log_init() {
-        // Vérifier si la longueur de log_init dépasse 80% de LOG_MAX_STRING_LENGTH
-        if (strlen(log_init) > (LOG_MAX_STRING_LENGTH - (LOG_MAX_STRING_LENGTH/5)) ) {
+      //clean log_init
+      void clean_log_init() {
+          // Vérifier si la longueur de log_init dépasse 90% de LOG_MAX_STRING_LENGTH
+          if (strlen(log_init) > static_cast<size_t>(MaxString) ) {
+              reset_log_init();
+          }
+      }
+
+    //reset log_init
+      void reset_log_init() {
         log_init[0] = '\0';
         strcat(log_init,"197}11}1");
-        }
-    }
-
-  //reset log_init
-    void reset_log_init() {
-      log_init[0] = '\0';
-      strcat(log_init,"197}11}1");
-    }
+      }
 
   char *loguptime() {
       static char uptime_stamp[20]; // Vous devrez définir une taille suffisamment grande pour stocker votre temps
