@@ -260,6 +260,7 @@ MQTT device_dimmer_on_off;
 
 /// création des button
 MQTT device_dimmer_save;
+MQTT device_dimmer_alarm_temp_clear;
 
 /// création number
 MQTT device_dimmer_starting_pow; 
@@ -671,6 +672,14 @@ void setup() {
     device_dimmer_save.Set_entity_category("config");
     device_dimmer_save.Set_entity_qos(0);
     device_dimmer_save.Set_retain_flag(false);
+
+    device_dimmer_alarm_temp_clear.Set_name("Reset alarme");
+    device_dimmer_alarm_temp_clear.Set_object_id("reset_alarm");
+    device_dimmer_alarm_temp_clear.Set_entity_type("button");
+    device_dimmer_alarm_temp_clear.Set_entity_category("config");
+    device_dimmer_alarm_temp_clear.Set_entity_qos(0);
+    device_dimmer_alarm_temp_clear.Set_retain_flag(false);
+
 
     /// création des number
     device_dimmer_starting_pow.Set_name("Puissance de démarrage");

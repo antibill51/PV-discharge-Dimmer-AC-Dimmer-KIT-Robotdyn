@@ -46,6 +46,7 @@ extern MQTT device_temp[15];
 extern MQTT device_relay1;
 extern MQTT device_relay2;
 extern MQTT device_cooler;
+extern MQTT device_dimmer_alarm_temp_clear;
 
 extern bool HA_reconnected;
 extern bool discovery_temp; 
@@ -125,6 +126,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       device_dimmer_maxtemp.HA_discovery();
       device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
       device_dimmer_maxtemp.send(String(config.maxtemp));
+      device_dimmer_alarm_temp_clear.HA_discovery();
     }
     device_temp[sysvar.dallas_maitre].send(String(sysvar.celsius[sysvar.dallas_maitre]));
     if (sysvar.celsius[sysvar.dallas_maitre] != temperaturemqtt ) {
@@ -241,16 +243,28 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       }
     }
   }
-//save
+//clear alarm & save
   if (strstr( Subscribedtopic, command_button.c_str() ) != NULL) { 
   // if (strcmp( Subscribedtopic, command_button.c_str() ) == 0) { 
-    if (doc2.containsKey("save")) { 
-      if (doc2["save"] == "1" ) {
-        logging.Set_log_init("MQTT save command \r\n",true);
-        saveConfiguration(filename_conf, config);  
+    if (doc2.containsKey("reset_alarm")) { 
+      if (doc2["reset_alarm"] == "1" ) {
+        logging.Set_log_init("Clear alarm temp \r\n",true);
+        sysvar.security = 0 ;
+        device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security)); 
+        sysvar.change = 1 ;
       }
     }
+    else if (doc2.containsKey("save")) { 
+      if (doc2["save"] == "1" ) {
+        logging.Set_log_init("MQTT save command \r\n",true);
+        saveConfiguration(filename_conf, config);
+      }
+    }
+
+
   }
+
+
 //child mode
   if (strstr( Subscribedtopic, command_select.c_str() ) != NULL) { 
   // if (strcmp( Subscribedtopic, command_select.c_str() ) == 0) { 
