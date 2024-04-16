@@ -122,6 +122,8 @@ void mqttdallas() {
     device_dimmer.send("0"); 
     device_dimmer_send_power.send("0");
     device_dimmer_power.send("0");
+    device_dimmer_total_power.send(String(sysvar.puissance_cumul));  // remonté MQTT HA de la commande max
+
   }
   
   previous_celsius[sysvar.dallas_maitre]=sysvar.celsius[sysvar.dallas_maitre];
