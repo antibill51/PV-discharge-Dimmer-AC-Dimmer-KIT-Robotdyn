@@ -635,8 +635,13 @@ void setup() {
     device_dimmer_total_power.Set_retain_flag(false);
     
     for (int i = 0; i < deviceCount; i++) {
-      String devicename ="Température";
-      if ( i == sysvar.dallas_maitre ) {String devicename ="Température master";}
+      String devicename;
+      if ( i == sysvar.dallas_maitre ) {
+        devicename ="Température master";
+        }
+      else {
+        devicename ="Température";
+        }
       device_temp[i].Set_name(String(devicename));
       device_temp[i].Set_object_id("temperature_"+ devAddrNames[i]);
       device_temp[i].Set_unit_of_meas("°C");
@@ -1108,7 +1113,7 @@ void loop() {
             }  //si mode equal envoie de la commande vers la carte fille
             if ( strcmp(config.mode,"delester") == 0 && sysvar.puissance <= config.maxpow) { 
               child_communication(0,false); 
-               logging.Set_log_init("Child at 0\r\n"); 
+               logging.Set_log_init("Child at 0\r\n",true); 
             }  //si mode délest envoie d'une commande à 0
 
             if ( strcmp(config.mode,"delester") == 0 && sysvar.puissance > config.maxpow) { // si sysvar.puissance passe subitement au dessus de config.maxpow
