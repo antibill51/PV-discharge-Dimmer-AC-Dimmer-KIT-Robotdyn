@@ -636,14 +636,17 @@ void setup() {
     
     for (int i = 0; i < deviceCount; i++) {
       String devicename;
+      String objectid;
       if ( i == sysvar.dallas_maitre ) {
-        devicename ="Température master";
+        devicename = "Température master";
+        objectid = "temperature_master";
         }
       else {
         devicename ="Température";
+        objectid = "temperature_"+ devAddrNames[i];
         }
       device_temp[i].Set_name(String(devicename));
-      device_temp[i].Set_object_id("temperature_"+ devAddrNames[i]);
+      device_temp[i].Set_object_id(String(objectid));
       device_temp[i].Set_unit_of_meas("°C");
       device_temp[i].Set_stat_cla("measurement");
       device_temp[i].Set_dev_cla("temperature");
