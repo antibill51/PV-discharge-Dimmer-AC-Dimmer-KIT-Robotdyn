@@ -32,7 +32,6 @@ extern MQTT device_dimmer_child_mode;
 
 extern MQTT device_dimmer;
 extern MQTT device_dimmer_maxtemp;
-
 extern MQTT device_dimmer_maxpow;
 extern MQTT device_dimmer_minpow;
 extern MQTT device_dimmer_starting_pow;
@@ -135,6 +134,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       device_dimmer_alarm_temp_clear.HA_discovery();
     }
     device_temp[sysvar.dallas_maitre].send(String(sysvar.celsius[sysvar.dallas_maitre]));
+    Serial.println(sysvar.celsius[sysvar.dallas_maitre]);
     if (sysvar.celsius[sysvar.dallas_maitre] != temperaturemqtt ) {
       sysvar.celsius[sysvar.dallas_maitre] = temperaturemqtt;
       logging.Set_log_init("MQTT temp at ",true);
@@ -366,6 +366,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
             for (int i = 0; i < deviceCount; i++) {
               device_temp[i].send(String(sysvar.celsius[i]));
             }
+            Serial.println(sysvar.celsius[sysvar.dallas_maitre]);
             device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
             device_dimmer_maxtemp.send(String(config.maxtemp)); 
           }

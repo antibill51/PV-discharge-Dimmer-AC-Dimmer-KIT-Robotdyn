@@ -635,7 +635,9 @@ void setup() {
     device_dimmer_total_power.Set_retain_flag(false);
     
     for (int i = 0; i < deviceCount; i++) {
-      device_temp[i].Set_name("Température");
+      String devicename ="Température";
+      if ( i == sysvar.dallas_maitre ) {String devicename ="Température master";}
+      device_temp[i].Set_name(String(devicename));
       device_temp[i].Set_object_id("temperature_"+ devAddrNames[i]);
       device_temp[i].Set_unit_of_meas("°C");
       device_temp[i].Set_stat_cla("measurement");
