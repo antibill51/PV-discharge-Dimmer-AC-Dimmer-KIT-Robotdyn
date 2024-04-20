@@ -484,7 +484,7 @@ if (request->hasParam("charge1")) {
     config.dimmer_on_off = request->getParam("dimmer_on_off")->value().toInt();
     if (!AP && mqtt_config.mqtt) { device_dimmer_on_off.send(String(config.dimmer_on_off));}
    }
-   if (request->hasParam("PVROUTER")) { request->getParam("PVROUTER")->value().toCharArray(config.PVROUTER,5);}
+  //  if (request->hasParam("PVROUTER")) { request->getParam("PVROUTER")->value().toCharArray(config.PVROUTER,5);}
    if (request->hasParam("mqttuser")) { request->getParam("mqttuser")->value().toCharArray(mqtt_config.username,50);  }
    if (request->hasParam("mqttpassword")) { 
     request->getParam("mqttpassword")->value().toCharArray(mqtt_config.password,50);

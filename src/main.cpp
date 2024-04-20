@@ -934,7 +934,7 @@ void loop() {
       device_dimmer.send(String(instant_power));
       device_dimmer_send_power.send(String(instant_power));
       device_dimmer_power.send(String(instant_power * config.charge/100)); 
-      if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));}
+      device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
       sysvar.security = 0 ;
 
     } 

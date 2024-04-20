@@ -97,7 +97,6 @@ struct Config {
   bool HA;
   bool JEEDOM;
   bool DOMOTICZ;
-  char PVROUTER[5];
   char DALLAS[17];
   char say_my_name[32];
 };

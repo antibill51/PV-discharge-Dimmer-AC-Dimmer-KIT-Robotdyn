@@ -341,7 +341,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           device_dimmer.send(String(sysvar.puissance));
           device_dimmer_send_power.send(String(sysvar.puissance));
           device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-          if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) { device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));}
+          device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
           // int coolerstate = digitalRead(COOLER); 
           device_cooler.send(stringboolMQTT(sysvar.cooler));
           device_dimmer_starting_pow.send(String(config.startingpow));
@@ -351,7 +351,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           device_dimmer_charge2.send(String(config.charge2));
           device_dimmer_charge3.send(String(config.charge3));
           device_dimmer_maxtemp.send(String(config.maxtemp));
-          if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.send(String(config.mode));}
+          device_dimmer_child_mode.send(String(config.mode));
           device_dimmer_on_off.send(String(config.dimmer_on_off));
 
           #ifdef RELAY1
@@ -565,8 +565,8 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println(sessionPresent);
   client.publish(String(topic_Xlyric +"status").c_str(),1,true, "online");         // Once connected, publish online to the availability topic
   
-  if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
-  if (strcmp(config.PVROUTER, "mqtt") == 0 && strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
+  if (strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
+  if (strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
   client.subscribe((command_button + "/#").c_str(),1);
   client.subscribe((command_number + "/#").c_str(),1);
   client.subscribe((command_select + "/#").c_str(),1);

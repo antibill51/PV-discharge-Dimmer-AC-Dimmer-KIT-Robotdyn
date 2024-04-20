@@ -101,9 +101,9 @@ void loadConfiguration(const char *filename, Config &config) {
   config.HA = doc["HA"] | true; 
   config.JEEDOM = doc["JEEDOM"] | true; 
   config.DOMOTICZ = doc["DOMOTICZ"] | true; 
-  strlcpy(config.PVROUTER,
-        doc["PVROUTER"] | "mqtt", 
-        sizeof(config.PVROUTER)); 
+  // strlcpy(config.PVROUTER,
+  //       doc["PVROUTER"] | "mqtt", 
+  //       sizeof(config.PVROUTER)); 
   strlcpy(config.DALLAS,
         doc["DALLAS"] | "28b1255704e13c62", 
         sizeof(config.DALLAS));   
@@ -157,7 +157,7 @@ void saveConfiguration(const char *filename, const Config &config) {
   doc["HA"] = config.HA;
   doc["JEEDOM"] = config.JEEDOM;
   doc["DOMOTICZ"] = config.DOMOTICZ;
-  doc["PVROUTER"] = config.PVROUTER;
+  // doc["PVROUTER"] = config.PVROUTER;
   doc["DALLAS"] = config.DALLAS;
   doc["name"] = config.say_my_name;
   doc["charge1"] = config.charge1;
