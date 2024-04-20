@@ -7,11 +7,9 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <title>Pv Dimmer %NAME% - Configuration</title>
-        <!-- Custom fonts for this template-->
-        <link href="all.min.css" rel="stylesheet" type="text/css">
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
         <!-- Custom styles for this template-->
-        <link href="https://ota.apper-solaire.org/css/sb-admin-2.min.css" rel="stylesheet">
+        <link href="/all.css" rel="stylesheet">
     </head>
     <body id="page-top">
         <!-- Page Wrapper -->
@@ -213,216 +211,184 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="col-lg-12">
-                                        <form
-                                            class="user"
-                                            id="formulaire"
-                                            method="post"
-                                            action=""
-                                        >
+                                            <form
+                                                class="user"
+                                                id="formulaire"
+                                                method="post"
+                                                action=""
+                                            >
 
-                                        <div class="card position-relative">
-                                            <div class="card-header py-3">
-                                            <h6 class="m-0 font-weight-bold text-primary">DNS Name</h6>
-                                                <span id="saveform"></span>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="form-group row">
-                                                    <div class="col-sm-6">Dimmer Name</div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <div class="col-sm-6">
-                                                        <input
-                                                            type="text"
-                                                            class="form-control form-control-user"
-                                                            id="dimmername"
-                                                            placeholder="%DIMMERNAME%"
-                                                        >
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-
-
-                                            <div class="card position-relative">
-                                                <div class="card-header py-3">
+                                                <div class="card position-relative">
+                                                    <div class="card-header py-3">
                                                     <h6 class="m-0 font-weight-bold text-primary">Plage d'utilisation</h6>
-                                                    <span id="saveform"></span>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-4">Max Temp (°C)</div>
-                                                        <div class="col-sm-4">Min Power (&percnt;)</div>
-                                                        <div class="col-sm-4">Max Power (&percnt;)</div>
-                                                        <!-- <div class="col-sm-3">Charge (W)</div> -->
+                                                        <span id="saveform"></span>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-4">
-                                                            <input
-                                                                type="number"
-                                                                step="1"
-                                                                class="form-control form-control-user"
-                                                                id="maxtemp"
-                                                                placeholder="%MAXTEMP%"
-                                                            >
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input
-                                                                type="number"
-                                                                step="1"
-                                                                class="form-control form-control-user"
-                                                                id="minpow"
-                                                                placeholder="%MINPOW%"
-                                                            >
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input
-                                                                type="number"
-                                                                step="1"
-                                                                class="form-control form-control-user"
-                                                                id="maxpow"
-                                                                placeholder="%MAXPOW%"
-                                                            >
-                                                        </div>
-                                                        <!-- <div class="col-sm-3">
-                                                            <input
-                                                                type="number"
-                                                                step="1"
-                                                                class="form-control form-control-user"
-                                                                id="charge"
-                                                                placeholder="%CHARGE%"
-                                                            >
-                                                        </div> -->
+                                                    <div class="card-body">
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-4">Max Temp (°C)</div>
+                                                            <div class="col-sm-4">Min Power (&percnt;)</div>
+                                                            <div class="col-sm-4">Max Power (&percnt;)</div>
+                                                                                                                    </div>
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-4">
+                                                                <input
+                                                                    type="number"
+                                                                    step="1"
+                                                                    class="form-control form-control-user"
+                                                                    id="maxtemp"
+                                                                    placeholder="%MAXTEMP%"
+                                                                >
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <input
+                                                                    type="number"
+                                                                    step="1"
+                                                                    class="form-control form-control-user"
+                                                                    id="minpow"
+                                                                    placeholder="%MINPOW%"
+                                                                >
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <input
+                                                                    type="number"
+                                                                    step="1"
+                                                                    class="form-control form-control-user"
+                                                                    id="maxpow"
+                                                                    placeholder="%MAXPOW%"
+                                                                >
+                                                            </div>
+</div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <br>
-                                            <div class="card position-relative">
-                                                <div class="card-header py-3">
-                                                <h6 class="m-0 font-weight-bold text-primary">Charges connectées</h6>
-                                                    <span id="saveform"></span>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-4"><span>Charge 1 (W)</span></div>
-                                                        <div class="col-sm-4"><span>Charge 2 (W)<br />(FW Alone Only)</span></div>
-                                                        <div class="col-sm-4"><span>Charge 3 (W)<br />(FW Alone Only)</span></div>
+                                                <br>
+                                                <div class="card position-relative">
+                                                    <div class="card-header py-3">
+                                                    <h6 class="m-0 font-weight-bold text-primary">Charges</h6>
+                                                        <span id="saveform"></span>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-4">
-                                                            <input
-                                                                type="number"
-                                                                step="1"
-                                                                class="form-control form-control-user"
-                                                                id="charge1"
-                                                                placeholder="%CHARGE1%"
-                                                            >
+                                                    <div class="card-body">
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-4" data-toggle="popover" title="Aide" data-content="Charge branchée sur la sortie Robotdyn ou SSR 1 (GND et PWM pour le SSR + pontage pins synchro) ">Charge 1 (W) ℹ</div>
+                                                            <div class="col-sm-4" data-toggle="popover" title="Aide" data-content="Charge branchée sur la sortie Jotta ou SSR2 (pontage pins synchro) ">Charge 2 (W) ( FW Alone only ) ℹ</div>
+                                                            <div class="col-sm-4" data-toggle="popover" title="Aide" data-content="Charge branchée sur la sortie Relay 2 ou SSR 3 (pontage pins synchro) ">Charge 3 (W) ( FW Alone Only ) ℹ</div>
                                                         </div>
-                                                        <div class="col-sm-4">
-                                                            <input
-                                                                type="number"
-                                                                step="1"
-                                                                class="form-control form-control-user"
-                                                                id="charge2"
-                                                                placeholder="%CHARGE2%"
-                                                            >
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input
-                                                                type="number"
-                                                                step="1"
-                                                                class="form-control form-control-user"
-                                                                id="charge3"
-                                                                placeholder="%CHARGE3%"
-                                                            >
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-4">
+                                                                <input
+                                                                    type="number"
+                                                                    step="1"
+                                                                    class="form-control form-control-user"
+                                                                    id="charge1"
+                                                                    placeholder="%CHARGE1%"
+                                                                >
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <input
+                                                                    type="number"
+                                                                    step="1"
+                                                                    class="form-control form-control-user"
+                                                                    id="charge2"
+                                                                    placeholder="%CHARGE2%"
+                                                                >
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <input
+                                                                    type="number"
+                                                                    step="1"
+                                                                    class="form-control form-control-user"
+                                                                    id="charge3"
+                                                                    placeholder="%CHARGE3%"
+                                                                >
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <br>
-                                            <div class="card position-relative">
-                                                <div class="card-header py-3">
-                                                    <h6 class="m-0 font-weight-bold text-primary">Liaison ROUTER / DIMMER</h6>
-                                                    <span id="saveform"></span>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-6">Protocole</div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-6">
-                                                            <select id="PVROUTER" class="form-control form-control-user">
-                                                                <option value="http">HTTP</option>
-                                                                <option value="mqtt">MQTT</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="card position-relative" id="CHILD" style="display: none">
+                                                <br>
+                                               
+                                                <div class="card position-relative">
                                                     <div class="card-header py-3">
                                                     <h6 class="m-0 font-weight-bold text-primary">Child</h6>
-                                                    <span id="saveform"></span>
+                                                        <span id="saveform"></span>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-4">Child Dimmer IP</div>
+                                                            <div class="col-sm-4">Child Dimmer Mode</div>
+                                                            <div class="col-sm-4" id="dimmer-url">
+                                                                <!-- L'url sera ajoutée ici -->
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-6">
+                                                                <input
+                                                                    type="text"
+                                                                    class="form-control form-control-user"
+                                                                    id="child"
+                                                                    placeholder="%CHILD%"
+                                                                >
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <select id="delester" class="form-control form-control-user">
+                                                                    <option value="off">off</option>
+                                                                    <option value="delester">délester</option>
+                                                                    <option value="equal">égal</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="card-body">
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-6">Child Dimmer IP</div>
-                                                        <div class="col-sm-4">Child Dimmer Mode</div>
+                                                <br>
+                                                <div class="card position-relative">
+                                                    <div class="card-header py-3">
+                                                    <h6 class="m-0 font-weight-bold text-primary">Hostname</h6>
+                                                        <span id="saveform"></span>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-6">
-                                                            <input
-                                                                type="text"
-                                                                class="form-control form-control-user"
-                                                                id="child"
-                                                                placeholder="%CHILD%"
-                                                            >
+                                                    <div class="card-body">
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-6">Dimmer Name</div>
                                                         </div>
-                                                        <div class="col-sm-4">
-                                                            <select id="delester" class="form-control form-control-user">
-                                                                <option value="off">off</option>
-                                                                <option value="delester">délester</option>
-                                                                <option value="equal">égal</option>
-                                                            </select>
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-6">
+                                                                <input
+                                                                    type="text"
+                                                                    class="form-control form-control-user"
+                                                                    id="dimmername"
+                                                                    placeholder="%DIMMERNAME%"
+                                                                >
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <!-- <br> -->
-                                            <div class="card position-relative" id="PV_MQTT" style="display: none">
-                                                <div class="card-header py-3">
-                                                    <h6 class="m-0 font-weight-bold text-primary">Child</h6>
-                                                    <span id="saveform"></span>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-6">
-                                                            <a href="https://wiki.apper-solaire.org/index.php?page=adv-dimmer" target="_blank">MQTT state dimmer subscription</a>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <a href="https://wiki.apper-solaire.org/index.php?page=adv-dimmer" target="_blank">MQTT dimmer temp subscription</a>
-                                                        </div>
+                                                <br>
+                                                <div class="card position-relative">
+                                                    <div class="card-header py-3">
+                                                    <h6 class="m-0 font-weight-bold text-primary">Pilote MQTT</h6>
+                                                        <span id="saveform"></span>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <div class="col-sm-6">
-                                                            <input
-                                                                type="text"
-                                                                class="form-control form-control-user"
-                                                                id="SubscribePV"
-                                                                placeholder="%SUBSCRIBEPV%"
-                                                            >
+                                                    <div class="card-body">
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-6"><a href="https://wiki.apper-solaire.org/index.php?page=adv-dimmer" target="_blank">MQTT state dimmer subscription (or : none)</a></div>
+                                                            <div class="col-sm-6"><a href="https://wiki.apper-solaire.org/index.php?page=adv-dimmer" target="_blank">MQTT dimmer temp subscription (or : none)</a></div>
                                                         </div>
-                                                        <div class="col-sm-6">
-                                                            <input
-                                                                type="text"
-                                                                class="form-control form-control-user"
-                                                                id="SubscribeTEMP"
-                                                                placeholder="%SUBSCRIBETEMP%"
-                                                            >
-                                                        </div>
-                                                    </div>
-                                                    <!-- <div class="form-group row">
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-6">
+                                                                <input
+                                                                    type="text"
+                                                                    class="form-control form-control-user"
+                                                                    id="SubscribePV"
+                                                                    placeholder="%SUBSCRIBEPV%"
+                                                                >
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <input
+                                                                    type="text"
+                                                                    class="form-control form-control-user"
+                                                                    id="SubscribeTEMP"
+                                                                    placeholder="%SUBSCRIBETEMP%"
+                                                                >
+                                                            </div>
+                                                        </div>   
+                                                        <div class="form-group row">
                                                             <div class="col-sm-6">Puissance de démarrage</div>
                                                             <div class="col-sm-6">Etat au démarrage</div>
                                                         </div>
@@ -442,7 +408,7 @@
                                                                     <option value="0">off</option>
                                                                 </select>
                                                             </div>
-                                                        </div>     -->
+                                                        </div>
                                                 </div>
                                             </div>
                                             <br>
@@ -456,6 +422,9 @@
 
                                                         <div class="col-sm-6">
                                                             Adresse sonde DALLAS maitre
+                                                            <br><br>
+                                                            <b>Sonde présentes: </b>
+                                                            <span id="dallas"></span>
                                                         </div>
                                                         <div class="col-sm-6">
                                                             <input
@@ -464,31 +433,26 @@
                                                                 id="DALLAS"
                                                                 placeholder="%DALLAS%"
                                                             >
-                                                        </div>
+                                                        </div>    
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    <br>
-
-                                        <!--  fin du formumaire et envoie -->
-                                    <input type="submit" value=" Application des paramètres" class="btn btn-primary btn-user btn-block">
                                     </div>
-
-                            
-                                    <!-- </div> -->
+                                    <!--  fin du formumaire et envoie -->
+                                    <input type="submit" value=" Application des paramètres" class="btn btn-primary btn-user btn-block">
                                     
-                                <!-- <hr> -->
-
-
+                                    <hr>
                                 </div>
-
+                                <hr>
                             </div>
                         </div>
-                    </div>
+
                 </div>
-                <!-- Content Row -->
-                <script type="text/javascript"> 
+            </div>
+
+            <!-- Content Row -->
+            <script type="text/javascript"> 
 
       //<!-- rafraichissement valeurs -->
 setInterval(function refreshsend( ) {
@@ -500,6 +464,30 @@ setInterval(function refreshsend( ) {
           document.getElementById("state").innerHTML = dimmer;
           document.getElementById("sigma").innerHTML = temperature;
           document.getElementById("power").innerHTML = power;
+          // affichage des dallas et les Température ( boucle sur les dallas )
+            var dallasData = {}; // Objet pour stocker les données des capteurs Dallas
+
+        // Extraction des données des capteurs Dallas du JSON
+        for (var key in data) {
+            if (key.startsWith('dallas')) {
+                var dallasNumber = key.substring(6); // Récupérer le numéro du capteur Dallas
+                var dallasTemperature = data[key];
+                var dallasAddressKey = 'addr' + dallasNumber;
+                var dallasAddress = data[dallasAddressKey];
+                dallasData[dallasNumber] = {
+                    temperature: dallasTemperature,
+                    address: dallasAddress
+                };
+            }
+        }
+
+                    // Affichage des données des capteurs Dallas dans la page HTML
+            var dallasHtml = '';
+            for (var dallasNumber in dallasData) {
+                dallasHtml += '<p>Dallas sensor ' + dallasNumber + ': ' + dallasData[dallasNumber].temperature + '°C <br>Address: ' + dallasData[dallasNumber].address + '</p>';
+            }
+            document.getElementById("dallas").innerHTML = dallasHtml;
+
           });
 }, 5000);
 	
@@ -512,12 +500,6 @@ function sendmode (mode) {
 		});
 
 
-}
-function sendservermode (mode) {
-        $.get( "/get", { servermode: mode } )
-        .done(function(data) { 
-        $( "#saveform" ).text( "Configuration appliqué" ).show().fadeOut( 5000 );
-        }); 
 }
 
 
@@ -543,10 +525,26 @@ function save () {
 
 
 }
-                </script>
-                <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-                <script>
 
+		
+		</script>
+           
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.js">
+            </script>
+            <script>
+                    if (typeof jQuery == 'undefined') {
+                        document.write('<script src="/js/jquery.min.js"><\/script>');
+                    }
+            </script>
+
+
+
+            <script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
 
 <!--- sauvegarde de la configuration --> 
 $( "#save" ).click(function() {
@@ -562,7 +560,7 @@ $( "#save" ).click(function() {
 
 $( "#formulaire" ).submit(function() {
 
-	 var data = {'hostname':$('#hostname').val(), 'port':$('#port').val(), 'Publish':$('#Publish').val(), 'maxtemp':$('#maxtemp').val(), 'startingpow':$('#startingpow').val(), 'minpow':$('#minpow').val(), 'maxpow':$('#maxpow').val(), 'child':$('#child').val(), 'SubscribePV':$('#SubscribePV').val(), 'SubscribeTEMP':$('#SubscribeTEMP').val(), 'mode':$('#delester').val() , 'charge1':$('#charge1').val() , 'charge2':$('#charge2').val() , 'charge3':$('#charge3').val(), 'PVROUTER':$('#PVROUTER').val(), 'DALLAS':$('#DALLAS').val(), 'dimmername':$('#dimmername').val() } 
+	 var data = {'hostname':$('#hostname').val(), 'port':$('#port').val(), 'Publish':$('#Publish').val(),'maxtemp':$('#maxtemp').val(),  'startingpow':$('#startingpow').val(), 'minpow':$('#minpow').val(), 'maxpow':$('#maxpow').val(), 'child':$('#child').val(), 'SubscribePV':$('#SubscribePV').val(), 'SubscribeTEMP':$('#SubscribeTEMP').val(), 'mode':$('#delester').val() , 'charge1':$('#charge1').val() , 'charge2':$('#charge2').val() , 'charge3':$('#charge3').val(), 'DALLAS':$('#DALLAS').val(), 'dimmername':$('#dimmername').val() } 
 
      $.ajax({
             type: "GET",
@@ -578,66 +576,53 @@ $( "#formulaire" ).submit(function() {
 });
 
 
-// $("#DOMOTICZ").click(function () {
-//     if ($(this).is(":checked")) {
-//         $("#IDXview").show();
-//     } else {
-//         $("#IDXview").hide();
-//     }
-// });
+
+        $(document).ready(function(){
+
+            function generateLink(dimmerValue) {
+                if (dimmerValue !== 'none') {
+                    var dimmerURL = "http://" + dimmerValue;
+                    $('#dimmer-url').html('<a href="' + dimmerURL + '" target="_blank">' + dimmerURL + '</a>');
+                }
+            }
 
 
-$("#PVROUTER").change(function() {
-    if ($(this).val() == "http") {
-        $('#PV_MQTT').hide();
-        $('#CHILD').show();
-    } else {
-        $('#PV_MQTT').show();
-        $('#CHILD').hide();
-    }
-});
-
-// $(document).ready(function(){
-//     if ($("#PVROUTER").val() == "http") {
-//         $('#PV_MQTT').hide();
-//         $('#CHILD').show();
-//     } else {
-//         $('#PV_MQTT').show();
-//         $('#CHILD').hide();
-//     }
-//     // if ($("#DOMOTICZ").is(":checked")) {
-//     //     $("#IDXview").show();
-//     // } else {
-//     //     $("#IDXview").hide();
-//     // }    
-// });
-
-var recupconfig =  $.getJSON('/config', function(data) {
-  for (var key in data) {
-    if (data.hasOwnProperty(key)) {
-      var element = document.getElementById(key);
-      if (element) {
-        element.value = data[key];
-        if (element.type === 'checkbox') {
-          element.checked = data[key];
+        var recupconfig =  $.getJSON('/config', function(data) {
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+            var element = document.getElementById(key);
+            if (element) {
+                element.value = data[key];
+                if (element.type === 'checkbox') {
+                element.checked = data[key];
+                }
+            }
+            }
         }
-      }
-    }
-  }
-  if ($("#PVROUTER").val() == "http") {
-        $('#PV_MQTT').hide();
-        $('#CHILD').show();
-    } else {
-        $('#PV_MQTT').show();
-        $('#CHILD').hide();
-    }
+
+            // Une fois la requête terminée
+            recupconfig.done(function() {
+                // Générer le lien avec la valeur initiale
+                var dimmerValue = $('#child').val();
+                generateLink(dimmerValue);
+            });
+
+            $('#child').on('input', function() {
+                var dimmerValue = $(this).val();
+                generateLink(dimmerValue);
+            });
+
+
+        });
+
 });
 
-                </script>
-            </div>
+            </script>
+
         </div>
     </div>
-    <!-- </div>
+</div>
+<!-- </div>
 </div> -->
 <!-- /.container-fluid -->
 <!-- </div> -->
@@ -665,6 +650,6 @@ var recupconfig =  $.getJSON('/config', function(data) {
     'floating-chat.donateButton.background-color': '#00b9fe',
     'floating-chat.donateButton.text-color': '#fff'
   });
-    </script>
+</script>
 </body>
 </html>

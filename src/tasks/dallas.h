@@ -13,15 +13,15 @@ extern Mqtt mqtt_config; // configuration mqtt
 extern byte present; // capteur dallas présent ou non 
 extern String logs; // logs
 extern byte security; // sécurité
-extern DeviceAddress addr[15]; 
-extern float previous_celsius[15]; // température précédente
+extern DeviceAddress addr[MAX_DALLAS]; 
+extern float previous_celsius[MAX_DALLAS]; // température précédente
 extern IPAddress gatewayIP;
 extern Config config; 
-extern MQTT devicetemp[15];
-extern String devAddrNames[15];
+extern MQTT devicetemp[MAX_DALLAS];
+extern String devAddrNames[MAX_DALLAS];
 extern int deviceCount; // nombre de sonde(s) dallas détectée(s)
 
-int dallas_error[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // compteur d'erreur dallas
+int dallas_error[MAX_DALLAS] = {0}; // compteur d'erreur dallas
 int gw_error = 0;   // compteur d'erreur gateway
 
 float CheckTemperature(String label, byte deviceAddress[12]);
@@ -29,9 +29,9 @@ float CheckTemperature(String label, byte deviceAddress[12]);
 
 /// @brief / task executé toute les n secondes pour publier la température ( voir déclaration task dans main )
 void mqttdallas() {
-  if ( present == 1 ) {
+        if ( present == 1 ) {
     sensors.requestTemperatures();
-    delay(200);
+    delay(250);
     for (int a = 0; a < deviceCount; a++) {
       sysvar.celsius[a]=CheckTemperature("temp_" + devAddrNames[a],addr[a]);
       //gestion des erreurs DS18B20
@@ -39,8 +39,8 @@ void mqttdallas() {
         sysvar.celsius[a]=previous_celsius[a];
         dallas_error[a] ++; // incrémente le compteur d'erreur
         logging.Set_log_init("Dallas" + String(a) + " : échec "+ String(dallas_error[a]) + "\r\n",true);
-      }
-      else {
+          }
+          else { 
         sysvar.celsius[a] = (roundf(sysvar.celsius[a] * 10) / 10 ) + 0.1; // pour les valeurs min
         dallas_error[a] = 0; // remise à zéro du compteur d'erreur
       }   
@@ -91,11 +91,11 @@ void mqttdallas() {
     //     device_temp.send(String(sysvar.celsius));
     //     logging.Set_log_init("Dallas temp : "+ String(sysvar.celsius) +"\r\n");
     //   }
-  }
-  //// détection sécurité température
+         } 
+    //// détection sécurité température
   if  ( sysvar.celsius[sysvar.dallas_maitre] >= config.maxtemp ) {
-    // coupure du dimmer
-    DEBUG_PRINTLN("détection sécurité température");
+        // coupure du dimmer
+        DEBUG_PRINTLN("détection sécurité température");
 
         //unified_dimmer.set_power(0); // Pas besoin, fait dans dimmer_off()
         unified_dimmer.dimmer_off();
@@ -113,17 +113,16 @@ void mqttdallas() {
       }
     
     if ( mqtt_config.mqtt ) {
-      // mqtt(String(config.IDX), "0","pourcent");
       Mqtt_send_DOMOTICZ(String(config.IDX), "0","pourcent");
     }
-    // if ( mqtt_config.HA ) { 
+    // if ( config.HA ) { 
     //   device_dimmer.send("0"); 
     //   device_dimmer_power.send("0");
     // }
     device_dimmer.send("0"); 
     device_dimmer_send_power.send("0");
     device_dimmer_power.send("0");
-    device_dimmer_total_power.send(String(sysvar.puissance_cumul));  // remonté MQTT HA de la commande max
+    device_dimmer_total_power.send(String(sysvar.puissance_cumul)); // SI ABSENT, PAS DE REMONTEE DES DIMMER ENFANT// remonté MQTT HA de la commande max
 
   }
   
@@ -132,12 +131,12 @@ void mqttdallas() {
   // si trop d'erreur dallas, on remonte en mqtt
   for (int a = 0; a < deviceCount; a++) {
     if ( dallas_error[a] > 5 ) {
-      DEBUG_PRINTLN("détection perte sonde dallas");
+    DEBUG_PRINTLN("détection perte sonde dallas");
       // mqtt(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
-      Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
-      logging.Set_log_init("Dallas perdue !!!\r\n",true);
+    Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Dallas perdue"),"Dallas perdue");
+    logging.Set_log_init("Dallas perdue !!!\r\n",true);
       dallas_error[a] = 0; // remise à zéro du compteur d'erreur
-      ///mise en sécurité
+    ///mise en sécurité
       sysvar.celsius[a] = 99.9; 
       // sysvar.celsius[a] = float(99.99);  
       previous_celsius[a]=sysvar.celsius[a];
@@ -170,13 +169,13 @@ void mqttdallas() {
       gw_error ++; // incrémente le compteur d'erreur
     }
 
-  /// si GW perdu, reboot de l'ESP après 2 minutes
-    if ( gw_error > 8 ) {
-      DEBUG_PRINTLN("détection perte gateway");
+/// si GW perdu, reboot de l'ESP après 2 minutes
+  if ( gw_error > 8 ) {
+    DEBUG_PRINTLN("détection perte gateway");
       // ESP.restart();
       config.restart = true;
-    }
-  #endif
+  }
+#endif
 
 }
  
@@ -189,7 +188,7 @@ float CheckTemperature(String label, byte deviceAddress[12]){
   // sensors.requestTemperatures();
   // delay(200);
   float tempC = sensors.getTempC(deviceAddress);
-  Serial.print(label);
+  //Serial.println(label);
   if ( (tempC == -127.00) || (tempC == -255.00) ) {
     delay(250);
     //// cas d'une sonde trop longue à préparer les valeurs 

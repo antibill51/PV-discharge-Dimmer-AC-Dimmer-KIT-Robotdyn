@@ -47,7 +47,7 @@ AsyncWiFiManager wifiManager(&server,&dns);
 extern bool AP; 
 
 extern MQTT device_dimmer; 
-extern MQTT device_temp[15]; 
+extern MQTT device_temp[MAX_DALLAS]; 
 extern MQTT device_relay1;
 extern MQTT device_relay2;
 // extern MQTT device_cooler;
@@ -57,11 +57,13 @@ extern MQTT device_dimmer_maxpow;
 extern MQTT device_dimmer_minpow;
 extern MQTT device_dimmer_starting_pow;
 extern MQTT device_dimmer_maxtemp;
-extern MQTT device_dimmer_charge;
+extern MQTT device_dimmer_charge1;
+extern MQTT device_dimmer_charge2;
+extern MQTT device_dimmer_charge3;
 
 extern String dimmername;
 
-extern DeviceAddress addr[15];
+extern DeviceAddress addr[MAX_DALLAS];
 
 const char* PARAM_INPUT_1 = "POWER"; /// paramettre de retour sendmode
 const char* PARAM_INPUT_2 = "OFFSET"; /// paramettre de retour sendmode
@@ -79,6 +81,7 @@ String switchstate(int state);
 String readmqttsave();
 String getMinuteur(const Programme& minuteur);
 extern Logs Logging; 
+extern String devAddrNames[MAX_DALLAS];
 
 #ifdef SSR_ZC
 extern SSR_BURST ssr_burst;
@@ -143,7 +146,7 @@ void call_pages() {
 
             // on égalise
             if ( strcmp(config.child,"") != 0 && strcmp(config.child,"none") != 0 && strcmp(config.mode,"equal") == 0  ) {
-              if ( (security == 1) || (unified_dimmer.get_power() >= config.maxpow) ) {
+              if ( (sysvar.security == 1) || (unified_dimmer.get_power() >= config.maxpow) ) {
                 sysvar.puissance = sysvar.puissance + dispo;          // En %
                 sysvar.puissance_dispo = sysvar.puissance_dispo * 2 ; //  En W - On multiplie par 2 car la fonction child_communication() fera / 2
                               }
@@ -239,7 +242,14 @@ void call_pages() {
 
 //// compressé
   server.on("/all.min.css", HTTP_ANY, [](AsyncWebServerRequest *request){
-    AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/css/all.min.css.gz", "text/css");
+    AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/css/all.css.gz", "text/css");
+    response->addHeader("Content-Encoding", "gzip");
+    request->send(response);
+  });
+
+
+  server.on("/all.css", HTTP_ANY, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/css/all.css.gz", "text/css");
     response->addHeader("Content-Encoding", "gzip");
     request->send(response);
   });
@@ -430,17 +440,17 @@ server.on("/get", HTTP_ANY, [] (AsyncWebServerRequest *request) {
 if (request->hasParam("charge1")) { 
     config.charge1 = request->getParam("charge1")->value().toInt(); 
     config.charge = config.charge1 + config.charge2 + config.charge3;
-    if (!AP && mqtt_config.mqtt) { device_dimmer_charge.send(String(config.charge));}
+    if (!AP && mqtt_config.mqtt) { device_dimmer_charge1.send(String(config.charge1));}
     }
    if (request->hasParam("charge2")) { 
     config.charge2 = request->getParam("charge2")->value().toInt(); 
     config.charge = config.charge1 + config.charge2 + config.charge3;
-    if (!AP && mqtt_config.mqtt) { device_dimmer_charge.send(String(config.charge));}
+    if (!AP && mqtt_config.mqtt) { device_dimmer_charge2.send(String(config.charge2));}
     }
    if (request->hasParam("charge3")) { 
     config.charge3 = request->getParam("charge3")->value().toInt(); 
     config.charge = config.charge1 + config.charge2 + config.charge3;
-    if (!AP && mqtt_config.mqtt) { device_dimmer_charge.send(String(config.charge));}
+    if (!AP && mqtt_config.mqtt) { device_dimmer_charge3.send(String(config.charge3));}
     }
    if (request->hasParam("IDXAlarme")) { config.IDXAlarme = request->getParam("IDXAlarme")->value().toInt();}
    if (request->hasParam("IDX")) { config.IDX = request->getParam("IDX")->value().toInt();}
@@ -481,7 +491,14 @@ if (request->hasParam("charge1")) {
     savemqtt(mqtt_conf, mqtt_config); 
     saveConfiguration(filename_conf, config);
    }
-   if (request->hasParam("DALLAS")) { request->getParam("DALLAS")->value().toCharArray(config.DALLAS,17);}
+   if (request->hasParam("DALLAS")) { 
+    request->getParam("DALLAS")->value().toCharArray(config.DALLAS,17); 
+    // application de la modification sur la dallas master si existante
+    for (int i = 0; i < MAX_DALLAS; i++) {
+      if (strcmp(config.DALLAS,(devAddrNames[i]).c_str() ) == 0) { sysvar.dallas_maitre = i; }
+    
+    }
+   }
 
 //// minuteur 
    if (request->hasParam("heure_demarrage")) { request->getParam("heure_demarrage")->value().toCharArray(programme.heure_demarrage,6);  }
@@ -554,7 +571,7 @@ String getState() {
    
   dtostrf(sysvar.celsius[sysvar.dallas_maitre],2, 1, buffer); // conversion en n.1f 
   
-  DynamicJsonDocument doc(192);
+  DynamicJsonDocument doc(384);
     doc["dimmer"] = int(instant_power); // on le repasse un int pour éviter un affichage trop grand
     doc["temperature"] = buffer;
     doc["power"] = int(instant_power * config.charge/100);
@@ -569,6 +586,16 @@ String getState() {
     doc["relay2"]   = 0;
 #endif
     doc["minuteur"] = programme.run;
+    //affichage des température et adresse des sondes dallas 
+    for (int i = 0; i < MAX_DALLAS; i++) {
+      char buffer[5];
+      // affichage que si != 0 
+      if (sysvar.celsius[i] != 0) {
+        dtostrf(sysvar.celsius[i],2, 1, buffer); // conversion en n.1f 
+        doc["dallas"+String(i)] = buffer;
+        doc["addr"+String(i)] = devAddrNames[i];
+      }
+    }
   serializeJson(doc, state);
   return String(state);
 }
@@ -615,7 +642,6 @@ String getconfig() {
     doc["SubscribeTEMP"] = config.SubscribeTEMP;
     doc["dimmer_on_off"] = config.dimmer_on_off;
     doc["charge"] = config.charge;
-    doc["PVROUTER"] = config.PVROUTER;
     doc["DALLAS"] = config.DALLAS;
     doc["dimmername"] = config.say_my_name;
     doc["charge1"] = config.charge1;

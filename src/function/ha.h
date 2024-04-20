@@ -8,15 +8,19 @@ extern AsyncMqttClient  client;
 extern Config config;
 extern Mqtt mqtt_config;
 extern System sysvar;
+// extern DeviceAddress addr[MAX_DALLAS];  // array of (up to) 15 temperature sensors
+// extern String devAddrNames[MAX_DALLAS];  // array of (up to) 15 temperature sensors
+// extern int deviceCount ; // nombre de sonde(s) dallas détectée(s)
+
 //extern dimmerLamp dimmer;
 String stringbool(bool mybool);
 
 struct MQTT
 {
-  private:int MQTT_INTERVAL = 60;
+    private:int MQTT_INTERVAL = 60;
     /* MQTT */
-  private:String name; 
-  public:void Set_name(String setter) {name=setter; }
+    private:String name; 
+    public:void Set_name(String setter) {name=setter; }
 
   private:String object_id; 
   public:void Set_object_id(String setter) {object_id=setter; }
@@ -51,8 +55,8 @@ struct MQTT
   private:String entity_option; 
   public:void Set_entity_option(String setter) {entity_option=setter; }
 
-  private:bool retain_flag; 
-  public:void Set_retain_flag(bool setter) {retain_flag=setter; }
+    private:bool retain_flag; 
+    public:void Set_retain_flag(bool setter) {retain_flag=setter; }
 
   private:int qos; 
   public:void Set_entity_qos(int setter) {qos; }
@@ -68,101 +72,111 @@ struct MQTT
   }
 
   private:String HA_sensor_type() {
-    String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
-    String topic_Xlyric = "Xlyric/"+ node_id +"/";
-    String info;
-    if (entity_type == "sensor") {
-            info =         "\"dev_cla\": \""+dev_cla+"\","
-          "\"unit_of_meas\": \""+unit_of_meas+"\","
-          "\"stat_cla\": \""+stat_cla+"\"," 
-          "\"value_template\": \"{{ value_json."+ object_id +" }}\","; 
-    }
-    else if (entity_type == "switch") { 
-            info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
-          "\"pl\":  \"{{ value_json."+ object_id +" }}\","
-          "\"pl_on\": \"{ \\\""+object_id+"\\\" : \\\"1\\\"  } \","
-          "\"pl_off\": \"{ \\\""+object_id+"\\\" : \\\"0\\\"  } \","
-          "\"stat_on\":1,"
-          "\"stat_off\":0,"
+      String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
+      String topic_Xlyric = "Xlyric/"+ node_id +"/";
+      String info;
+      if (entity_type == "sensor") {
+              info =         "\"dev_cla\": \""+dev_cla+"\","
+            "\"unit_of_meas\": \""+unit_of_meas+"\","
+            "\"stat_cla\": \""+stat_cla+"\"," 
+            "\"value_template\": \"{{ value_json."+ object_id +" }}\","; 
+      }
+      else if (entity_type == "switch") { 
+              info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
+            "\"pl\":  \"{{ value_json."+ object_id +" }}\","
+            "\"pl_on\": \"{ \\\""+object_id+"\\\" : \\\"1\\\"  } \","
+            "\"pl_off\": \"{ \\\""+object_id+"\\\" : \\\"0\\\"  } \","
+            "\"stat_on\":1,"
+            "\"stat_off\":0,"
           "\"qos\":1,"
           "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\",";
-    } 
-    else if (entity_type == "number") { 
+      } 
+      else if (entity_type == "number") { 
             info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
           "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
-          "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : {{ value }} } \"," 
+            "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : {{ value }} } \"," 
           "\"entity_category\": \""+ entity_category + "\","
           "\"max\": \""+max+"\","
           "\"min\": \""+min+"\","
           "\"step\": \""+step+"\",";
-    } 
-    else if (entity_type == "select") { 
+      } 
+      else if (entity_type == "select") { 
             info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
           "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
-          "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : \\\"{{ value }}\\\" } \","
+            "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : \\\"{{ value }}\\\" } \"," 
           "\"entity_category\": \""+ entity_category + "\","
           "\"options\": ["+ entity_option + "],";
-    } 
-    else if (entity_type == "binary_sensor") { 
-            info =         "\"dev_cla\": \""+dev_cla+"\","
-          "\"pl_on\":\"true\","
-          "\"pl_off\":\"false\","
-          "\"val_tpl\": \"{{ value_json."+ object_id +" }}\",";
-    }
-    else if (entity_type == "button") { 
+      } 
+      else if (entity_type == "binary_sensor") { 
+              info =         "\"dev_cla\": \""+dev_cla+"\","
+            "\"pl_on\":\"true\","
+            "\"pl_off\":\"false\","
+            "\"val_tpl\": \"{{ value_json."+ object_id +" }}\",";
+      }
+      else if (entity_type == "button") { 
             info =            "\"entity_category\": \""+ entity_category + "\","
           "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
-          "\"pl_prs\": \"{ \\\""+object_id+"\\\" : \\\"1\\\"  } \",";
+            "\"pl_prs\": \"{ \\\""+object_id+"\\\" : \\\"1\\\"  } \",";
+      }
+      return info;
     }
-    return info;
-  }
 
   //bool cmd_t; 
 
   private:String IPaddress = WiFi.localIP().toString();
 
-  //private:String state_topic; 
-  //private:String stat_t; 
-  //private:String avty_t;
-
-  private:String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-  private:String node_id = String("Dimmer-") + node_mac; 
-  private:String HA_device_declare() { 
+    //private:String state_topic; 
+    //private:String stat_t; 
+    //private:String avty_t;
+   
+    private:String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
+    // setter mod_mac
+    public:void Set_node_mac(String setter) {node_mac=setter; }
+       
+    private:String node_id = String("Dimmer-") + node_mac; 
+    //private:String topic = "homeassistant/sensor/"+ node_id +"/";
+    // private:String topic_switch = "homeassistant/switch/"+ node_id +"/";
+    // private:String topic_switch_state = "homeassistant/switch/";
+    private:String HA_device_declare() { 
               String IPaddress = WiFi.localIP().toString();
               String info =         "\"dev\": {"
-            "\"ids\": \""+ node_id + "\","
-            "\"name\": \""+ node_id + "\","
-            "\"sw\": \"Dimmer "+ String(VERSION) +"\","
-            "\"mdl\": \"ESP8266 " + IPaddress + "\","
-            "\"mf\": \"Cyril Poissonnier\","
-            "\"cu\": \"http://"+ IPaddress +"\""
-          "}"; 
-          return info;
-          }
-  
+              "\"ids\": \""+ node_id + "\","
+              "\"name\": \""+ node_id + "\","
+              "\"sw\": \"Dimmer "+ String(VERSION) +"\","
+              "\"mdl\": \"ESP8266 " + IPaddress + "\","
+              "\"mf\": \"Cyril Poissonnier\","
+              "\"cu\": \"http://"+ IPaddress +"\""
+            "}"; 
+            return info;
+            }
+
 
   public:void HA_discovery(){
-    String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
+      String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
     String topic_Xlyric = "Xlyric/"+ node_id +"/";
 
-    String device= "{\"name\": \""+ name + "\"," 
-          "\"obj_id\": \"Dimmer-"+ object_id +"-"+ node_mac + "\"," 
-          "\"uniq_id\": \""+ node_mac + "-" + object_id +"\","
+      String device= "{\"name\": \""+ name + "\"," 
+            "\"obj_id\": \"Dimmer-"+ object_id +"-"+ node_mac + "\"," 
+            "\"uniq_id\": \""+ node_mac + "-" + object_id +"\","
           "\"stat_t\": \""+ topic_Xlyric + "sensors/" + object_id +"/state\"," 
           "\"avty_t\": \""+ topic_Xlyric + "status\","
           + HA_sensor_type()
-          + icon
-          + retain
-          + expire_after
+            + icon
+            + retain
+            + expire_after
           + HA_device_declare() + 
-          "}";
-    client.publish(String(topic+object_id+"/config").c_str() ,1, true, device.c_str()); // déclaration autoconf PvRouter
-    // Serial.println(device.c_str());    /// sérial pour debug
-    
+            "}";
 
-  }
+       if (strlen(object_id.c_str()) > 0) {
+       client.publish(String(topic+object_id+"/config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
+       }  
+       else {
+        client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
+       }
+ 
+    }
 
-  public:void send(String value){
+    public:void send(String value){
     if (config.JEEDOM || config.HA) {
       String topic = "Xlyric/"+ node_id +"/sensors/";
       String message = "  { \""+object_id+"\" : \"" + value.c_str() + "\"  } ";

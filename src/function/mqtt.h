@@ -32,6 +32,7 @@ extern MQTT device_dimmer_child_mode;
 
 extern MQTT device_dimmer;
 extern MQTT device_dimmer_maxtemp;
+
 extern MQTT device_dimmer_maxpow;
 extern MQTT device_dimmer_minpow;
 extern MQTT device_dimmer_starting_pow;
@@ -41,8 +42,10 @@ extern MQTT device_dimmer_alarm_temp;
 extern MQTT device_dimmer_power;
 extern MQTT device_dimmer_send_power; 
 extern MQTT device_dimmer_total_power;
-extern MQTT device_dimmer_charge;
-extern MQTT device_temp[15];
+extern MQTT device_dimmer_charge1;
+extern MQTT device_dimmer_charge2;
+extern MQTT device_dimmer_charge3;
+extern MQTT device_temp[MAX_DALLAS];
 extern MQTT device_relay1;
 extern MQTT device_relay2;
 extern MQTT device_cooler;
@@ -54,7 +57,7 @@ extern bool alerte;
 extern byte security; // sécurité
 extern Logs logging; 
 //extern char buffer[1024];
-extern String devAddrNames[15];
+extern String devAddrNames[MAX_DALLAS];
 extern AsyncMqttClient client; 
 
 
@@ -90,6 +93,9 @@ String stringboolMQTT(bool mybool);
 void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
   //char* Subscribedtopic, byte* message, unsigned int length
   // logging.Set_log_init("Subscribedtopic : " + String(Subscribedtopic)+ "\r\n",true);
+  // debug
+  Serial.println("Subscribedtopic : " + String(Subscribedtopic));
+  Serial.println("payload : " + String(payload));
   String fixedpayload = ((String)payload).substring(0,len);
   // logging.Set_log_init("Payload : " + String(fixedpayload)+ "\r\n",true);
   StaticJsonDocument<1152> doc2;
@@ -136,8 +142,7 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
       logging.Set_log_init("°C\r\n");
     }
   }
-    // logs += loguptime() + "Subscribedtopic : " + String(Subscribedtopic)+ "\r\n";
-    // logs += loguptime() + "command_switch : " + String(command_switch)+ "\r\n";
+
 //#ifdef  STANDALONE // désactivé sinon ne fonctionne pas avec ESP32
   /// @brief Enregistrement des requetes de commandes 
   if (strstr( Subscribedtopic, command_switch.c_str() ) != NULL) { 
@@ -231,14 +236,36 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         sysvar.change=1; 
       }
     }
-    else if (doc2.containsKey("charge")) { 
-      int charge = doc2["charge"]; 
-      if (config.charge != charge ) {
-        config.charge = charge;
+    else if (doc2.containsKey("charge1")) { 
+      int charge = doc2["charge1"]; 
+      if (config.charge1 != charge ) {
+        config.charge1 = charge;
         logging.Set_log_init("MQTT charge at ",true);
         logging.Set_log_init(String(charge));
         logging.Set_log_init("W\r\n");
-        device_dimmer_charge.send(String(charge));
+        device_dimmer_charge1.send(String(charge));
+        sysvar.change=1; 
+      }
+    }
+    else if (doc2.containsKey("charge2")) { 
+      int charge = doc2["charge2"]; 
+      if (config.charge2 != charge ) {
+        config.charge2 = charge;
+        logging.Set_log_init("MQTT charge 2 at ",true);
+        logging.Set_log_init(String(charge));
+        logging.Set_log_init("W\r\n");
+        device_dimmer_charge2.send(String(charge));
+        sysvar.change=1; 
+      }
+    }
+    else if (doc2.containsKey("charge3")) { 
+      int charge = doc2["charge3"]; 
+      if (config.charge3 != charge ) {
+        config.charge3 = charge;
+        logging.Set_log_init("MQTT charge 3 at ",true);
+        logging.Set_log_init(String(charge));
+        logging.Set_log_init("W\r\n");
+        device_dimmer_charge3.send(String(charge));
         sysvar.change=1; 
       }
     }
@@ -320,7 +347,9 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
           device_dimmer_starting_pow.send(String(config.startingpow));
           device_dimmer_minpow.send(String(config.minpow));
           device_dimmer_maxpow.send(String(config.maxpow));
-          device_dimmer_charge.send(String(config.charge));
+          device_dimmer_charge1.send(String(config.charge1));
+          device_dimmer_charge2.send(String(config.charge2));
+          device_dimmer_charge3.send(String(config.charge3));
           device_dimmer_maxtemp.send(String(config.maxtemp));
           if (strcmp(String(config.PVROUTER).c_str() , "http") == 0) {device_dimmer_child_mode.send(String(config.mode));}
           device_dimmer_on_off.send(String(config.dimmer_on_off));
@@ -398,25 +427,25 @@ void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
 {
 
   if (config.DOMOTICZ) {
-    String nvalue = "0" ; 
-    String retour; 
-    DynamicJsonDocument doc(128);
-    if ( value != "0" ) { nvalue = "2" ; }
-    doc["idx"] = idx.toInt();
-    doc["nvalue"] = nvalue.toInt();
-    doc["svalue"] = value;
-    doc["name"] = name;
-    serializeJson(doc, retour);
+      String nvalue = "0" ; 
+      String retour; 
+      DynamicJsonDocument doc(128);
+      if ( value != "0" ) { nvalue = "2" ; }
+      doc["idx"] = idx.toInt();
+      doc["nvalue"] = nvalue.toInt();
+      doc["svalue"] = value;
+      doc["name"] = name;
+      serializeJson(doc, retour);
 //      String message = "  { \"idx\" : \"" + idx +"\" ,   \"svalue\" : \"" + value + "\",  \"nvalue\" : " + nvalue + "  } ";
-    //client.loop();
-    //client.publish(config.Publish, 0,true, String(message).c_str());   
-    // si config.Publish est vide, on ne publie pas
-    if (strlen(config.Publish) != 0 ) {
-      client.publish(config.Publish, 0,true, retour.c_str());
+      //client.loop();
+      //client.publish(config.Publish, 0,true, String(message).c_str());   
+      // si config.Publish est vide, on ne publie pas
+      if (strlen(config.Publish) != 0 ) {
+        client.publish(config.Publish, 0,true, retour.c_str());
+      }
     }
-  }
-    
-  Serial.println("MQTT SENT");
+
+    Serial.println("MQTT SENT");
 
 }
 
@@ -468,7 +497,7 @@ void child_communication(int delest_power, bool equal = false){
       
 //       if (mqttConnected) {
 //         logging.Set_log_init("Subscribe and publish to MQTT topics\r\n");
-//         client.publish(String(topic).c_str() ,0,true, "online"); // status Online
+//         //client.publish(String(topic).c_str() ,0,true, "online"); // status Online
 //         Serial.println("connected");
 //         logging.Set_log_init("Connected\r\n");
 
@@ -480,10 +509,10 @@ void child_communication(int delest_power, bool equal = false){
 //         Serial.println("Other subscriptions...");
 //         if (mqtt_config.mqtt && strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
 //         if (mqtt_config.mqtt && strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
-//         client.subscribe(switch_command.c_str(),1);
-//         client.subscribe(number_command.c_str(),1);
-//         client.subscribe(select_command.c_str(),1);
-//         client.subscribe(button_command.c_str(),1);
+//         client.subscribe(command_switch.c_str(),1);
+//         client.subscribe(command_number.c_str(),1);
+//         client.subscribe(command_select.c_str(),1);
+//         client.subscribe(command_button.c_str(),1);
 
 //         //String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
 //         //String node_id = String("dimmer-") + node_mac; 
@@ -520,9 +549,9 @@ void async_mqtt_init() {
 
 void connectToMqtt() {
   if (!client.connected() ) {
-    DEBUG_PRINTLN("Connecting to MQTT...");
-    logging.Set_log_init("Connecting to MQTT... \r\n",true);
-    client.connect();
+  DEBUG_PRINTLN("Connecting to MQTT...");
+    logging.Set_log_init("Connecting to MQTT... \r\n");
+  client.connect();
     // client.setKeepAlive(60);
   }
   
@@ -542,8 +571,12 @@ void onMqttConnect(bool sessionPresent) {
   client.subscribe((command_select + "/#").c_str(),1);
   client.subscribe((command_switch + "/#").c_str(),1);
   client.subscribe((HA_status).c_str(),1);
-  logging.Set_log_init("MQTT connected \r\n",true);
-  // mqttConnected = true;
+  Serial.println((command_button + "/#").c_str());
+  Serial.println((command_number + "/#").c_str());
+  Serial.println((command_select + "/#").c_str());
+  Serial.println((command_switch + "/#").c_str());
+  logging.Set_log_init("MQTT connected \r\n");
+ // mqttConnected = true;
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {

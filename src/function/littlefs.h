@@ -28,7 +28,7 @@ extern Config config;
 extern int deviceCount; 
 
 extern Logs logging; 
-extern String node_mac;
+
 extern String node_id; 
 extern Wifi_struct  wifi_config_fixe; 
 

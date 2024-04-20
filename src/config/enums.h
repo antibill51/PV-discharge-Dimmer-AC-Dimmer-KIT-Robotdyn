@@ -14,6 +14,7 @@ extern struct tm timeinfo;
 // WiFiUDP ntpUDP;
 // NTPClient timeClient(ntpUDP, NTP_SERVER, NTP_OFFSET_SECONDS, NTP_UPDATE_INTERVAL_MS);
 
+#define MAX_DALLAS 8
 //extern String logs;
 
 /// @brief  partie délicate car pas mal d'action sur la variable log_init et donc protection de la variable ( pour éviter les pb mémoire )
@@ -31,7 +32,7 @@ public:
               if ( strlen(setter.c_str()) + strlen(log_init) + strlen(loguptime()) < static_cast<size_t>(MaxString))  { 
                 strcat(log_init,loguptime()); }
               }
-          strcat(log_init,setter.c_str());
+          strcat(log_init,setter.c_str());  
         } else {  
           // Si la taille est trop grande, réinitialiser le log_init
           reset_log_init();
@@ -103,9 +104,6 @@ struct Config {
 
 struct Mqtt {
   public:bool mqtt;
-  // public:bool HA;
-  // public:bool jeedom;
-  // public:bool domoticz;
   public:char username[50];
   public:char password[50];
 };
@@ -119,7 +117,8 @@ struct Wifi_struct {
 ///variables globales 
 struct System {
 /// @brief  température actuelle
-float celsius[15] = {0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00};
+//float celsius=20.00; 
+float celsius[MAX_DALLAS] = {0.00};
 /// @brief  puissance actuelle en %
 float puissance; 
 /// @brief  puissance actuelle en Watt
