@@ -183,7 +183,7 @@ void call_pages() {
       
       else if (request->hasParam(PARAM_INPUT_2)) { 
         config.startingpow = request->getParam(PARAM_INPUT_2)->value().toInt(); 
-        logging.Set_log_init("HTTP power at " + String(config.startingpow)+"W\r\n",true);
+        logging.Set_log_init("HTTP Startingpower at " + String(config.startingpow)+"W\r\n",true);
         sysvar.change=1; 
         request->send_P(200, "text/plain", getState().c_str());
       }

@@ -684,7 +684,7 @@ void setup() {
     device_dimmer_save.Set_entity_qos(0);
     device_dimmer_save.Set_retain_flag(false);
 
-    device_dimmer_alarm_temp_clear.Set_name("Reset alarme");
+    device_dimmer_alarm_temp_clear.Set_name("RAZ surchauffe");
     device_dimmer_alarm_temp_clear.Set_object_id("reset_alarm");
     device_dimmer_alarm_temp_clear.Set_entity_type("button");
     device_dimmer_alarm_temp_clear.Set_entity_category("config");
@@ -743,7 +743,7 @@ void setup() {
     device_dimmer_send_power.Set_entity_qos(0);
     device_dimmer_send_power.Set_retain_flag(false);
 
-    device_dimmer_charge1.Set_name("Charge1");
+    device_dimmer_charge1.Set_name("Charge 1");
     device_dimmer_charge1.Set_object_id("charge1");
     device_dimmer_charge1.Set_entity_type("number");
     device_dimmer_charge1.Set_entity_category("config");
@@ -753,7 +753,7 @@ void setup() {
     device_dimmer_charge1.Set_entity_qos(0);
     device_dimmer_charge1.Set_retain_flag(false);
 
-    device_dimmer_charge2.Set_name("Charge2");
+    device_dimmer_charge2.Set_name("Charge 2");
     device_dimmer_charge2.Set_object_id("charge2");
     device_dimmer_charge2.Set_entity_type("number");
     device_dimmer_charge2.Set_entity_category("config");
@@ -763,7 +763,7 @@ void setup() {
     device_dimmer_charge2.Set_entity_qos(0);
     device_dimmer_charge2.Set_retain_flag(false);
 
-    device_dimmer_charge3.Set_name("Charge3");
+    device_dimmer_charge3.Set_name("Charge 3");
     device_dimmer_charge3.Set_object_id("charge3");
     device_dimmer_charge3.Set_entity_type("number");
     device_dimmer_charge3.Set_entity_category("config");

@@ -228,7 +228,7 @@
                                                             <div class="col-sm-4">Max Temp (°C)</div>
                                                             <div class="col-sm-4">Min Power (&percnt;)</div>
                                                             <div class="col-sm-4">Max Power (&percnt;)</div>
-                                                                                                                    </div>
+                                                        </div>
                                                         <div class="form-group row">
                                                             <div class="col-sm-4">
                                                                 <input
@@ -257,7 +257,29 @@
                                                                     placeholder="%MAXPOW%"
                                                                 >
                                                             </div>
-</div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-6">Puissance de démarrage</div>
+                                                            <div class="col-sm-6">Etat au démarrage</div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-4">
+                                                                <input
+                                                                    type="number"
+                                                                    step="1"
+                                                                    class="form-control form-control-user"
+                                                                    id="startingpow"
+                                                                    placeholder="%STARTINGPOW%"
+                                                                >
+                                                            </div>
+                                                            <div class="col-sm-2"></div>
+                                                            <div class="col-sm-3">
+                                                                <select id="dimmer_on_off" class="form-control form-control-user">
+                                                                    <option value="1">on</option>
+                                                                    <option value="0">off</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <br>
@@ -269,8 +291,8 @@
                                                     <div class="card-body">
                                                         <div class="form-group row">
                                                             <div class="col-sm-4" data-toggle="popover" title="Aide" data-content="Charge branchée sur la sortie Robotdyn ou SSR 1 (GND et PWM pour le SSR + pontage pins synchro) ">Charge 1 (W) ℹ</div>
-                                                            <div class="col-sm-4" data-toggle="popover" title="Aide" data-content="Charge branchée sur la sortie Jotta ou SSR2 (pontage pins synchro) ">Charge 2 (W) ( FW Alone only ) ℹ</div>
-                                                            <div class="col-sm-4" data-toggle="popover" title="Aide" data-content="Charge branchée sur la sortie Relay 2 ou SSR 3 (pontage pins synchro) ">Charge 3 (W) ( FW Alone Only ) ℹ</div>
+                                                            <div class="col-sm-4" data-toggle="popover" title="Aide" data-content="Charge branchée sur la sortie Jotta ou SSR2 (pontage pins synchro) (FW Alone only)">Charge 2 (W) ℹ</div>
+                                                            <div class="col-sm-4" data-toggle="popover" title="Aide" data-content="Charge branchée sur la sortie Relay 2 ou SSR 3 (pontage pins synchro) (FW Alone only)">Charge 3 (W) ℹ</div>
                                                         </div>
                                                         <div class="form-group row">
                                                             <div class="col-sm-4">
@@ -312,11 +334,8 @@
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="form-group row">
-                                                            <div class="col-sm-4">Child Dimmer IP</div>
-                                                            <div class="col-sm-4">Child Dimmer Mode</div>
-                                                            <div class="col-sm-4" id="dimmer-url">
-                                                                <!-- L'url sera ajoutée ici -->
-                                                            </div>
+                                                            <div class="col-sm-6">Child Dimmer IP</div>
+                                                            <div class="col-sm-6">Child Dimmer Mode</div>
                                                         </div>
                                                         <div class="form-group row">
                                                             <div class="col-sm-6">
@@ -324,7 +343,7 @@
                                                                     type="text"
                                                                     class="form-control form-control-user"
                                                                     id="child"
-                                                                    placeholder="%CHILD%"
+                                                                    placeholder="N/A"
                                                                 >
                                                             </div>
                                                             <div class="col-sm-4">
@@ -333,6 +352,11 @@
                                                                     <option value="delester">délester</option>
                                                                     <option value="equal">égal</option>
                                                                 </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-12" id="dimmer-url">
+                                                                <!-- L'url sera ajoutée ici -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -376,7 +400,7 @@
                                                                     type="text"
                                                                     class="form-control form-control-user"
                                                                     id="SubscribePV"
-                                                                    placeholder="%SUBSCRIBEPV%"
+                                                                    placeholder="N/A"
                                                                 >
                                                             </div>
                                                             <div class="col-sm-6">
@@ -384,31 +408,11 @@
                                                                     type="text"
                                                                     class="form-control form-control-user"
                                                                     id="SubscribeTEMP"
-                                                                    placeholder="%SUBSCRIBETEMP%"
+                                                                    placeholder="N/A"
                                                                 >
                                                             </div>
                                                         </div>   
-                                                        <div class="form-group row">
-                                                            <div class="col-sm-6">Puissance de démarrage</div>
-                                                            <div class="col-sm-6">Etat au démarrage</div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <div class="col-sm-6">
-                                                                <input
-                                                                    type="number"
-                                                                    step="1"
-                                                                    class="form-control form-control-user"
-                                                                    id="startingpow"
-                                                                    placeholder="%STARTINGPOW%"
-                                                                >
-                                                            </div>
-                                                            <div class="col-sm-3">
-                                                                <select id="dimmer_on_off" class="form-control form-control-user">
-                                                                    <option value="1">on</option>
-                                                                    <option value="0">off</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
+
                                                 </div>
                                             </div>
                                             <br>
@@ -422,9 +426,6 @@
 
                                                         <div class="col-sm-6">
                                                             Adresse sonde DALLAS maitre
-                                                            <br><br>
-                                                            <b>Sonde présentes: </b>
-                                                            <span id="dallas"></span>
                                                         </div>
                                                         <div class="col-sm-6">
                                                             <input
@@ -435,6 +436,12 @@
                                                             >
                                                         </div>    
                                                     </div>
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-12">
+                                                            <b>Sonde présentes: </b>
+                                                            <span id="dallas"></span>
+                                                        </div>
+                                                    </div>        
                                                 </div>
                                             </div>
                                         </div>
