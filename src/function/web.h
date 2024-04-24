@@ -81,6 +81,7 @@ String getServermode(String Servermode);
 String switchstate(int state);
 String readmqttsave();
 String getMinuteur(const Programme& minuteur);
+String getMinuteur();
 extern Logs Logging; 
 extern String devAddrNames[MAX_DALLAS];
 
@@ -177,7 +178,8 @@ void call_pages() {
         sysvar.change=1; 
         }
         String pb=getState().c_str(); 
-        pb = pb +String(sysvar.puissance) +" " + String(input) +" " + String(sysvar.puissance_dispo) ;
+        // modif faite le 11 Juin 2023, pourquoi ? pas trouvé l'utilité, log ?
+        // pb = pb +String(sysvar.puissance) +" " + String(input) +" " + String(sysvar.puissance_dispo) ;
         request->send_P(200, "text/plain", pb.c_str() );  
       } 
       
@@ -337,7 +339,7 @@ void call_pages() {
     if (request->hasParam("dimmer")) { request->send(200, "application/json",  getMinuteur(programme));  }
     if (request->hasParam("relay1")) { request->send(200, "application/json",  getMinuteur(programme_relay1)); }
     if (request->hasParam("relay2")) { request->send(200, "application/json",  getMinuteur(programme_relay2)); }
-    
+    else { request->send(200, "application/json",  getMinuteur()); }
     //request->send(200, "application/json",  getminuteur(programme_relay2).c_str()); 
   });
 
@@ -361,6 +363,7 @@ void call_pages() {
             if (request->hasParam("temperature")) { programme_relay2.temperature = request->getParam("temperature")->value().toInt();  programme_relay2.saveProgramme(); }
       request->send(200, "application/json",  getMinuteur(programme_relay2)); 
     }
+    else { request->send(200, "application/json",  getMinuteur()); }
   });
 
   /// reglage des seuils relais
@@ -374,6 +377,7 @@ void call_pages() {
     server.on("/getseuil", HTTP_ANY, [] (AsyncWebServerRequest *request) {
     if (request->hasParam("relay1")) { request->send(200, "application/json",  getMinuteur(programme_relay1)); }
     if (request->hasParam("relay2")) { request->send(200, "application/json",  getMinuteur(programme_relay2)); }
+    else { request->send(200, "application/json",  getMinuteur()); }
     //request->send(200, "application/json",  getminuteur(programme_relay2).c_str()); 
   });
 
@@ -391,6 +395,7 @@ void call_pages() {
             if (request->hasParam("temperature")) { programme_relay2.seuil_temperature = request->getParam("temperature")->value().toInt();  programme_relay2.saveProgramme(); }
       request->send(200, "application/json",  getMinuteur(programme_relay2)); 
     }
+    else { request->send(200, "application/json",  getMinuteur()); }
   });
 
 
@@ -603,6 +608,7 @@ String getState() {
   
   DynamicJsonDocument doc(384);
     doc["dimmer"] = int(instant_power); // on le repasse un int pour éviter un affichage trop grand
+    doc["commande"] = int(sysvar.puissance);
     doc["temperature"] = buffer;
     doc["power"] = int(instant_power * config.charge/100);
     doc["Ptotal"]  = sysvar.puissance_cumul + int(instant_power * config.charge/100);
@@ -686,7 +692,8 @@ String getminuteur(Programme name) {
   return String(retour) ;
 } */ 
 
-String getMinuteur(const Programme& minuteur) {
+String getMinuteur(const Programme& minuteur ) {
+    getLocalTime(&timeinfo);
     DynamicJsonDocument doc(256);
     doc["heure_demarrage"] = minuteur.heure_demarrage;
     doc["heure_arret"] = minuteur.heure_arret;
@@ -702,6 +709,15 @@ String getMinuteur(const Programme& minuteur) {
     return retour;
 }
 
+String getMinuteur() {
+    getLocalTime(&timeinfo);
+    DynamicJsonDocument doc(256);
+    doc["heure"] = timeinfo.tm_hour;
+    doc["minute"] = timeinfo.tm_min;
+    String retour;
+    serializeJson(doc, retour);
+    return retour;
+}
 
 String getmqtt() {
     String retour;

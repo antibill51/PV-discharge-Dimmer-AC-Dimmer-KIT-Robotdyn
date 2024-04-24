@@ -31,7 +31,7 @@ float CheckTemperature(String label, byte deviceAddress[12]);
 void mqttdallas() {
         if ( present == 1 ) {
     sensors.requestTemperatures();
-    delay(250);
+    delay(400);
     for (int a = 0; a < deviceCount; a++) {
       sysvar.celsius[a]=CheckTemperature("temp_" + devAddrNames[a],addr[a]);
       //gestion des erreurs DS18B20
