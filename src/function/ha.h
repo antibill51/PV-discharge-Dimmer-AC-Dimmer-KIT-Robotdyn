@@ -156,7 +156,7 @@ struct MQTT
     String topic_Xlyric = "Xlyric/"+ node_id +"/";
 
       String device= "{\"name\": \""+ name + "\"," 
-            "\"obj_id\": \"Dimmer-"+ object_id +"-"+ node_mac + "\"," 
+            "\"obj_id\": \"Dimmer-"+ node_mac +"-"+ object_id + "\"," 
             "\"uniq_id\": \""+ node_mac + "-" + object_id +"\","
           "\"stat_t\": \""+ topic_Xlyric + "sensors/" + object_id +"/state\"," 
           "\"avty_t\": \""+ topic_Xlyric + "status\","
@@ -168,7 +168,7 @@ struct MQTT
             "}";
 
        if (strlen(object_id.c_str()) > 0) {
-       client.publish(String(topic+object_id+"/config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
+       client.publish(String(topic+object_id+"/config").c_str() ,1,false, device.c_str()); // déclaration autoconf dimmer
        }  
        else {
         client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
