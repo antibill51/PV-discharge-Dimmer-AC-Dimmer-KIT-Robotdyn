@@ -504,7 +504,7 @@ void setup() {
   if (strcmp(config.say_my_name, "") == 0) {
     strcpy(config.say_my_name, (WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17)).c_str());
   }
-  wifiManager.autoConnect(config.say_my_name);
+  wifiManager.autoConnect(("Dimmer_"+String(config.say_my_name)).c_str());
   
   
   
@@ -527,7 +527,7 @@ void setup() {
     Serial.print(".");
   }
 
-    WiFi.setHostname(config.say_my_name);
+    WiFi.setHostname(("Dimmer_"+String(config.say_my_name)).c_str());
 
   //***********************************
 
