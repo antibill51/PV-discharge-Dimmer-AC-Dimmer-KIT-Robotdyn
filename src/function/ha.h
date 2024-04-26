@@ -13,7 +13,7 @@ extern System sysvar;
 // extern int deviceCount ; // nombre de sonde(s) dallas détectée(s)
 
 //extern dimmerLamp dimmer;
-String stringbool(bool mybool);
+String stringBool(bool mybool);
 
 struct MQTT
 {

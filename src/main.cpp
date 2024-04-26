@@ -232,7 +232,7 @@ Programme programme_relay2;
 String getmqtt(); 
 void savemqtt(const char *filename, const Mqtt &mqtt_config);
 bool pingIP(IPAddress ip) ;
-String stringbool(bool mybool);
+String stringBool(bool mybool);
 String getServermode(String Servermode);
 String switchstate(int state);
 
@@ -820,7 +820,7 @@ void setup() {
       device_dimmer_send_power.send(String(sysvar.puissance));
       device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
       device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-      device_cooler.send(stringboolMQTT(false));
+      device_cooler.send(stringBool(false));
       device_dimmer_starting_pow.send(String(config.startingpow));
       device_dimmer_minpow.send(String(config.minpow));
       device_dimmer_maxpow.send(String(config.maxpow));
@@ -829,7 +829,7 @@ void setup() {
       device_dimmer_charge3.send(String(config.charge3));
       device_dimmer_child_mode.send(String(config.mode));
       device_dimmer_on_off.send(String(config.dimmer_on_off));
-      // device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
+      // device_dimmer_alarm_temp.send(stringBool(sysvar.security));
 
 
       #ifdef RELAY1
@@ -1028,7 +1028,7 @@ void loop() {
     
       if (!AP && mqtt_config.mqtt){
         Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("Ballon chaud " ),"Alerte");  ///send alert to MQTT
-        device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security)); 
+        device_dimmer_alarm_temp.send(stringBool(sysvar.security)); 
 
       }
       alerte=true;
@@ -1038,7 +1038,7 @@ void loop() {
     if ( sysvar.celsius[sysvar.dallas_maitre] <= (config.maxtemp - (config.maxtemp*TRIGGER/100)) ) {  
       sysvar.security = 0 ;
       if (!AP && mqtt_config.mqtt) {
-        device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security)); 
+        device_dimmer_alarm_temp.send(stringBool(sysvar.security)); 
         Mqtt_send_DOMOTICZ(String(config.IDXAlarme), String("RAS" ),"Alerte");
       }
       sysvar.change = 1 ;
@@ -1221,7 +1221,7 @@ void loop() {
     float temp = sysvar.celsius[sysvar.dallas_maitre] + 0.2; /// pour être sur que la dernière consigne envoyé soit au moins égale au max.temp  
     Mqtt_send_DOMOTICZ(String(config.IDXTemp), String(temp),"Temperature");  /// remonté MQTT de la température
     device_temp[sysvar.dallas_maitre].send(String(temp)); 
-    device_dimmer_alarm_temp.send(stringbool(sysvar.security));
+    device_dimmer_alarm_temp.send(stringBool(sysvar.security));
     device_dimmer_power.send(String(0));
     device_dimmer_total_power.send(String(sysvar.puissance_cumul));
   }
@@ -1295,10 +1295,8 @@ void dallaspresent () {
   }
 
 
-String stringbool(bool mybool){
-  String truefalse = "true";
-  if (mybool == false ) {truefalse = "false";}
-  return String(truefalse);
+String stringBool(bool myBool) {
+  return myBool ? "true" : "false";
 }
 
 
