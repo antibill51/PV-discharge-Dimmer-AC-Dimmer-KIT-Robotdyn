@@ -334,42 +334,50 @@ void callback(char* Subscribedtopic, char* payload, AsyncMqttClientMessageProper
         logging.Set_log_init("MQTT HA_status ",true);
         logging.Set_log_init(fixedpayload);
         logging.Set_log_init("\r\n");
-        if (strcmp( fixedpayload.c_str(), "online" ) == 0) { 
-          logging.Set_log_init("MQTT resend HA discovery \r\n",true);
-          HA_discover();
-          logging.Set_log_init("MQTT resend all values \r\n",true);
-          device_dimmer.send(String(sysvar.puissance));
-          device_dimmer_send_power.send(String(sysvar.puissance));
-          device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-          device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-          // int coolerstate = digitalRead(COOLER); 
-          device_cooler.send(stringboolMQTT(sysvar.cooler));
-          device_dimmer_starting_pow.send(String(config.startingpow));
-          device_dimmer_minpow.send(String(config.minpow));
-          device_dimmer_maxpow.send(String(config.maxpow));
-          device_dimmer_charge1.send(String(config.charge1));
-          device_dimmer_charge2.send(String(config.charge2));
-          device_dimmer_charge3.send(String(config.charge3));
-          device_dimmer_maxtemp.send(String(config.maxtemp));
-          device_dimmer_child_mode.send(String(config.mode));
-          device_dimmer_on_off.send(String(config.dimmer_on_off));
+        if (strcmp( fixedpayload.c_str(), "online" ) == 0) {
+          client.disconnect();
+          logging.Set_log_init("MQTT Disconnection to resend HA discovery \r\n",true);
+          // HA_discover();
+          // logging.Set_log_init("MQTT resend all values \r\n",true);
+          // device_dimmer.send(String(sysvar.puissance));
+          // device_dimmer_send_power.send(String(sysvar.puissance));
+          // device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+          // device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+          // // int coolerstate = digitalRead(COOLER); 
+          // device_cooler.send(stringboolMQTT(sysvar.cooler));
+          // device_dimmer_starting_pow.send(String(config.startingpow));
+          // device_dimmer_minpow.send(String(config.minpow));
+          // device_dimmer_maxpow.send(String(config.maxpow));
+          // device_dimmer_charge1.send(String(config.charge1));
+          // device_dimmer_charge2.send(String(config.charge2));
+          // device_dimmer_charge3.send(String(config.charge3));
+          // device_dimmer_maxtemp.send(String(config.maxtemp));
+          // device_dimmer_child_mode.send(String(config.mode));
+          // device_dimmer_on_off.send(String(config.dimmer_on_off));
 
-          #ifdef RELAY1
-            int relaystate = digitalRead(RELAY1); 
-            device_relay1.send(String(relaystate));
-          #endif
-          #ifdef RELAY2
-            relaystate = digitalRead(RELAY2); 
-            device_relay2.send(String(relaystate));
-          #endif
-          if (discovery_temp) {
-            for (int i = 0; i < deviceCount; i++) {
-              device_temp[i].send(String(sysvar.celsius[i]));
-            }
-            Serial.println(sysvar.celsius[sysvar.dallas_maitre]);
-            device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
-            device_dimmer_maxtemp.send(String(config.maxtemp)); 
-          }
+          // #ifdef RELAY1
+          //   int relaystate = digitalRead(RELAY1); 
+          //   device_relay1.send(String(relaystate));
+          // #endif
+          // #ifdef RELAY2
+          //   relaystate = digitalRead(RELAY2); 
+          //   device_relay2.send(String(relaystate));
+          // #endif
+          // if (discovery_temp) {
+          //   logging.Set_log_init("MQTT resend HA temperature discovery and values \r\n",true);
+          //   device_dimmer_alarm_temp.HA_discovery();
+          //   device_dimmer_maxtemp.HA_discovery();
+          //   device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
+          //   device_dimmer_maxtemp.send(String(config.maxtemp)); 
+          //   device_dimmer_alarm_temp_clear.HA_discovery();
+          //   for (int i = 0; i < deviceCount; i++) {
+          //     device_temp[i].HA_discovery();
+          //     device_temp[i].send(String(sysvar.celsius[i]));
+          //   }
+          //   Serial.println(sysvar.celsius[sysvar.dallas_maitre]);
+          //   device_dimmer_alarm_temp.send(stringboolMQTT(sysvar.security));
+          //   device_dimmer_maxtemp.send(String(config.maxtemp)); 
+          // }
         }
   }
 }
@@ -585,9 +593,11 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
   logging.Set_log_init("MQTT disconnected \r\n",true);
   // mqttConnected = false;
 
-  if (WiFi.isConnected()) {
-    connectToMqtt();
-  }
+  // if (WiFi.isConnected()) {
+  //   connectToMqtt();
+  //   delay(1000);
+  //   HA_discover();
+  // }
 }
 
 
