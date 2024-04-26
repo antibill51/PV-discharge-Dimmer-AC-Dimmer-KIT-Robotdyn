@@ -1241,10 +1241,10 @@ void dallaspresent () {
   for (int i = 0; i < deviceCount; i++) {
     if (!ds.search(addr[i])) {
       logging.Set_log_init("Unable to find temperature sensors address \r\n",true);
-    ds.reset_search();
-    delay(250);
-    return ;
-  }
+      ds.reset_search();
+      delay(350);
+      return ;
+      }
   }
   for (int a = 0; a < deviceCount; a++) {
     String address = "";
@@ -1268,7 +1268,7 @@ void dallaspresent () {
     logging.Set_log_init(String(address).c_str()); 
     logging.Set_log_init("\r\n");
 
-    // delay(250);
+    delay(250);
 
 
 
@@ -1289,7 +1289,7 @@ void dallaspresent () {
 
   }
   ds.reset_search();
-  delay(250);
+  delay(350);
 
    
   }
