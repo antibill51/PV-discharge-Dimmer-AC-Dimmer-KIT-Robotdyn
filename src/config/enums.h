@@ -15,11 +15,12 @@ extern struct tm timeinfo;
 // NTPClient timeClient(ntpUDP, NTP_SERVER, NTP_OFFSET_SECONDS, NTP_UPDATE_INTERVAL_MS);
 
 #define MAX_DALLAS 8
-//extern String logs;
+
 
 /// @brief  partie délicate car pas mal d'action sur la variable log_init et donc protection de la variable ( pour éviter les pb mémoire )
 struct Logs {
 private:
+     
       char log_init[LOG_MAX_STRING_LENGTH];
       int MaxString = LOG_MAX_STRING_LENGTH * .9 ;
 
@@ -72,54 +73,56 @@ public:
 
 
 struct Config {
-  char hostname[16];
-  int port;
-  char Publish[100];
-  int IDXTemp;
-  int maxtemp;
-  int IDXAlarme;
-  int IDX;
-  int maxpow;
-  char child[16];
-  char mode[10];
-  int minpow;
-  int startingpow;
-  char SubscribePV[100];
-  char SubscribeTEMP[100];
-  bool restart;
-  bool dimmer_on_off;
-/// @brief  // Somme des 3 charges déclarées dans la page web
-  int charge;
-/// @brief  // Puissance de la charge 1 déclarée dans la page web
-  int charge1; 
-/// @brief  // Puissance de la charge 2 déclarée dans la page web
-  int charge2; 
-/// @brief  // Puissance de la charge 3 déclarée dans la page web
-  int charge3; 
-  int dispo; 
-  bool HA;
-  bool JEEDOM;
-  bool DOMOTICZ;
-  char DALLAS[17];
-  char say_my_name[32];
+  public:
+    char hostname[16];
+    int port;
+    char Publish[100];
+    int IDXTemp;
+    int maxtemp;
+    int IDXAlarme;
+    int IDX;
+    int maxpow;
+    char child[16];
+    char mode[10];
+    int minpow;
+    int startingpow;
+    char SubscribePV[100];
+    char SubscribeTEMP[100];
+    bool restart;
+    bool dimmer_on_off;
+  /// @brief  // Somme des 3 charges déclarées dans la page web
+    int charge;
+  /// @brief  // Puissance de la charge 1 déclarée dans la page web
+    int charge1; 
+  /// @brief  // Puissance de la charge 2 déclarée dans la page web
+    int charge2; 
+  /// @brief  // Puissance de la charge 3 déclarée dans la page web
+    int charge3; 
+    int dispo; 
+    bool HA;
+    bool JEEDOM;
+    bool DOMOTICZ;
+      char DALLAS[17];
+    char say_my_name[32];
 };
 
 struct Mqtt {
-  public:bool mqtt;
-  public:char username[50];
-  public:char password[50];
+  public:
+    bool mqtt;
+    char username[50];
+    char password[50];
 };
 
 struct Wifi_struct {
-  public:char static_ip[16];
-  public:char static_sn[16];
-  public:char static_gw[16];
+  public:
+    char static_ip[16];
+    char static_sn[16];
+    char static_gw[16];
 };
 
 ///variables globales 
 struct System {
 /// @brief  température actuelle
-//float celsius=20.00; 
 float celsius[MAX_DALLAS] = {0.00};
 /// @brief  puissance actuelle en %
 float puissance; 
@@ -142,13 +145,14 @@ byte security=0;
 };
 
 struct epoc {
-  public:int heure;
-  public:int minute;
-  public:int seconde;
-  public:int jour;
-  public:int mois;
-  public:int annee;
-  public:int weekday;
+  public:
+    int heure;
+    int minute;
+    int seconde;
+    int jour;
+    int mois;
+    int annee;
+    int weekday;
 };
 
 

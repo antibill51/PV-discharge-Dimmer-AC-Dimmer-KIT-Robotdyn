@@ -1,7 +1,6 @@
 #ifndef HA_FUNCTIONS
 #define HA_FUNCTIONS
 
-//#include <PubSubClient.h>
 #include <AsyncMqttClient.h>
 
 extern AsyncMqttClient  client;
@@ -12,7 +11,6 @@ extern System sysvar;
 // extern String devAddrNames[MAX_DALLAS];  // array of (up to) 15 temperature sensors
 // extern int deviceCount ; // nombre de sonde(s) dallas détectée(s)
 
-//extern dimmerLamp dimmer;
 String stringBool(bool mybool);
 
 struct MQTT
@@ -40,8 +38,9 @@ struct MQTT
   private:String entity_type; 
   public:void Set_entity_type(String setter) {entity_type=setter; }
 
-  private:String icon; 
-  public:void Set_icon(String setter) {icon="\"ic\": \""+ setter +"\", "; }
+    private:String icon; 
+    public:void Set_icon(String setter) {icon=R"("ic": ")" + setter + R"(",)"; }
+    //{icon="\"ic\": \""+ setter +"\", "; }
 
   private:String min; 
   public:void Set_entity_valuemin(String setter) {min=setter; }
@@ -124,11 +123,7 @@ struct MQTT
   //bool cmd_t; 
 
   private:String IPaddress = WiFi.localIP().toString();
-
-    //private:String state_topic; 
-    //private:String stat_t; 
-    //private:String avty_t;
-   
+  
     private:String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
     // setter mod_mac
     public:void Set_node_mac(String setter) {node_mac=setter; }
