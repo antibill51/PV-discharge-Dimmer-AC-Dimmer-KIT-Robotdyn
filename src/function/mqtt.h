@@ -24,6 +24,7 @@ extern System sysvar;
 extern HTTPClient http;
 extern WiFiClient domotic_client;
 // extern bool mqttConnected;
+extern int deviceCount; 
 extern MQTT device_dimmer_child_mode;
 
 extern MQTT device_dimmer;
