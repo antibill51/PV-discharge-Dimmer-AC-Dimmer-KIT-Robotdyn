@@ -582,9 +582,9 @@ void setup() {
     
   Serial.println("start 18b20");
   sensors.begin();
-  delay(250);
-  ds.reset_search();
-
+  delay(1000);
+  //ds.reset_search();
+  //delay(450);
   deviceCount = sensors.getDeviceCount();
 
   logging.Set_log_init(String(deviceCount)); 
@@ -1224,10 +1224,13 @@ void loop() {
     float temp = sysvar.celsius[sysvar.dallas_maitre] + 0.2; /// pour être sur que la dernière consigne envoyé soit au moins égale au max.temp  
     Mqtt_send_DOMOTICZ(String(config.IDXTemp), String(temp),"Temperature");  /// remonté MQTT de la température
     device_temp[sysvar.dallas_maitre].send(String(temp)); 
+    // device_temp_master.send(String(temp)); 
     device_dimmer_alarm_temp.send(stringBool(sysvar.security));
     device_dimmer_power.send(String(0));
     device_dimmer_total_power.send(String(sysvar.puissance_cumul));
   }
+//// protection contre la perte de la sonde dallas
+  restart_dallas();
 
   delay(100);  // 24/01/2023 changement 500 à 100ms pour plus de réactivité
 }
@@ -1289,8 +1292,8 @@ void dallaspresent () {
     ds.write(0xBE);         // Read Scratchpad
 
   }
-  ds.reset_search();
-  delay(350);
+  //ds.reset_search();
+  //delay(350);
 
    
   }
