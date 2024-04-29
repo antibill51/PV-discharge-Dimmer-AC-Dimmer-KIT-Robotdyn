@@ -14,7 +14,7 @@ extern struct tm timeinfo;
 // WiFiUDP ntpUDP;
 // NTPClient timeClient(ntpUDP, NTP_SERVER, NTP_OFFSET_SECONDS, NTP_UPDATE_INTERVAL_MS);
 
-#define MAX_DALLAS 8
+constexpr const int MAX_DALLAS=8; // nombre de sonde Dallas
 
 
 /// @brief  partie délicate car pas mal d'action sur la variable log_init et donc protection de la variable ( pour éviter les pb mémoire )

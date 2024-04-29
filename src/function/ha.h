@@ -57,11 +57,11 @@ struct MQTT
     private:bool retain_flag; 
     public:void Set_retain_flag(bool setter) {retain_flag=setter; }
 
-  private:int qos; 
-  public:void Set_entity_qos(int setter) {qos; }
+    private:int qos; 
+    public:void Set_entity_qos(int setter) {qos=setter; }
 
-  private:String retain; 
-  public:void Set_retain(bool setter) {
+    private:String retain; 
+    public:void Set_retain(bool setter) {
     if (setter) {retain="\"ret\":true,"; }
   }
 
@@ -120,7 +120,7 @@ struct MQTT
       return info;
     }
 
-  //bool cmd_t; 
+
 
   private:String IPaddress = WiFi.localIP().toString();
   
@@ -129,7 +129,6 @@ struct MQTT
     public:void Set_node_mac(String setter) {node_mac=setter; }
        
     private:String node_id = String("Dimmer-") + node_mac; 
-    //private:String topic = "homeassistant/sensor/"+ node_id +"/";
     // private:String topic_switch = "homeassistant/switch/"+ node_id +"/";
     // private:String topic_switch_state = "homeassistant/switch/";
     private:String HA_device_declare() { 
