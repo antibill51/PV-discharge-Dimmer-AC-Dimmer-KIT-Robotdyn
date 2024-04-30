@@ -209,7 +209,6 @@ DallasTemperature sensors(&ds);
   int refresh = 60;
   int refreshcount = 0; 
 int deviceCount = 0;
-DeviceAddress addr[MAX_DALLAS];  // array of (up to) MAX_DALLAS temperature sensors
 String devAddrNames[MAX_DALLAS];  // array of (up to) MAX_DALLAS temperature sensors
 /***************************
  * End Settings
@@ -239,37 +238,6 @@ Logs logging;/// declare logs
 int childsend = 0; 
 
 //AsyncWiFiManager wifiManager(&server,&dns);
-
-/// création des sensors
-MQTT device_dimmer; 
-MQTT device_temp[MAX_DALLAS]; 
-MQTT device_dimmer_power;
-MQTT device_dimmer_total_power;
-MQTT device_dimmer_charge1;
-MQTT device_dimmer_charge2;
-MQTT device_dimmer_charge3;
-/// création des switchs
-MQTT device_relay1;
-MQTT device_relay2;
-MQTT device_dimmer_on_off;
-
-/// création des button
-MQTT device_dimmer_save;
-MQTT device_dimmer_alarm_temp_clear;
-
-/// création number
-MQTT device_dimmer_starting_pow; 
-MQTT device_dimmer_maxtemp;
-MQTT device_dimmer_minpow;
-MQTT device_dimmer_maxpow;
-MQTT device_dimmer_send_power; 
-
-/// création select
-MQTT device_dimmer_child_mode;
-
-/// création binary_sensor
-MQTT device_dimmer_alarm_temp;
-MQTT device_cooler;
 
 void HA_discover();
 
@@ -592,204 +560,7 @@ void setup() {
     
   /// recherche d'une sonde dallas
   dallaspresent();
-  if (config.HA || config.JEEDOM) {
-    /// création des sensors
-    device_dimmer.Set_name("Puissance");
-    device_dimmer.Set_object_id("power");
-    device_dimmer.Set_unit_of_meas("%");
-    device_dimmer.Set_stat_cla("measurement");
-    device_dimmer.Set_dev_cla("power_factor"); // fix is using native unit of measurement '%' which is not a valid unit for the device class ('power') it is using
-    device_dimmer.Set_icon("mdi:percent");
-    device_dimmer.Set_entity_type("sensor");
-    device_dimmer.Set_entity_qos(0);
-    device_dimmer.Set_retain_flag(false);
-    // device_dimmer.Set_expire_after(true);
-
-    device_dimmer_power.Set_name("Watt");
-    device_dimmer_power.Set_object_id("watt");
-    device_dimmer_power.Set_unit_of_meas("W");
-    device_dimmer_power.Set_stat_cla("measurement");
-    device_dimmer_power.Set_dev_cla("power");
-    device_dimmer_power.Set_icon("mdi:home-lightning-bolt-outline");
-    device_dimmer_power.Set_entity_type("sensor");
-    device_dimmer_power.Set_entity_qos(0);
-    device_dimmer_power.Set_retain_flag(false);
-
-    device_dimmer_total_power.Set_name("Watt total");
-    device_dimmer_total_power.Set_object_id("watt_total");
-    device_dimmer_total_power.Set_unit_of_meas("W");
-    device_dimmer_total_power.Set_stat_cla("measurement");
-    device_dimmer_total_power.Set_dev_cla("power");
-    device_dimmer_total_power.Set_icon("mdi:home-lightning-bolt-outline");
-    device_dimmer_total_power.Set_entity_type("sensor");
-    device_dimmer_total_power.Set_entity_qos(0);
-    device_dimmer_total_power.Set_retain_flag(false);
-    
-    for (int i = 0; i < deviceCount; i++) {
-      String devicename;
-      String objectid;
-      if ( i == sysvar.dallas_maitre ) {
-        devicename = "Température master";
-        objectid = "temperature_master";
-        }
-      else {
-        devicename ="Température";
-        objectid = "temperature_"+ devAddrNames[i];
-        }
-      device_temp[i].Set_name(String(devicename));
-      device_temp[i].Set_object_id(String(objectid));
-      device_temp[i].Set_unit_of_meas("°C");
-      device_temp[i].Set_stat_cla("measurement");
-      device_temp[i].Set_dev_cla("temperature");
-      device_temp[i].Set_entity_type("sensor");
-      device_temp[i].Set_entity_qos(1);
-      device_temp[i].Set_retain_flag(true);
-    }
-    /// création des switch
-    device_relay1.Set_name("Relais 1");
-    device_relay1.Set_object_id("relay1");
-    device_relay1.Set_entity_type("switch");
-    device_relay1.Set_entity_qos(0);
-    device_relay1.Set_retain_flag(false);
-    device_relay1.Set_retain(true);
-
-    device_relay2.Set_name("Relais 2");
-    device_relay2.Set_object_id("relay2");
-    device_relay2.Set_entity_type("switch");
-    device_relay2.Set_entity_qos(0);
-    device_relay2.Set_retain_flag(false);
-    device_relay2.Set_retain(true);
-
-    device_dimmer_on_off.Set_name("Dimmer");
-    device_dimmer_on_off.Set_object_id("on_off");
-    device_dimmer_on_off.Set_entity_type("switch");
-    device_dimmer_on_off.Set_entity_qos(0);
-    device_dimmer_on_off.Set_retain_flag(false);
-    device_dimmer_on_off.Set_retain(true);
-  
-    /// création des button
-    device_dimmer_save.Set_name("Sauvegarder");
-    device_dimmer_save.Set_object_id("save");
-    device_dimmer_save.Set_entity_type("button");
-    device_dimmer_save.Set_entity_category("config");
-    device_dimmer_save.Set_entity_qos(0);
-    device_dimmer_save.Set_retain_flag(false);
-
-    device_dimmer_alarm_temp_clear.Set_name("RAZ surchauffe");
-    device_dimmer_alarm_temp_clear.Set_object_id("reset_alarm");
-    device_dimmer_alarm_temp_clear.Set_entity_type("button");
-    device_dimmer_alarm_temp_clear.Set_entity_category("config");
-    device_dimmer_alarm_temp_clear.Set_entity_qos(0);
-    device_dimmer_alarm_temp_clear.Set_retain_flag(false);
-
-
-    /// création des number
-    device_dimmer_starting_pow.Set_name("Puissance de démarrage");
-    device_dimmer_starting_pow.Set_object_id("starting_power");
-    device_dimmer_starting_pow.Set_entity_type("number");
-    device_dimmer_starting_pow.Set_entity_category("config");
-    device_dimmer_starting_pow.Set_entity_valuemin("-100");
-    device_dimmer_starting_pow.Set_entity_valuemax("500"); // trop? pas assez? TODO : test sans valeur max?
-    device_dimmer_starting_pow.Set_entity_valuestep("1");
-    device_dimmer_starting_pow.Set_entity_qos(0);
-    device_dimmer_starting_pow.Set_retain_flag(false);
-
-    device_dimmer_minpow.Set_name("Puissance mini");
-    device_dimmer_minpow.Set_object_id("minpow");
-    device_dimmer_minpow.Set_entity_type("number");
-    device_dimmer_minpow.Set_entity_category("config");
-    device_dimmer_minpow.Set_entity_valuemin("0");
-    device_dimmer_minpow.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
-    device_dimmer_minpow.Set_entity_valuestep("1");
-    device_dimmer_minpow.Set_entity_qos(0);
-    device_dimmer_minpow.Set_retain_flag(false);
-
-    device_dimmer_maxpow.Set_name("Puissance maxi");
-    device_dimmer_maxpow.Set_object_id("maxpow");
-    device_dimmer_maxpow.Set_entity_type("number");
-    device_dimmer_maxpow.Set_entity_category("config");
-    device_dimmer_maxpow.Set_entity_valuemin("0");
-    device_dimmer_maxpow.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
-    device_dimmer_maxpow.Set_entity_valuestep("1");
-    device_dimmer_maxpow.Set_entity_qos(0);
-    device_dimmer_maxpow.Set_retain_flag(false);
-
-    device_dimmer_maxtemp.Set_name("Température maxi");
-    device_dimmer_maxtemp.Set_object_id("maxtemp");
-    device_dimmer_maxtemp.Set_entity_type("number");
-    device_dimmer_maxtemp.Set_entity_category("config");
-    device_dimmer_maxtemp.Set_entity_valuemin("0");
-    device_dimmer_maxtemp.Set_entity_valuemax("90"); // trop? pas assez? TODO : test sans valeur max?
-    device_dimmer_maxtemp.Set_entity_valuestep("1");
-    device_dimmer_maxtemp.Set_entity_qos(0);
-    device_dimmer_maxtemp.Set_retain_flag(false);
-
-    device_dimmer_send_power.Set_name("Puissance dimmer");
-    device_dimmer_send_power.Set_object_id("powdimmer");
-    device_dimmer_send_power.Set_entity_type("number");
-    device_dimmer_send_power.Set_entity_category("config");
-    device_dimmer_send_power.Set_entity_valuemin("0");
-    device_dimmer_send_power.Set_entity_valuemax("100"); // trop? pas assez? TODO : test sans valeur max?
-    device_dimmer_send_power.Set_entity_valuestep("1");
-    device_dimmer_send_power.Set_entity_qos(0);
-    device_dimmer_send_power.Set_retain_flag(false);
-
-    device_dimmer_charge1.Set_name("Charge 1");
-    device_dimmer_charge1.Set_object_id("charge1");
-    device_dimmer_charge1.Set_entity_type("number");
-    device_dimmer_charge1.Set_entity_category("config");
-    device_dimmer_charge1.Set_entity_valuemin("0");
-    device_dimmer_charge1.Set_entity_valuemax("3000");
-    device_dimmer_charge1.Set_entity_valuestep("50");
-    device_dimmer_charge1.Set_entity_qos(0);
-    device_dimmer_charge1.Set_retain_flag(false);
-
-    device_dimmer_charge2.Set_name("Charge 2");
-    device_dimmer_charge2.Set_object_id("charge2");
-    device_dimmer_charge2.Set_entity_type("number");
-    device_dimmer_charge2.Set_entity_category("config");
-    device_dimmer_charge2.Set_entity_valuemin("0");
-    device_dimmer_charge2.Set_entity_valuemax("3000");
-    device_dimmer_charge2.Set_entity_valuestep("50");
-    device_dimmer_charge2.Set_entity_qos(0);
-    device_dimmer_charge2.Set_retain_flag(false);
-
-    device_dimmer_charge3.Set_name("Charge 3");
-    device_dimmer_charge3.Set_object_id("charge3");
-    device_dimmer_charge3.Set_entity_type("number");
-    device_dimmer_charge3.Set_entity_category("config");
-    device_dimmer_charge3.Set_entity_valuemin("0");
-    device_dimmer_charge3.Set_entity_valuemax("3000");
-    device_dimmer_charge3.Set_entity_valuestep("50");
-    device_dimmer_charge3.Set_entity_qos(0);
-    device_dimmer_charge3.Set_retain_flag(false);
-
-    /// création des select
-    device_dimmer_child_mode.Set_name("Mode");
-    device_dimmer_child_mode.Set_object_id("child_mode");
-    device_dimmer_child_mode.Set_entity_type("select");
-    device_dimmer_child_mode.Set_entity_category("config");
-    device_dimmer_child_mode.Set_entity_option("\"off\",\"delester\",\"equal\"");
-    device_dimmer_child_mode.Set_entity_qos(0);
-    device_dimmer_child_mode.Set_retain_flag(false);
-
-    // création des binary_sensor
-    device_dimmer_alarm_temp.Set_name("Surchauffe");
-    device_dimmer_alarm_temp.Set_object_id("alarm_temp");
-    device_dimmer_alarm_temp.Set_entity_type("binary_sensor");
-    device_dimmer_alarm_temp.Set_entity_category("diagnostic");
-    device_dimmer_alarm_temp.Set_dev_cla("problem");
-    device_dimmer_alarm_temp.Set_entity_qos(0);
-    device_dimmer_alarm_temp.Set_retain_flag(false);
-
-    device_cooler.Set_name("Ventillateur");
-    device_cooler.Set_object_id("cooler");
-    device_cooler.Set_entity_type("binary_sensor");
-    device_cooler.Set_entity_category("diagnostic");
-    device_cooler.Set_dev_cla("running");
-    device_cooler.Set_entity_qos(0);
-    device_cooler.Set_retain_flag(false);
-  }
+  devices_init(); // initialisation des devices HA
 
   //Serial.println(device_temp.name);
   /// MQTT 
@@ -801,35 +572,7 @@ void setup() {
     async_mqtt_init();
     connectToMqtt();
     delay(1000);  
-    HA_discover(); // Hello des devices HA, condition HA directement dans la fonction.
-    /// pour remonter un 0 sur le MQTT
-
-    if (config.HA || config.JEEDOM) {
-      device_dimmer_on_off.send(String(config.dimmer_on_off));
-      device_dimmer.send(String(sysvar.puissance));
-      device_dimmer_send_power.send(String(sysvar.puissance));
-      device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-      device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-      device_cooler.send(stringBool(false));
-      device_dimmer_starting_pow.send(String(config.startingpow));
-      device_dimmer_minpow.send(String(config.minpow));
-      device_dimmer_maxpow.send(String(config.maxpow));
-      device_dimmer_charge1.send(String(config.charge1));
-      device_dimmer_charge2.send(String(config.charge2));
-      device_dimmer_charge3.send(String(config.charge3));
-      device_dimmer_child_mode.send(String(config.mode));
-
-
-
-      #ifdef RELAY1
-        int relaystate = digitalRead(RELAY1); 
-        device_relay1.send(String(relaystate));
-      #endif
-      #ifdef RELAY2
-        relaystate = digitalRead(RELAY2); 
-        device_relay2.send(String(relaystate));
-      #endif
-    }
+    HA_discover(); // Hello des devices HA et envoi des valeurs, condition "HA activé" directement dans la fonction.
   }
   
  
@@ -890,30 +633,6 @@ void loop() {
       delay(1000);
       HA_discover();
       discovery_temp = false;
-
-      device_dimmer_on_off.send(String(config.dimmer_on_off));
-      device_dimmer.send(String(sysvar.puissance));
-      device_dimmer_send_power.send(String(sysvar.puissance));
-      device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-      device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-      device_cooler.send(stringBool(false));
-      device_dimmer_starting_pow.send(String(config.startingpow));
-      device_dimmer_minpow.send(String(config.minpow));
-      device_dimmer_maxpow.send(String(config.maxpow));
-      device_dimmer_charge1.send(String(config.charge1));
-      device_dimmer_charge2.send(String(config.charge2));
-      device_dimmer_charge3.send(String(config.charge3));
-      device_dimmer_child_mode.send(String(config.mode));
-
-      #ifdef RELAY1
-        int relaystate = digitalRead(RELAY1); 
-        device_relay1.send(String(relaystate));
-      #endif
-      #ifdef RELAY2
-        relaystate = digitalRead(RELAY2); 
-        device_relay2.send(String(relaystate));
-      #endif
-
     }
   }
 
@@ -1328,4 +1047,33 @@ void HA_discover(){
     device_dimmer_child_mode.HA_discovery();
     device_dimmer_save.HA_discovery();
   }
+
+  if (config.HA || config.JEEDOM) {
+    device_dimmer_on_off.send(String(config.dimmer_on_off));
+    device_dimmer.send(String(sysvar.puissance));
+    device_dimmer_send_power.send(String(sysvar.puissance));
+    device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+    device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+
+    bool coolerstate = digitalRead(COOLER); 
+    device_cooler.send(String(coolerstate));
+
+    device_dimmer_starting_pow.send(String(config.startingpow));
+    device_dimmer_minpow.send(String(config.minpow));
+    device_dimmer_maxpow.send(String(config.maxpow));
+    device_dimmer_charge1.send(String(config.charge1));
+    device_dimmer_charge2.send(String(config.charge2));
+    device_dimmer_charge3.send(String(config.charge3));
+    device_dimmer_child_mode.send(String(config.mode));
+
+    #ifdef RELAY1
+      int relaystate = digitalRead(RELAY1); 
+      device_relay1.send(String(relaystate));
+    #endif
+    #ifdef RELAY2
+      relaystate = digitalRead(RELAY2); 
+      device_relay2.send(String(relaystate));
+    #endif
+  }
+
 }

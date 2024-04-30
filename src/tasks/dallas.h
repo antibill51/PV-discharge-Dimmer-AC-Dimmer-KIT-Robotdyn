@@ -13,7 +13,7 @@ extern Mqtt mqtt_config; // configuration mqtt
 extern byte present; // capteur dallas présent ou non 
 extern String logs; // logs
 extern byte security; // sécurité
-extern DeviceAddress addr[MAX_DALLAS]; 
+// extern DeviceAddress addr[MAX_DALLAS]; 
 extern float previous_celsius[MAX_DALLAS]; // température précédente
 extern IPAddress gatewayIP;
 extern Config config; 
@@ -21,6 +21,7 @@ extern MQTT devicetemp[MAX_DALLAS];
 extern String devAddrNames[MAX_DALLAS];
 extern int deviceCount; // nombre de sonde(s) dallas détectée(s)
 
+DeviceAddress addr[MAX_DALLAS];  // array of (up to) MAX_DALLAS temperature sensors
 int dallas_error[MAX_DALLAS] = {0}; // compteur d'erreur dallas
 int gw_error = 0;   // compteur d'erreur gateway
 

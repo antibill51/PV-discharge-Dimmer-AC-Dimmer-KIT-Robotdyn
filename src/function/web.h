@@ -57,7 +57,7 @@ extern MQTT device_dimmer_charge3;
 
 extern String dimmername;
 
-extern DeviceAddress addr[MAX_DALLAS];
+// extern DeviceAddress addr[MAX_DALLAS];
 
 constexpr const char* PARAM_INPUT_1 = "POWER"; /// paramettre de retour sendmode
 constexpr const char* PARAM_INPUT_2 = "OFFSET"; /// paramettre de retour sendmode
