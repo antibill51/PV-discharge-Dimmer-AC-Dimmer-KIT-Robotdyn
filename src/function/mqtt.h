@@ -47,7 +47,6 @@ extern MQTT device_relay2;
 extern MQTT device_cooler;
 extern MQTT device_dimmer_alarm_temp_clear;
 
-extern bool HA_reconnected;
 extern bool discovery_temp; 
 extern bool alerte; 
 extern byte security; // sécurité
@@ -369,8 +368,62 @@ void child_communication(int delest_power, bool equal = false){
   http.end(); 
 
 }
+void HA_discover(){
+  if (config.HA) {
+    device_dimmer_on_off.HA_discovery();
+    device_dimmer_on_off.send(String(config.dimmer_on_off));
 
+    device_dimmer.HA_discovery();
+    device_dimmer.send(String(sysvar.puissance));
 
+    device_dimmer_power.HA_discovery();
+    
+    device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+
+    device_dimmer_total_power.HA_discovery();
+    device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+
+    device_cooler.HA_discovery();
+    device_cooler.send(String(sysvar.cooler));
+
+    #ifdef RELAY1
+      device_relay1.HA_discovery();
+    #endif
+    #ifdef RELAY2
+      device_relay2.HA_discovery();
+    #endif
+    device_dimmer_starting_pow.HA_discovery();
+    device_dimmer_starting_pow.send(String(config.startingpow));
+
+    device_dimmer_minpow.HA_discovery();
+    device_dimmer_minpow.send(String(config.minpow));
+
+    device_dimmer_maxpow.HA_discovery();
+    device_dimmer_maxpow.send(String(config.maxpow));
+
+    device_dimmer_charge1.HA_discovery();
+    device_dimmer_charge1.send(String(config.charge1));
+
+    device_dimmer_charge2.HA_discovery();
+    device_dimmer_charge2.send(String(config.charge2));
+
+    device_dimmer_charge3.HA_discovery();
+    device_dimmer_charge3.send(String(config.charge3));
+    
+    device_dimmer_send_power.HA_discovery();
+    device_dimmer_send_power.send(String(sysvar.puissance));
+
+    device_dimmer_child_mode.HA_discovery();
+    device_dimmer_child_mode.send(String(config.mode));
+
+    device_dimmer_save.HA_discovery();
+    device_dimmer_alarm_temp_clear.HA_discovery();
+
+    discovery_temp = false;
+
+  }
+
+}
 //////////// reconnexion MQTT
 
 // void connect_and_subscribe() {
@@ -451,6 +504,8 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println(sessionPresent);
   client.publish(String(topic_Xlyric +"status").c_str(),1,true, "online");         // Once connected, publish online to the availability topic
   
+  HA_discover(); // Déplacé avant client subscribe
+
   if (strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
   if (strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
   client.subscribe((command_button + "/#").c_str(),1);
@@ -464,6 +519,9 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println((command_switch + "/#").c_str());
   logging.Set_log_init("MQTT connected \r\n");
  // mqttConnected = true;
+
+  
+
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
