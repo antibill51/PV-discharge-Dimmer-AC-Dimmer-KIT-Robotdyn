@@ -52,9 +52,8 @@ void loadConfiguration(const char *filename, Config &config) {
   File configFile = LittleFS.open(filename_conf, "r");
 
    // Allocate a temporary JsonDocument
-  // Don't forget to change the capacity to match your requirements.
-  // Use arduinojson.org/v6/assistant to compute the capacity.
-  DynamicJsonDocument doc(2048);
+
+  JsonDocument doc;
 
   // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, configFile);
@@ -129,9 +128,9 @@ void saveConfiguration(const char *filename, const Config &config) {
   }
 
   // Allocate a temporary JsonDocument
-  // Don't forget to change the capacity to match your requirements.
+  
   // Use arduinojson.org/assistant to compute the capacity.
-  DynamicJsonDocument doc(2048);
+  JsonDocument doc;
 
   // Set the values in the document
   doc["hostname"] = config.hostname;
@@ -187,9 +186,9 @@ bool loadmqtt(const char *filename, Mqtt &mqtt_config) {
   File configFile = LittleFS.open(mqtt_conf, "r");
 
   // Allocate a temporary JsonDocument
-  // Don't forget to change the capacity to match your requirements.
-  // Use arduinojson.org/v6/assistant to compute the capacity.
-  DynamicJsonDocument doc(512);
+  
+  
+  JsonDocument doc;
 
   // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, configFile);
@@ -225,9 +224,9 @@ void savemqtt(const char *filename, const Mqtt &mqtt_config) {
   } 
 
     // Allocate a temporary JsonDocument
-  // Don't forget to change the capacity to match your requirements.
+  
   // Use arduinojson.org/assistant to compute the capacity.
-  DynamicJsonDocument doc(512);
+  JsonDocument doc;
 
   // Set the values in the document
   doc["MQTT_USER"] = mqtt_config.username;
@@ -251,9 +250,9 @@ bool loadwifiIP(const char *wifi_conf, Wifi_struct &wifi_config_fixe) {
   File configFile = LittleFS.open(wifi_conf, "r");
 
       // Allocate a temporary JsonDocument
-      // Don't forget to change the capacity to match your requirements.
-      // Use arduinojson.org/v6/assistant to compute the capacity.
-      DynamicJsonDocument doc(256);
+      
+      
+      JsonDocument doc;
 
       // Deserialize the JSON document
       DeserializationError error = deserializeJson(doc, configFile);
@@ -291,9 +290,9 @@ void savewifiIP(const char *wifi_conf, Wifi_struct &wifi_config_fixe) {
   } 
 
     // Allocate a temporary JsonDocument
-  // Don't forget to change the capacity to match your requirements.
+  
   // Use arduinojson.org/assistant to compute the capacity.
-  DynamicJsonDocument doc(256);
+  JsonDocument doc;
 
   // Set the values in the document
   doc["IP"] = wifi_config_fixe.static_ip;

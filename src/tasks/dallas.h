@@ -6,7 +6,7 @@
 Pinger pinger;
 #endif
 
-extern AsyncMqttClient  client;
+extern espMqttClientAsync  client;
 extern DallasTemperature sensors;
 extern bool AP; // mode point d'accès
 extern Mqtt mqtt_config; // configuration mqtt
@@ -62,6 +62,45 @@ void mqttdallas() {
         device_dimmer_alarm_temp.send(stringBool(sysvar.security));
         device_dimmer_maxtemp.send(String(config.maxtemp)); 
         device_dimmer_alarm_temp_clear.HA_discovery();
+
+
+    // device_dimmer_on_off.send(String(config.dimmer_on_off));
+
+    // device_dimmer.send(String(sysvar.puissance));
+
+    
+    // device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+
+    // device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+
+    // device_cooler.send(String(sysvar.cooler));
+
+    // device_dimmer_starting_pow.send(String(config.startingpow));
+
+    
+    // device_dimmer_minpow.send(String(config.minpow));
+
+    
+    // device_dimmer_maxpow.send(String(config.maxpow));
+
+    
+    // device_dimmer_charge1.send(String(config.charge1));
+
+    
+    // device_dimmer_charge2.send(String(config.charge2));
+
+    
+    // device_dimmer_charge3.send(String(config.charge3));
+    
+    
+    // device_dimmer_send_power.send(String(sysvar.puissance));
+
+    
+    // device_dimmer_child_mode.send(String(config.mode));
+
+    
+    // device_dimmer_alarm_temp_clear.HA_discovery();
+
       }
 
 /// uniformisation des valeurs de température ( for en valeur I pour retrouver plus facilement)

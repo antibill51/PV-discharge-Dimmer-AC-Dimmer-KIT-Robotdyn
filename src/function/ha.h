@@ -1,9 +1,9 @@
 #ifndef HA_FUNCTIONS
 #define HA_FUNCTIONS
 
-#include <AsyncMqttClient.h>
+#include <espMqttClientAsync.h>
 
-extern AsyncMqttClient  client;
+extern espMqttClientAsync  client;
 extern Config config;
 extern Mqtt mqtt_config;
 extern System sysvar;
@@ -11,6 +11,7 @@ extern System sysvar;
 extern String devAddrNames[MAX_DALLAS];  // array of (up to) 15 temperature sensors
 extern int deviceCount ; // nombre de sonde(s) dallas détectée(s)
 // String stringBool(bool mybool);
+extern Logs logging; 
 
 struct MQTT
 {
@@ -205,7 +206,7 @@ struct MQTT
             }
 
 
-  public:void HA_discovery(){
+  public:int HA_discovery(){
       String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
       String topic_Xlyric = "Xlyric/"+ node_id +"/";
       String device = R"({"name": ")" + name + R"(", 
@@ -230,13 +231,22 @@ struct MQTT
       //       + expire_after
       //     + HA_device_declare() + 
       //       "}";
-
-       if (strlen(object_id.c_str()) > 0) {
-       client.publish(String(topic+object_id+"/config").c_str() ,1,false, device.c_str()); // déclaration autoconf dimmer
-       }  
-       else {
-        client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
-       }
+      //  if (strlen(object_id.c_str()) > 0) {
+        int debug = 0;
+      while (debug == 0) { 
+        debug = client.publish(String(topic+object_id+"/config").c_str() ,1,false, device.c_str()); // déclaration autoconf dimmer
+      }
+      //  }  
+      //  else {
+      //   client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
+      //  }
+    logging.Set_log_init(String(debug).c_str(),true); 
+    logging.Set_log_init(" : Discovery send for " );
+    logging.Set_log_init(String(topic+object_id+"/config").c_str()); 
+    logging.Set_log_init(" / Message :  " );
+    logging.Set_log_init(String(device.c_str())); 
+    logging.Set_log_init("\r\n");
+    return debug;
  
     }
 
@@ -244,9 +254,17 @@ struct MQTT
     if (config.JEEDOM || config.HA) {
       String topic = R"(Xlyric/)" + node_id + R"(/sensors/)";
       String message = R"(  { ")" + object_id + R"(" : ")" + value.c_str() + R"("  } )";
-      // String topic = "Xlyric/"+ node_id +"/sensors/";
-      // String message = "  { \""+object_id+"\" : \"" + value.c_str() + "\"  } ";
-      client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
+      int debug = 0;
+      while (debug == 0) { 
+        debug = client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
+      }
+      logging.Set_log_init(String(debug).c_str(),true); 
+      logging.Set_log_init(" / Publish send for ");
+      logging.Set_log_init(String(object_id).c_str()); 
+      logging.Set_log_init(" message : " );
+      logging.Set_log_init(String(message).c_str()); 
+      logging.Set_log_init("\r\n");
+  
     }
   } 
 };

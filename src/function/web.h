@@ -550,7 +550,7 @@ String getState_dallas() {
    
   dtostrf(sysvar.celsius[sysvar.dallas_maitre],2, 1, buffer); // conversion en n.1f 
   
-  DynamicJsonDocument doc(384);
+  JsonDocument doc;
     doc["temperature"] = buffer;
     
     //affichage des température et adresse des sondes dallas 
@@ -584,7 +584,7 @@ String getState() {
    
   dtostrf(sysvar.celsius[sysvar.dallas_maitre],2, 1, buffer); // conversion en n.1f 
   
-  DynamicJsonDocument doc(384);
+  JsonDocument doc;
     doc["dimmer"] = int(instant_power); // on le repasse un int pour éviter un affichage trop grand
     doc["commande"] = int(sysvar.puissance);
     doc["temperature"] = buffer;
@@ -629,7 +629,7 @@ String processor(const String& var){
 
 String getconfig() {
   String configweb;  
-  DynamicJsonDocument doc(512);  
+  JsonDocument doc;  
     doc["maxtemp"] = config.maxtemp;
 
     doc["startingpow"] = config.startingpow;
@@ -655,7 +655,7 @@ String getconfig() {
 
 String getMinuteur(const Programme& minuteur ) {
     getLocalTime(&timeinfo);
-    DynamicJsonDocument doc(256);
+    JsonDocument doc;
     doc["heure_demarrage"] = minuteur.heure_demarrage;
     doc["heure_arret"] = minuteur.heure_arret;
     doc["temperature"] = minuteur.temperature;
@@ -672,7 +672,7 @@ String getMinuteur(const Programme& minuteur ) {
 
 String getMinuteur() {
     getLocalTime(&timeinfo);
-    DynamicJsonDocument doc(256);
+    JsonDocument doc;
     doc["heure"] = timeinfo.tm_hour;
     doc["minute"] = timeinfo.tm_min;
     String retour;
@@ -682,7 +682,7 @@ String getMinuteur() {
 
 String getmqtt() {
     String retour;
-  DynamicJsonDocument doc(512); 
+    JsonDocument doc; 
 
     doc["server"] = config.hostname;
     doc["port"] = config.port;
@@ -702,7 +702,7 @@ String getmqtt() {
 
 String getcomplement() {
   String retour;
-  DynamicJsonDocument doc(64); 
+  JsonDocument doc; 
 
     doc["hdebut"] = config.hostname;
     doc["hfin"] = config.port;

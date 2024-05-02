@@ -89,7 +89,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 //mqtt
-#include <AsyncMqttClient.h>
+#include <espMqttClientAsync.h>
 /// config
 #include "config/config.h"
 #include "config/enums.h"
@@ -159,7 +159,7 @@ Scheduler runner;
 //***********************************
 // Create AsyncWebServer object on port 80
 WiFiClient domotic_client;
-AsyncMqttClient client;
+espMqttClientAsync client;
 // bool mqttConnected = false;
 void Mqtt_send_DOMOTICZ(String idx, String value, String name);
 
@@ -571,7 +571,10 @@ void setup() {
     
     /// Configuration et connexion MQTT 
     async_mqtt_init();
-    connectToMqtt();
+    // connectToMqtt();
+    // delay(1000);
+    
+    // delay(10000);
   
   }
   
@@ -619,6 +622,7 @@ delay(1000);
 
 
 bool alerte=false;
+bool HA_discovery_sended=false;
 
 /////////////////////
 /// LOOP 
@@ -630,6 +634,13 @@ void loop() {
   if ( mqtt_config.mqtt && !AP ) {
     if (!client.connected() ) {
       connectToMqtt();
+      delay(1000);
+      HA_discover();
+      // discovery_temp = false;
+    }
+    if (client.connected() && !HA_discovery_sended ) {
+      HA_discover();
+      
       // discovery_temp = false;
     }
   }
