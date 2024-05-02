@@ -133,7 +133,7 @@ void mqttdallas() {
       }
     
     if ( mqtt_config.mqtt ) {
-      Mqtt_send_DOMOTICZ(String(config.IDX), "0","pourcent");
+      Mqtt_send_DOMOTICZ(String(config.IDX), "0");
     }
     device_dimmer.send("0"); 
     device_dimmer_send_power.send("0");
