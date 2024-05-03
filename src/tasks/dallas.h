@@ -25,7 +25,7 @@ DeviceAddress addr[MAX_DALLAS];  // array of (up to) MAX_DALLAS temperature sens
 int dallas_error[MAX_DALLAS] = {0}; // compteur d'erreur dallas
 int gw_error = 0;   // compteur d'erreur gateway
 
-float CheckTemperature(String label, byte deviceAddress[12]);
+float CheckTemperature(String label, byte deviceAddress[12]); // NO SONAR
 void restart_dallas();
 void dallaspresent ();
 
@@ -108,7 +108,6 @@ void mqttdallas() {
         if ( sysvar.celsius[i] != previous_celsius[i] || sysvar.celsius[i] != 0.99) {
           device_temp[i].send(String(sysvar.celsius[i]));
           previous_celsius[i]=sysvar.celsius[i];
-          // logging.Set_log_init("Dallas " + String(i) + " temp : "+ String(sysvar.celsius[i]) +"\r\n");
         }
       }
       // device_temp_master.send(String(sysvar.celsius[sysvar.dallas_maitre]));
@@ -158,7 +157,7 @@ void mqttdallas() {
       previous_celsius[a]=sysvar.celsius[a];
       if (a == sysvar.dallas_maitre) {
       //  String temp_topic = "topic_Xlyric/" + String(config.say_my_name) + "/dallas" ;
-      //  static char uptime_stamp[20]; // Vous devrez définir une taille suffisamment grande pour stocker votre temps
+      //  //static char uptime_stamp[20]; // Vous devrez définir une taille suffisamment grande pour stocker votre temps
 
        String message = String(logging.loguptime()) + "Dallas maitre perdue";
        client.publish((topic_Xlyric+"memory").c_str(),1,true, String(message).c_str());

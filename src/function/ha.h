@@ -4,8 +4,8 @@
 #include <espMqttClientAsync.h>
 
 extern espMqttClientAsync  client;
-extern Config config;
-extern Mqtt mqtt_config;
+extern Config config; // NOSONAR
+extern Mqtt mqtt_config; // NOSONAR
 extern System sysvar;
 // extern DeviceAddress addr[MAX_DALLAS];  // array of (up to) 15 temperature sensors
 extern String devAddrNames[MAX_DALLAS];  // array of (up to) 15 temperature sensors
@@ -66,12 +66,10 @@ struct MQTT
     // if (setter) {retain="\"ret\":true,"; }
   }
 
-  private:String expire_after; 
-  public:void Set_expire_after(bool setter) {
-    if (setter) {expire_after=R"("exp_aft": ")"+ String(MQTT_INTERVAL) +R"(",)"; }
-    // if (setter) {expire_after="\"exp_aft\": \""+ String(MQTT_INTERVAL) +"\", "; }
-
-  }
+    private:String expire_after; 
+    public:void Set_expire_after(bool setter) {
+      if (setter) {expire_after=R"("exp_aft": ")" + String(MQTT_INTERVAL) + R"(", )"; }
+    }
 
   private:String HA_sensor_type() {
     //   String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
@@ -126,47 +124,49 @@ struct MQTT
       String topic_Xlyric = R"(Xlyric/)" + node_id + R"(/)";
       String info;
       if (entity_type == "sensor") {
-          info = R"("dev_cla": ")" + dev_cla + R"(",
-                "unit_of_meas": ")" + unit_of_meas + R"(",
-                "stat_cla": ")" + stat_cla + R"(",
-                "value_template": "{{ value_json.)" + object_id + R"( }}",)";
+            info = R"("dev_cla": ")" + dev_cla + R"(",)" 
+            + R"("unit_of_meas": ")" + unit_of_meas + R"(",)"
+            + R"("stat_cla": ")" + stat_cla + R"(",)"
+            + R"("value_template": "{{ value_json.)" + object_id + R"( }}",)";
       }
       else if (entity_type == "switch") { 
-          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
-                "pl":  "{{ value_json.)" + object_id + R"( }}",
-                "pl_on": "{ \")" + object_id + R"(\": \"1\"  } ",
-                "pl_off": "{ \")" + object_id + R"(\": \"0\"  } ",
-                "stat_on":1,
-                "stat_off":0,
-                "qos":1,
-                "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",)";
+          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",)"
+          + R"("pl": "{{ value_json.)" + object_id + R"( }}",)"
+          + R"("pl_on": "{ \"" + object_id + R"\" : \"" + "1\"  } ",)"
+          + R"("pl_off": "{ \"" + object_id + R"\" : \"" + "0\"  } ",)"
+          + R"("stat_on":1,)"
+          + R"("stat_off":0,)"
+          + R"("qos":1,)"
+          + R"("cmd_t": ")" + topic_Xlyric + "command/" + entity_type + "/" + object_id + R"(",)";
+
       } 
       else if (entity_type == "number") { 
-          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
-                "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
-                "cmd_tpl": "{ \")" + object_id + R"(\": {{ value }} } ",
-                "entity_category": ")" + entity_category + R"(",
-                "max": ")" + max + R"(",
-                "min": ")" + min + R"(",
-                "step": ")" + step + R"(",)";
+          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",)"
+          + R"("cmd_t": ")" + topic_Xlyric + "command/" + entity_type + "/" + object_id + R"(",)"
+          + R"("cmd_tpl": "{ \"" + object_id + R"\" : {{ value }} } ",)"
+          + R"("entity_category": ")" + entity_category + R"(",)"
+          + R"("max": ")" + max + R"(",)"
+          + R"("min": ")" + min + R"(",)"
+          + R"("step": ")" + step + R"(",)";
       } 
       else if (entity_type == "select") { 
-          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
-                "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
-                "cmd_tpl": "{ \")" + object_id + R"(\": {{ value }} } ",
-                "entity_category": ")" + entity_category + R"(",
-                "options": [)" + entity_option + R"(],)";
+          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",)"
+          + R"("cmd_t": ")" + topic_Xlyric + "command/" + entity_type + "/" + object_id + R"(",)"
+          + R"("cmd_tpl": "{ \"" + object_id + R"\" : \"" + "{{ value }}\" } ",)"
+          + R"("entity_category": ")" + entity_category + R"(",)"
+          + R"("options": [)" + entity_option + R"(],)";
       } 
       else if (entity_type == "binary_sensor") { 
-          info = R"("dev_cla": ")" + dev_cla + R"(",
-                "pl_on":"true",
-                "pl_off":"false",
-                "val_tpl": "{{ value_json.)" + object_id + R"( }}",)";
+          info = R"("dev_cla": ")" + dev_cla + R"(",)"
+          + R"("pl_on":"true",)"
+          + R"("pl_off":"false",)"
+          + R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",)";
       }
       else if (entity_type == "button") { 
-          info = R"("entity_category": ")" + entity_category + R"(",
-                "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
-                "pl_prs": "{ \"")" + object_id + R"(": \""1\"  } ",)";
+          info = R"("entity_category": ")" + entity_category + R"(",)"
+          + R"("cmd_t": ")" + topic_Xlyric + "command/" + entity_type + "/" + object_id + R"(",)"
+          + R"("pl_prs": "{ \"" + object_id + R"\" : \"" + "1\"  } ",)";
+
       }
       return info;
 
@@ -186,21 +186,16 @@ struct MQTT
     // private:String topic_switch_state = "homeassistant/switch/";
     private:String HA_device_declare() { 
               String IPaddress = WiFi.localIP().toString();
-              String info = R"("dev": {
+              String info = R"(
+                  "dev": {
                       "ids": ")" + node_id + R"(",
                       "name": ")" + node_id + R"(",
                       "sw": "Dimmer )" + String(VERSION) + R"(",
                       "mdl": "ESP8266 )" + IPaddress + R"(",
                       "mf": "Cyril Poissonnier",
-                      "cu": "http://)" + IPaddress + R"("})";
-              // String info =         "\"dev\": {"
-            //   "\"ids\": \""+ node_id + "\","
-            //   "\"name\": \""+ node_id + "\","
-            //   "\"sw\": \"Dimmer "+ String(VERSION) +"\","
-            //   "\"mdl\": \"ESP8266 " + IPaddress + "\","
-            //   "\"mf\": \"Cyril Poissonnier\","
-            //   "\"cu\": \"http://"+ IPaddress +"\""
-            // "}"; 
+                      "cu": "http://)" + IPaddress + R"("
+                  }
+              )";
             return info;
             }
 
@@ -218,29 +213,13 @@ struct MQTT
                   + retain
                   + expire_after
                   + HA_device_declare() + "}";
-      // String device= "{\"name\": \""+ name + "\"," 
-      //       "\"obj_id\": \"Dimmer-"+ node_mac +"-"+ object_id + "\"," 
-      //       "\"uniq_id\": \""+ node_mac + "-" + object_id +"\","
-      //     "\"stat_t\": \""+ topic_Xlyric + "sensors/" + object_id +"/state\"," 
-      //     "\"avty_t\": \""+ topic_Xlyric + "status\","
-      //     + HA_sensor_type()
-      //       + icon
-      //       + retain
-      //       + expire_after
-      //     + HA_device_declare() + 
-      //       "}";
       if (strlen(object_id.c_str()) > 0) {
         client.publish(String(topic+object_id+"/config").c_str() ,1,false, device.c_str()); // déclaration autoconf dimmer
       }  
       else {
         client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
       }
-      // logging.Set_log_init(String(debug).c_str(),true); 
-      // logging.Set_log_init(" : Discovery send for " );
-      // logging.Set_log_init(String(topic+object_id+"/config").c_str()); 
-      // // logging.Set_log_init(" / Message :  " );
-      // // logging.Set_log_init(String(device.c_str())); 
-      // logging.Set_log_init("\r\n");
+      
       delay(500);
  
     }
@@ -250,12 +229,6 @@ struct MQTT
       String topic = R"(Xlyric/)" + node_id + R"(/sensors/)";
       String message = R"({")" + object_id + R"(" : ")" + value.c_str() + R"("} )";
       client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
-      // logging.Set_log_init(String(debug).c_str(),true); 
-      // logging.Set_log_init(" / Publish send for ");
-      // logging.Set_log_init(String(object_id).c_str()); 
-      // logging.Set_log_init(" message : " );
-      // logging.Set_log_init(String(message).c_str()); 
-      // logging.Set_log_init("\r\n");
       delay(500);
   
     }
@@ -265,7 +238,7 @@ struct MQTT
 
 /// création des sensors
 MQTT device_dimmer; 
-MQTT device_temp[MAX_DALLAS]; 
+MQTT device_temp[MAX_DALLAS];  // NO SONAR
 MQTT device_dimmer_power;
 MQTT device_dimmer_total_power;
 MQTT device_dimmer_charge1;
@@ -473,7 +446,7 @@ void devices_init(){
     device_dimmer_child_mode.Set_entity_type("select");
     device_dimmer_child_mode.Set_entity_category("config");
     device_dimmer_child_mode.Set_entity_option(R"("off","delester","equal")");
-    // device_dimmer_child_mode.Set_entity_option("\"off\",\"delester\",\"equal\"");
+    // device_dimmer_child_mode.Set_entity_option(R"("off","delester","equal")");
     device_dimmer_child_mode.Set_entity_qos(0);
     device_dimmer_child_mode.Set_retain_flag(false);
 

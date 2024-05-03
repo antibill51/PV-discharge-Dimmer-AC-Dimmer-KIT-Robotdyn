@@ -21,17 +21,14 @@ void cooler() {
 
     /// controle du cooler 
     if (config.dimmer_on_off == 1){
-        //if ( ( sysvar.puissance > config.minpow && sysvar.celsius < config.maxtemp && sysvar.security == 0 ) || ( programme.run == true )) {
-        if ( ( sysvar.puissance > config.minpow && sysvar.celsius[sysvar.dallas_maitre] < config.maxtemp && sysvar.security == 0 ) || ( programme.run == true )) {
-        // if ( ( sysvar.puissance > config.minpow && sysvar.celsius < config.maxtemp && sysvar.security == 0 ) || ( programme.run == true )) {
-        ///if ( unified_dimmer.get_power() > 0 ) {
-            sysvar.cooler = 1;
+        if ( ( sysvar.puissance > config.minpow && sysvar.celsius[sysvar.dallas_maitre]< config.maxtemp && sysvar.security == 0 ) || ( programme.run == true )) {
+            sysvar.cooler = true;
         } else {
-            sysvar.cooler = 0;
+            sysvar.cooler = false;
         }
     } 
     else {
-        sysvar.cooler = 0;
+        sysvar.cooler = false;
     }
 
     if ( cooler_change != sysvar.cooler ) {
@@ -53,8 +50,7 @@ void cooler() {
     
     
     ///ajout d'envoie MQTT pour test fuite mémoire
-  //  client.publish(String("memory/dimmer-"+dimmername).c_str(), 0,true, String(ESP.getFreeHeap()).c_str());
-    client.publish((topic_Xlyric+"memory").c_str(),1,true, String(ESP.getFreeHeap()).c_str());
+    // client.publish((topic_Xlyric+"memory").c_str(),1,true, String(ESP.getFreeHeap()).c_str());
 
  // pas besoin de tempo pour l'arret, vu que c'est toute les 15 secondes la task 
 }
