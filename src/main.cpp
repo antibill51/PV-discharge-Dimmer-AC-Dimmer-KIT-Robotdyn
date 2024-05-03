@@ -571,11 +571,6 @@ void setup() {
     
     /// Configuration et connexion MQTT 
     async_mqtt_init();
-    // connectToMqtt();
-    // delay(1000);
-    
-    // delay(10000);
-  
   }
   
  
@@ -622,7 +617,6 @@ delay(1000);
 
 
 bool alerte=false;
-bool HA_discovery_sended=false;
 
 /////////////////////
 /// LOOP 
@@ -636,13 +630,8 @@ void loop() {
       connectToMqtt();
       delay(1000);
       HA_discover();
-      // discovery_temp = false;
     }
-    if (client.connected() && !HA_discovery_sended ) {
-      HA_discover();
-      
-      // discovery_temp = false;
-    }
+
   }
 
   runner.execute(); // gestion des taches

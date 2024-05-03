@@ -53,7 +53,6 @@ extern byte security; // sécurité
 extern Logs logging; 
 extern String devAddrNames[MAX_DALLAS];
 extern espMqttClientAsync client; 
-extern bool HA_discovery_sended;
 
 // extern void HA_discover();
 
@@ -385,27 +384,26 @@ void child_communication(int delest_power, bool equal = false){
 }
 void HA_discover(){
   if (config.HA) {
-    bool errorMQTT = false;
-    if (device_dimmer_on_off.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_power.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_send_power.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_total_power.HA_discovery() == 0){errorMQTT=true;}
-    if (device_cooler.HA_discovery() == 0){errorMQTT=true;}
+    device_dimmer_on_off.HA_discovery();
+    device_dimmer.HA_discovery();
+    device_dimmer_power.HA_discovery();
+    device_dimmer_send_power.HA_discovery();
+    device_dimmer_total_power.HA_discovery();
+    device_cooler.HA_discovery();
     #ifdef RELAY1
-      if (device_relay1.HA_discovery() == 0){errorMQTT=true;}
+      device_relay1.HA_discovery();
     #endif
     #ifdef RELAY2
-      if (device_relay2.HA_discovery() == 0){errorMQTT=true;}
+      device_relay2.HA_discovery();
     #endif
-    if (device_dimmer_starting_pow.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_minpow.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_maxpow.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_charge1.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_charge2.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_charge3.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_child_mode.HA_discovery() == 0){errorMQTT=true;}
-    if (device_dimmer_save.HA_discovery() == 0){errorMQTT=true;}
+    device_dimmer_starting_pow.HA_discovery();
+    device_dimmer_minpow.HA_discovery();
+    device_dimmer_maxpow.HA_discovery();
+    device_dimmer_charge1.HA_discovery();
+    device_dimmer_charge2.HA_discovery();
+    device_dimmer_charge3.HA_discovery();
+    device_dimmer_child_mode.HA_discovery();
+    device_dimmer_save.HA_discovery();
 
     device_dimmer_on_off.send(String(config.dimmer_on_off));
     device_dimmer.send(String(sysvar.puissance));
@@ -420,9 +418,7 @@ void HA_discover(){
     device_dimmer_charge2.send(String(config.charge2));
     device_dimmer_charge3.send(String(config.charge3));
     device_dimmer_child_mode.send(String(config.mode));
-    if (!errorMQTT) { 
-      HA_discovery_sended = true;
-    }
+
     discovery_temp = false;
 
   }
@@ -508,10 +504,6 @@ void onMqttConnect(bool sessionPresent) {
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
   client.publish(String(topic_Xlyric +"status").c_str(),1,true, "online");         // Once connected, publish online to the availability topic
-  // delay(1000);
-   // Déplacé avant client subscribe
-  HA_discovery_sended = false;
-  // delay(1000);
   if (strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
   if (strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
   client.subscribe((command_button + "/#").c_str(),1);

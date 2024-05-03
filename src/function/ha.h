@@ -192,8 +192,7 @@ struct MQTT
                       "sw": "Dimmer )" + String(VERSION) + R"(",
                       "mdl": "ESP8266 )" + IPaddress + R"(",
                       "mf": "Cyril Poissonnier",
-                      "cu": "http://)" + IPaddress + R"("
-                      })";
+                      "cu": "http://)" + IPaddress + R"("})";
               // String info =         "\"dev\": {"
             //   "\"ids\": \""+ node_id + "\","
             //   "\"name\": \""+ node_id + "\","
@@ -206,7 +205,7 @@ struct MQTT
             }
 
 
-  public:int HA_discovery(){
+  public:void HA_discovery(){
       String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
       String topic_Xlyric = "Xlyric/"+ node_id +"/";
       String device = R"({"name": ")" + name + R"(", 
@@ -218,8 +217,7 @@ struct MQTT
                   + icon
                   + retain
                   + expire_after
-                  + HA_device_declare() + 
-                    "}";
+                  + HA_device_declare() + "}";
       // String device= "{\"name\": \""+ name + "\"," 
       //       "\"obj_id\": \"Dimmer-"+ node_mac +"-"+ object_id + "\"," 
       //       "\"uniq_id\": \""+ node_mac + "-" + object_id +"\","
@@ -231,39 +229,34 @@ struct MQTT
       //       + expire_after
       //     + HA_device_declare() + 
       //       "}";
-      //  if (strlen(object_id.c_str()) > 0) {
-        int debug = 0;
-      while (debug == 0) { 
-        debug = client.publish(String(topic+object_id+"/config").c_str() ,1,false, device.c_str()); // déclaration autoconf dimmer
+      if (strlen(object_id.c_str()) > 0) {
+        client.publish(String(topic+object_id+"/config").c_str() ,1,false, device.c_str()); // déclaration autoconf dimmer
+      }  
+      else {
+        client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
       }
-      //  }  
-      //  else {
-      //   client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
-      //  }
-    logging.Set_log_init(String(debug).c_str(),true); 
-    logging.Set_log_init(" : Discovery send for " );
-    logging.Set_log_init(String(topic+object_id+"/config").c_str()); 
-    logging.Set_log_init(" / Message :  " );
-    logging.Set_log_init(String(device.c_str())); 
-    logging.Set_log_init("\r\n");
-    return debug;
+      // logging.Set_log_init(String(debug).c_str(),true); 
+      // logging.Set_log_init(" : Discovery send for " );
+      // logging.Set_log_init(String(topic+object_id+"/config").c_str()); 
+      // // logging.Set_log_init(" / Message :  " );
+      // // logging.Set_log_init(String(device.c_str())); 
+      // logging.Set_log_init("\r\n");
+      delay(500);
  
     }
 
     public:void send(String value){
     if (config.JEEDOM || config.HA) {
       String topic = R"(Xlyric/)" + node_id + R"(/sensors/)";
-      String message = R"(  { ")" + object_id + R"(" : ")" + value.c_str() + R"("  } )";
-      int debug = 0;
-      while (debug == 0) { 
-        debug = client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
-      }
-      logging.Set_log_init(String(debug).c_str(),true); 
-      logging.Set_log_init(" / Publish send for ");
-      logging.Set_log_init(String(object_id).c_str()); 
-      logging.Set_log_init(" message : " );
-      logging.Set_log_init(String(message).c_str()); 
-      logging.Set_log_init("\r\n");
+      String message = R"({")" + object_id + R"(" : ")" + value.c_str() + R"("} )";
+      client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
+      // logging.Set_log_init(String(debug).c_str(),true); 
+      // logging.Set_log_init(" / Publish send for ");
+      // logging.Set_log_init(String(object_id).c_str()); 
+      // logging.Set_log_init(" message : " );
+      // logging.Set_log_init(String(message).c_str()); 
+      // logging.Set_log_init("\r\n");
+      delay(500);
   
     }
   } 
@@ -394,7 +387,7 @@ void devices_init(){
 
 
     /// création des number
-    device_dimmer_starting_pow.Set_name("Puissance de démarrage");
+    device_dimmer_starting_pow.Set_name("Puissance de demarrage");
     device_dimmer_starting_pow.Set_object_id("starting_power");
     device_dimmer_starting_pow.Set_entity_type("number");
     device_dimmer_starting_pow.Set_entity_category("config");
