@@ -405,21 +405,21 @@ void HA_discover(){
     device_dimmer_child_mode.HA_discovery();
     device_dimmer_save.HA_discovery();
 
-    device_dimmer_on_off.send(String(config.dimmer_on_off));
-    device_dimmer.send(String(sysvar.puissance));
-    device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-    device_dimmer_send_power.send(String(sysvar.puissance));
-    device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-    device_cooler.send(String(sysvar.cooler));
-    device_dimmer_starting_pow.send(String(config.startingpow));
-    device_dimmer_minpow.send(String(config.minpow));
-    device_dimmer_maxpow.send(String(config.maxpow));
-    device_dimmer_charge1.send(String(config.charge1));
-    device_dimmer_charge2.send(String(config.charge2));
-    device_dimmer_charge3.send(String(config.charge3));
-    device_dimmer_child_mode.send(String(config.mode));
+    // device_dimmer_on_off.send(String(config.dimmer_on_off));
+    // device_dimmer.send(String(sysvar.puissance));
+    // device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+    // device_dimmer_send_power.send(String(sysvar.puissance));
+    // device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+    // device_cooler.send(String(sysvar.cooler));
+    // device_dimmer_starting_pow.send(String(config.startingpow));
+    // device_dimmer_minpow.send(String(config.minpow));
+    // device_dimmer_maxpow.send(String(config.maxpow));
+    // device_dimmer_charge1.send(String(config.charge1));
+    // device_dimmer_charge2.send(String(config.charge2));
+    // device_dimmer_charge3.send(String(config.charge3));
+    // device_dimmer_child_mode.send(String(config.mode));
 
-    discovery_temp = false;
+    // discovery_temp = false;
 
   }
 

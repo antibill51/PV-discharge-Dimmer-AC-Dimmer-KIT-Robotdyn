@@ -1,9 +1,9 @@
 #ifndef CONFIG
 #define CONFIG
-// #define EMC_TX_BUFFER_SIZE 1440 * 3
+// #define EMC_TX_BUFFER_SIZE 1440 * 2
 
-// #define SSE_MAX_QUEUED_MESSAGES 256      // ESPAsyncWebServer: max number of queued SSE messages
 // #define EMC_ESP8266_MULTITHREADING 1
+
 #define VERSION "Version 20240501" 
 #define FS_RELEASE "20240501" // date de la release
 

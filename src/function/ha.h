@@ -169,6 +169,7 @@ struct MQTT
       else {
         client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
       }
+      delay(500);
     }
 
     public:void send(String value){
