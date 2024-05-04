@@ -72,54 +72,6 @@ struct MQTT
     }
 
   private:String HA_sensor_type() {
-    //   String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
-    //   String topic_Xlyric = "Xlyric/"+ node_id +"/";
-    //   String info;
-    //   if (entity_type == "sensor") {
-    //           info =         "\"dev_cla\": \""+dev_cla+"\","
-    //         "\"unit_of_meas\": \""+unit_of_meas+"\","
-    //         "\"stat_cla\": \""+stat_cla+"\"," 
-    //         "\"value_template\": \"{{ value_json."+ object_id +" }}\","; 
-    //   }
-    //   else if (entity_type == "switch") { 
-    //           info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
-    //         "\"pl\":  \"{{ value_json."+ object_id +" }}\","
-    //         "\"pl_on\": \"{ \\\""+object_id+"\\\" : \\\"1\\\"  } \","
-    //         "\"pl_off\": \"{ \\\""+object_id+"\\\" : \\\"0\\\"  } \","
-    //         "\"stat_on\":1,"
-    //         "\"stat_off\":0,"
-    //       "\"qos\":1,"
-    //       "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\",";
-    //   } 
-    //   else if (entity_type == "number") { 
-    //         info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
-    //       "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
-    //         "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : {{ value }} } \"," 
-    //       "\"entity_category\": \""+ entity_category + "\","
-    //       "\"max\": \""+max+"\","
-    //       "\"min\": \""+min+"\","
-    //       "\"step\": \""+step+"\",";
-    //   } 
-    //   else if (entity_type == "select") { 
-    //         info =         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\","
-    //       "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
-    //         "\"cmd_tpl\": \"{ \\\""+object_id+"\\\" : \\\"{{ value }}\\\" } \"," 
-    //       "\"entity_category\": \""+ entity_category + "\","
-    //       "\"options\": ["+ entity_option + "],";
-    //   } 
-    //   else if (entity_type == "binary_sensor") { 
-    //           info =         "\"dev_cla\": \""+dev_cla+"\","
-    //         "\"pl_on\":\"true\","
-    //         "\"pl_off\":\"false\","
-    //         "\"val_tpl\": \"{{ value_json."+ object_id +" }}\",";
-    //   }
-    //   else if (entity_type == "button") { 
-    //         info =            "\"entity_category\": \""+ entity_category + "\","
-    //       "\"cmd_t\": \""+ topic_Xlyric + "command/" +  entity_type + "/" + object_id + "\","
-    //         "\"pl_prs\": \"{ \\\""+object_id+"\\\" : \\\"1\\\"  } \",";
-    //   }
-    //   return info;
-
       String topic = R"(homeassistant/)" + entity_type + R"(/)" + node_id + R"(/)";
       String topic_Xlyric = R"(Xlyric/)" + node_id + R"(/)";
       String info;
@@ -130,43 +82,41 @@ struct MQTT
             + R"("value_template": "{{ value_json.)" + object_id + R"( }}",)";
       }
       else if (entity_type == "switch") { 
-          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",)"
-          + R"("pl": "{{ value_json.)" + object_id + R"( }}",)"
-          + R"("pl_on": "{ \"" + object_id + R"\" : \"" + "1\"  } ",)"
-          + R"("pl_off": "{ \"" + object_id + R"\" : \"" + "0\"  } ",)"
-          + R"("stat_on":1,)"
-          + R"("stat_off":0,)"
-          + R"("qos":1,)"
-          + R"("cmd_t": ")" + topic_Xlyric + "command/" + entity_type + "/" + object_id + R"(",)";
-
+          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
+                "pl":  "{{ value_json.)" + object_id + R"( }}",
+                "pl_on": "{ \")" + object_id + R"(\": \"1\"  } ",
+                "pl_off": "{ \")" + object_id + R"(\": \"0\"  } ",
+                "stat_on":1,
+                "stat_off":0,
+                "qos":1,
+                "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",)";
       } 
       else if (entity_type == "number") { 
-          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",)"
-          + R"("cmd_t": ")" + topic_Xlyric + "command/" + entity_type + "/" + object_id + R"(",)"
-          + R"("cmd_tpl": "{ \"" + object_id + R"\" : {{ value }} } ",)"
-          + R"("entity_category": ")" + entity_category + R"(",)"
-          + R"("max": ")" + max + R"(",)"
-          + R"("min": ")" + min + R"(",)"
-          + R"("step": ")" + step + R"(",)";
+          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
+                "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
+                "cmd_tpl": "{ \")" + object_id + R"(\": {{ value }} } ",
+                "entity_category": ")" + entity_category + R"(",
+                "max": ")" + max + R"(",
+                "min": ")" + min + R"(",
+                "step": ")" + step + R"(",)";
       } 
       else if (entity_type == "select") { 
-          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",)"
-          + R"("cmd_t": ")" + topic_Xlyric + "command/" + entity_type + "/" + object_id + R"(",)"
-          + R"("cmd_tpl": "{ \"" + object_id + R"\" : \"" + "{{ value }}\" } ",)"
-          + R"("entity_category": ")" + entity_category + R"(",)"
-          + R"("options": [)" + entity_option + R"(],)";
+          info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
+                "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
+                "cmd_tpl": "{ \")" + object_id + R"(\": {{ value }} } ",
+                "entity_category": ")" + entity_category + R"(",
+                "options": [)" + entity_option + R"(],)";
       } 
       else if (entity_type == "binary_sensor") { 
-          info = R"("dev_cla": ")" + dev_cla + R"(",)"
-          + R"("pl_on":"true",)"
-          + R"("pl_off":"false",)"
-          + R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",)";
+          info = R"("dev_cla": ")" + dev_cla + R"(",
+                "pl_on":"true",
+                "pl_off":"false",
+                "val_tpl": "{{ value_json.)" + object_id + R"( }}",)";
       }
       else if (entity_type == "button") { 
-          info = R"("entity_category": ")" + entity_category + R"(",)"
-          + R"("cmd_t": ")" + topic_Xlyric + "command/" + entity_type + "/" + object_id + R"(",)"
-          + R"("pl_prs": "{ \"" + object_id + R"\" : \"" + "1\"  } ",)";
-
+          info = R"("entity_category": ")" + entity_category + R"(",
+                "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
+                "pl_prs": "{ \"")" + object_id + R"(": \""1\"  } ",)";
       }
       return info;
 
@@ -219,9 +169,6 @@ struct MQTT
       else {
         client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
       }
-      
-      delay(500);
- 
     }
 
     public:void send(String value){
@@ -229,7 +176,6 @@ struct MQTT
       String topic = R"(Xlyric/)" + node_id + R"(/sensors/)";
       String message = R"({")" + object_id + R"(" : ")" + value.c_str() + R"("} )";
       client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
-      delay(500);
   
     }
   } 
@@ -446,7 +392,6 @@ void devices_init(){
     device_dimmer_child_mode.Set_entity_type("select");
     device_dimmer_child_mode.Set_entity_category("config");
     device_dimmer_child_mode.Set_entity_option(R"("off","delester","equal")");
-    // device_dimmer_child_mode.Set_entity_option(R"("off","delester","equal")");
     device_dimmer_child_mode.Set_entity_qos(0);
     device_dimmer_child_mode.Set_retain_flag(false);
 
