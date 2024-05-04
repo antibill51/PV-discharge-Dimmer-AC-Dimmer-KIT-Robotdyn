@@ -516,9 +516,46 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println((command_select + "/#").c_str());
   Serial.println((command_switch + "/#").c_str());
   logging.Set_log_init("MQTT connected \r\n");
+  // HA_discover();
  // mqttConnected = true;
+  if (config.HA) {
+    device_dimmer_on_off.HA_discovery();
+    device_dimmer.HA_discovery();
+    device_dimmer_power.HA_discovery();
+    device_dimmer_send_power.HA_discovery();
+    device_dimmer_total_power.HA_discovery();
+    device_cooler.HA_discovery();
+    #ifdef RELAY1
+      device_relay1.HA_discovery();
+    #endif
+    #ifdef RELAY2
+      device_relay2.HA_discovery();
+    #endif
+    device_dimmer_starting_pow.HA_discovery();
+    device_dimmer_minpow.HA_discovery();
+    device_dimmer_maxpow.HA_discovery();
+    device_dimmer_charge1.HA_discovery();
+    device_dimmer_charge2.HA_discovery();
+    device_dimmer_charge3.HA_discovery();
+    device_dimmer_child_mode.HA_discovery();
+    device_dimmer_save.HA_discovery();
 
-  
+    device_dimmer_on_off.send(String(config.dimmer_on_off));
+    device_dimmer.send(String(sysvar.puissance));
+    device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+    device_dimmer_send_power.send(String(sysvar.puissance));
+    device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+    device_cooler.send(String(sysvar.cooler));
+    device_dimmer_starting_pow.send(String(config.startingpow));
+    device_dimmer_minpow.send(String(config.minpow));
+    device_dimmer_maxpow.send(String(config.maxpow));
+    device_dimmer_charge1.send(String(config.charge1));
+    device_dimmer_charge2.send(String(config.charge2));
+    device_dimmer_charge3.send(String(config.charge3));
+    device_dimmer_child_mode.send(String(config.mode));
+
+    discovery_temp = false;
+  }
 
 }
 
@@ -557,6 +594,8 @@ void onMqttDisconnect(espMqttClientTypes::DisconnectReason reason)
         logging.Set_log_init("Unknown");
         logging.Set_log_init("\r\n");
     }
+
+connectToMqtt();
 }
 
 void onMqttSubscribe(uint16_t packetId, const espMqttClientTypes::SubscribeReturncode* codes, size_t len) {

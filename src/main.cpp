@@ -561,7 +561,7 @@ void setup() {
   /// recherche d'une sonde dallas
   dallaspresent();
   devices_init(); // initialisation des devices HA
-
+  delay(2000);
   //Serial.println(device_temp.name);
   /// MQTT 
   if (!AP && mqtt_config.mqtt) {
@@ -570,6 +570,7 @@ void setup() {
     
     /// Configuration et connexion MQTT 
     async_mqtt_init();
+    connectToMqtt();
   }
   
  
@@ -624,14 +625,14 @@ void loop() {
 
 
   /// connexion MQTT
-  if ( mqtt_config.mqtt && !AP ) {
-    if (!client.connected() ) {
-      connectToMqtt();
-      delay(1000);
-      HA_discover();
-    }
+  // if ( mqtt_config.mqtt && !AP ) {
+  //   if (!client.connected() ) {
+  //     connectToMqtt();
+  //     // delay(1000);
+  //     // HA_discover();
+  //   }
 
-  }
+  // }
 
   runner.execute(); // gestion des taches
 
