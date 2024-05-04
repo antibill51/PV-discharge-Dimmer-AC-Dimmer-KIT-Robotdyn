@@ -629,42 +629,71 @@ void loop() {
       connectToMqtt();
       delay(1000);
   if (config.HA) {
+     delay(500);
     device_dimmer_on_off.HA_discovery();
+    delay(500);
     device_dimmer.HA_discovery();
+    delay(500);
     device_dimmer_power.HA_discovery();
+    delay(500);
     device_dimmer_send_power.HA_discovery();
+    delay(500);
     device_dimmer_total_power.HA_discovery();
+    delay(500);
     device_cooler.HA_discovery();
+    delay(500);
     #ifdef RELAY1
       device_relay1.HA_discovery();
+      delay(500);
     #endif
     #ifdef RELAY2
       device_relay2.HA_discovery();
+      delay(500);
     #endif
     device_dimmer_starting_pow.HA_discovery();
+    delay(500);
     device_dimmer_minpow.HA_discovery();
+    delay(500);
     device_dimmer_maxpow.HA_discovery();
+    delay(500);
     device_dimmer_charge1.HA_discovery();
+    delay(500);
     device_dimmer_charge2.HA_discovery();
+    delay(500);
     device_dimmer_charge3.HA_discovery();
+    delay(500);
     device_dimmer_child_mode.HA_discovery();
+    delay(500);
     device_dimmer_save.HA_discovery();
+    
+    delay(500);
 
-    delay(2000);
-      
     device_dimmer_on_off.send(String(config.dimmer_on_off));
+    delay(500);
     device_dimmer.send(String(sysvar.puissance));
+    delay(500);
     device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+    delay(500);
     device_dimmer_send_power.send(String(sysvar.puissance));
+    delay(500);
     device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+    delay(500);
     device_cooler.send(String(sysvar.cooler));
+    delay(500);
     device_dimmer_starting_pow.send(String(config.startingpow));
+    delay(500);
     device_dimmer_minpow.send(String(config.minpow));
+    delay(500);
     device_dimmer_maxpow.send(String(config.maxpow));
+    delay(500);
     device_dimmer_charge1.send(String(config.charge1));
+    delay(500);
     device_dimmer_charge2.send(String(config.charge2));
+    delay(500);
     device_dimmer_charge3.send(String(config.charge3));
+    delay(500);
     device_dimmer_child_mode.send(String(config.mode));
+    delay(500);
 
     discovery_temp = false;
   }}
