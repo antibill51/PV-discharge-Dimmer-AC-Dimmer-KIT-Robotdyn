@@ -411,15 +411,14 @@ void setup() {
   // Should load default config if run for the first time
   Serial.println(F("Loading configuration..."));
   logging.Set_log_init("Load config \r\n"); 
-  loadConfiguration(filename_conf, config);
+  logging.Set_log_init(config.loadConfiguration()); // charge la configuration
 
-  // Create configuration file
-  Serial.println(F("Saving configuration..."));
-  logging.Set_log_init("Apply config \r\n"); 
-  saveConfiguration(filename_conf, config);
-
+  // Load configuration file mqtt 
   Serial.println(F("Loading mqtt_conf configuration..."));
-  loadmqtt(mqtt_conf, mqtt_config);
+  logging.Set_log_init("Load config MQTT\r\n"); 
+  logging.Set_log_init(mqtt_config.loadmqtt());  /// charge la configuration mqtt
+
+  /// chargement des conf de wifi
   Serial.println(F("Loading wifi configuration..."));
   loadwifiIP(wifi_conf, wifi_config_fixe);
  
@@ -466,17 +465,12 @@ void setup() {
         Serial.print(String(wifi_config_fixe.static_ip));
   }
 
-  if (strcmp(config.say_my_name, "") == 0) {
-    strcpy(config.say_my_name, (("Dimmer-")+WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17)).c_str());
-  }
-  wifiManager.autoConnect(config.say_my_name);
-  
-  
-  
-  DEBUG_PRINTLN("end Wifiautoconnect");
-  wifiManager.setSaveConfigCallback(saveConfigCallback);
-  wifiManager.setConfigPortalTimeout(600);
-
+    wifiManager.autoConnect(config.say_my_name);
+    
+    DEBUG_PRINTLN("end Wifiautoconnect");
+    wifiManager.setSaveConfigCallback(saveConfigCallback);
+    wifiManager.setConfigPortalTimeout(600);
+ 
 
   strcpy(wifi_config_fixe.static_ip, custom_IP_Address.getValue());
   strcpy(wifi_config_fixe.static_sn, custom_IP_mask.getValue());

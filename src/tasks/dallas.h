@@ -156,11 +156,10 @@ void mqttdallas() {
 
       previous_celsius[a]=sysvar.celsius[a];
       if (a == sysvar.dallas_maitre) {
-      //  String temp_topic = "topic_Xlyric/" + String(config.say_my_name) + "/dallas" ;
-      //  //static char uptime_stamp[20]; // Vous devrez définir une taille suffisamment grande pour stocker votre temps
+       String temp_topic = "Xlyric/" + String(config.say_my_name) + "/dallas" ;
 
        String message = String(logging.loguptime()) + "Dallas maitre perdue";
-       client.publish((topic_Xlyric+"memory").c_str(),1,true, String(message).c_str());
+       client.publish((temp_topic+"dallas").c_str(),1,true, String(message).c_str());
 
         unified_dimmer.dimmer_off();  /// mise en sécurité de l'ensemble
 

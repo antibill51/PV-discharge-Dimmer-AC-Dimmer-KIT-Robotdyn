@@ -17,8 +17,8 @@
   #include <LittleFS.h>
 #endif
 
-constexpr const char *mqtt_conf = "/mqtt.json";
-constexpr const char *filename_conf = "/config.json";
+// constexpr const char *mqtt_conf = "/mqtt.json";
+// constexpr const char *filename_conf = "/config.json";
 constexpr const char *wifi_conf = "/wifi.json";
 constexpr const char *programme_conf = "/programme.json";
 

@@ -84,6 +84,20 @@ extern SSR_BURST ssr_burst;
 void dallaspresent ();
 
 void call_pages() {
+  // pages Statiques voir compressées
+  server.serveStatic("/all.min.css", LittleFS, "/css/all.css");
+  server.serveStatic("/all.css", LittleFS, "/css/all.css");
+  server.serveStatic("/favicon.ico", LittleFS, "/favicon.ico");
+  server.serveStatic("/fa-solid-900.woff2", LittleFS, "/css/fa-solid-900.woff2");
+  server.serveStatic("/sb-admin-2.js", LittleFS, "/js/sb-admin-2.js");
+  server.serveStatic("/sb-admin-2.min.css", LittleFS, "/css/sb-admin-2.min.css");
+  server.serveStatic("/jquery.easing.min.js", LittleFS, "/js/jquery.easing.min.js");
+  server.serveStatic("/log.html", LittleFS, "/log.html");
+  server.serveStatic("/mqtt.html", LittleFS, "/mqtt.html");
+  server.serveStatic("/minuteur.html", LittleFS, "/minuteur.html");
+  server.serveStatic("/relai.html", LittleFS, "/relai.html");
+  server.serveStatic("/jquery.easing.min.js", LittleFS, "/js/jquery.easing.min.js");
+
 
 /// page de index et récupération des requetes de puissance
   server.on("/",HTTP_ANY, [](AsyncWebServerRequest *request){
@@ -347,6 +361,25 @@ void call_pages() {
     else { request->send(200, "application/json",  getMinuteur()); }
   });
 
+/*
+  server.on("/test2.html", HTTP_ANY, [] (AsyncWebServerRequest *request) {
+     Serial.println(ESP.getFreeHeap());
+    File header = LittleFS.open("/index.html", "r");
+     Serial.println(ESP.getFreeHeap());
+    File body = LittleFS.open("/config.html", "r");
+     Serial.println(ESP.getFreeHeap());
+    StreamConcat stream1(&header, &body);
+     Serial.println(ESP.getFreeHeap());
+
+    File footer = LittleFS.open("/mqtt.json", "r");
+     Serial.println(ESP.getFreeHeap());
+
+    StreamConcat stream3 = StreamConcat(&stream1, &footer);
+     Serial.println(ESP.getFreeHeap());
+    request->send(stream3, "text/html", stream3.available());
+  });
+*/
+
   /// reglage des seuils relais
     server.on("/relai.html", HTTP_ANY, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/relai.html", "text/html");
@@ -408,33 +441,6 @@ void call_pages() {
     request->send_P(200, "text/html", readmqttsave().c_str());
     });
 
-/////////////////////////
-////// déclaration des pages html compressé pour les utilisateurs de safari... 
-/////////////////////////
-
-  server.on("/log.html.gz", HTTP_ANY, [](AsyncWebServerRequest *request){
-        AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/log.html.gz", "text/html");
-        response->addHeader("Content-Encoding", "gzip");
-        request->send(response);
-  });
-
-  server.on("/mqtt.html.gz", HTTP_ANY, [](AsyncWebServerRequest *request){
-        AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/mqtt.html.gz", "text/html");
-        response->addHeader("Content-Encoding", "gzip");
-        request->send(response);
-  });
-
-  server.on("/jquery.easing.min.js.gz", HTTP_ANY, [](AsyncWebServerRequest *request){
-        AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/jquery.easing.min.js.gz", "text/html");
-        response->addHeader("Content-Encoding", "gzip");
-        request->send(response);
-  });
-
-    server.on("/all.css.gz", HTTP_ANY, [](AsyncWebServerRequest *request){
-        AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/css/all.css.gz", "text/html");
-        response->addHeader("Content-Encoding", "gzip");
-        request->send(response);
-  });
 
 /////////////////////////
 ////// mise à jour parametre d'envoie vers domoticz et récupération des modifications de configurations
@@ -443,7 +449,7 @@ void call_pages() {
 server.on("/get", HTTP_ANY, [] (AsyncWebServerRequest *request) {
       ///  fonction  /get?paramettre=xxxx
     if (request->hasParam("save")) { Serial.println(F("Saving configuration..."));
-                          saveConfiguration(filename_conf, config);   
+                            logging.Set_log_init(config.saveConfiguration());    //sauvegarde de la configuration
                             }
                           
    if (request->hasParam("hostname")) { request->getParam("hostname")->value().toCharArray(config.hostname,16);  }
@@ -500,8 +506,8 @@ if (request->hasParam("charge1")) {
    if (request->hasParam("mqttuser")) { request->getParam("mqttuser")->value().toCharArray(mqtt_config.username,50);  }
    if (request->hasParam("mqttpassword")) { 
     request->getParam("mqttpassword")->value().toCharArray(mqtt_config.password,50);
-    savemqtt(mqtt_conf, mqtt_config); 
-    saveConfiguration(filename_conf, config);
+    logging.Set_log_init(config.saveConfiguration()); //sauvegarde de la configuration
+    logging.Set_log_init(mqtt_config.savemqtt());  // sauvegarde et récupération de la log MQTT
    }
    if (request->hasParam("DALLAS")) { 
     request->getParam("DALLAS")->value().toCharArray(config.DALLAS,17); 
@@ -552,8 +558,8 @@ if (request->hasParam("charge1")) {
    if (request->hasParam("servermode")) {String inputMessage = request->getParam("servermode")->value();
                                             getServermode(inputMessage);
                                             request->send(200, "text/html", getconfig().c_str());
-                                            saveConfiguration(filename_conf, config);
-                                            savemqtt(mqtt_conf, mqtt_config); 
+                                            logging.Set_log_init(config.saveConfiguration()); //sauvegarde de la configuration
+                                            logging.Set_log_init(mqtt_config.savemqtt());  // sauvegarde et récupération de la log MQTT  
                                         }
 
    request->send(200, "text/html", getconfig().c_str());

@@ -73,7 +73,7 @@ extern String stringBool(bool myBool);
   String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
   String node_id = String("Dimmer-") + node_mac; 
   
-  String topic_Xlyric = "Xlyric/"+ node_id +"/";
+  String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
 
   String command_switch = String(topic_Xlyric + "command/switch");
   String command_number = String(topic_Xlyric + "command/number");
@@ -273,7 +273,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
     else if (doc2.containsKey("save")) { 
       if (doc2["save"] == "1" ) {
         logging.Set_log_init("MQTT save command \r\n",true);
-        saveConfiguration(filename_conf, config);
+        logging.Set_log_init(config.saveConfiguration()); //sauvegarde de la configuration
       }
     }
 
@@ -474,6 +474,7 @@ void HA_discover(){
 //#define MQTT_HOST IPAddress(192, 168, 1, 20)
 char arrayWill[64];// NOSONAR
 void async_mqtt_init() {
+  String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
 	const String LASTWILL_TOPIC = topic_Xlyric + "status";
 	LASTWILL_TOPIC.toCharArray(arrayWill, 64);
   IPAddress ip;
@@ -506,6 +507,7 @@ void onMqttConnect(bool sessionPresent) {
   logging.Set_log_init("Connected to MQTT.\r\n",true);
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
+  String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
   client.publish(String(topic_Xlyric +"status").c_str(),1,true, "online");         // Once connected, publish online to the availability topic
   if (strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
   if (strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
