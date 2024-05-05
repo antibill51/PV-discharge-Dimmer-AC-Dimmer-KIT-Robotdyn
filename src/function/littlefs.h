@@ -49,7 +49,7 @@ String loguptime(String log) {
 // Loads the configuration from a file
 void loadConfiguration(const char *filename, Config &config) {
   // Open file for reading
-  File configFile = LittleFS.open(filename_conf, "r");
+  File configFile = LittleFS.open(filename, "r");
 
    // Allocate a temporary JsonDocument
 
@@ -119,7 +119,7 @@ void loadConfiguration(const char *filename, Config &config) {
 void saveConfiguration(const char *filename, const Config &config) {
   
   // Open file for writing
-   File configFile = LittleFS.open(filename_conf, "w");
+   File configFile = LittleFS.open(filename, "w");
   if (!configFile) {
     Serial.println(F("Failed to open config file for writing"));
     logging.Set_log_init("Failed to read file config File, use default\r\n",true); 
@@ -183,7 +183,7 @@ void saveConfiguration(const char *filename, const Config &config) {
 
 bool loadmqtt(const char *filename, Mqtt &mqtt_config) {
   // Open file for reading
-  File configFile = LittleFS.open(mqtt_conf, "r");
+  File configFile = LittleFS.open(filename, "r");
 
   // Allocate a temporary JsonDocument
   
@@ -217,7 +217,7 @@ return true;
 void savemqtt(const char *filename, const Mqtt &mqtt_config) {
   
   // Open file for writing
-   File configFile = LittleFS.open(mqtt_conf, "w");
+   File configFile = LittleFS.open(filename, "w");
   if (!configFile) {
     Serial.println(F("Failed to open config file for writing in function Save configuration"));
     return;

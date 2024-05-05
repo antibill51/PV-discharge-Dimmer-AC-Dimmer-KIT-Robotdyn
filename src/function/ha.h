@@ -82,14 +82,14 @@ private:
   void createHA_sensor_type(JsonObject& root) {
 
 char node_mac[21];
-char obj_id[63]; // config.say_my_name + object_id + 1 -1
+char obj_id[62]; // config.say_my_name + object_id + 1 -1
 char uniq_id[51]; // node_mac + object_id -1
 char topic_Xlyric[40]; // 8 + config.say_my_name
 char stat_t[83]; // 14 + topic_Xlyric + object_id -1 
 char avty_t[46]; // 6 + topic_Xlyric
 char value_template[47]; // 17 + object_id
 
-char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
+char cmd_t[93]; //9+topic_Xlyric + entity_type + object_id -2
       snprintf(node_mac, sizeof(node_mac), "%s%s", (WiFi.macAddress().substring(12,14)).c_str(), (WiFi.macAddress().substring(15,17)).c_str());
       snprintf(uniq_id, sizeof(uniq_id), "%s-%s", node_mac, object_id);
       snprintf(obj_id, sizeof(obj_id), "%s-%s", config.say_my_name, object_id);
@@ -144,8 +144,8 @@ char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
               root["step"] = step;
           } 
           else if (strcmp(entity_type, "select") == 0) {
-            JsonArray options = root.createNestedArray("options");
-            // JsonArray options = root.to<JsonObject>();
+            // JsonArray options = root.createNestedArray("options");
+            JsonArray options = root["options"].to<JsonArray>();
             options.add("off");
             options.add("delester");
             options.add("equal");
@@ -196,7 +196,7 @@ public:
       // String topic = "homeassistant/" + entity_type + "/" + config.say_my_name + "/";
       // String topic_Xlyric = "Xlyric/" + config.say_my_name + "/";
 
-      char topic[87]; // 23 + entity_type + config.say_my_name + object_id -2
+      char topic[97]; // 23 + entity_type + config.say_my_name + object_id -2
       snprintf(topic, sizeof(topic), "homeassistant/%s/%s/%s/config", entity_type,config.say_my_name,object_id );
 
       JsonObject deviceObj = root["device"].to<JsonObject>(); // Création d'un objet JSON imbriqué pour "device"
