@@ -15,13 +15,14 @@ extern Logs logging;
 
 struct MQTT
 {
-    private:int MQTT_INTERVAL = 60;
-    /* MQTT */
-    private:String name; 
-    public:void Set_name(String setter) {name=setter; }
+  private:int MQTT_INTERVAL = 60;
+  /* MQTT */
+  private:String name; 
+  public:void Set_name(String setter) {name=setter; }
 
-  private:String object_id; 
-  public:void Set_object_id(String setter) {object_id=setter; }
+  private:char object_id[20]; 
+  public:void Set_object_id(String setter) {
+    snprintf(object_id, sizeof(object_id), "%s", setter.c_str());}
 
   private:String dev_cla; 
   public:void Set_dev_cla(String setter) {dev_cla=setter; }
@@ -35,8 +36,9 @@ struct MQTT
   private:String entity_category; 
   public:void Set_entity_category(String setter) {entity_category=setter; }
   
-  private:String entity_type; 
-  public:void Set_entity_type(String setter) {entity_type=setter; }
+  private:char entity_type[14]; 
+  public:void Set_entity_type(String setter) {
+    snprintf(entity_type, sizeof(entity_type), "%s", setter.c_str());}
 
   private:String icon; 
   public:void Set_icon(String setter) {icon=setter; }
@@ -54,179 +56,112 @@ struct MQTT
   private:String entity_option; 
   public:void Set_entity_option(String setter) {entity_option=setter; }
 
-    private:bool retain_flag; 
-    public:void Set_retain_flag(bool setter) {retain_flag=setter; }
 
-    private:int qos; 
-    public:void Set_entity_qos(int setter) {qos=setter; }
+  private:bool retain_flag; 
+  public:void Set_retain_flag(bool setter) {retain_flag=setter; }
 
-    private:String retain; 
-    public:void Set_retain(bool setter) {
-    if (setter) {retain=setter; }
-    // if (setter) {retain="\"ret\":true,"; }
+  private:int qos; 
+  public:void Set_entity_qos(int setter) {qos=setter; }
+
+  private:String retain; 
+  public:void Set_retain(bool setter) {
+  if (setter) {retain=setter; }
   }
 
-    private:String expire_after; 
-    public:void Set_expire_after(bool setter) {
-      if (setter) {expire_after=R"("exp_aft": ")" + String(MQTT_INTERVAL) + R"(", )"; }
-    }
-
-  // private:String HA_sensor_type() {
-  //     String topic = R"(homeassistant/)" + entity_type + R"(/)" + node_id + R"(/)";
-  //     String topic_Xlyric = R"(Xlyric/)" + node_id + R"(/)";
-  //     String info;
-  //     if (entity_type == "sensor") {
-  //           info = R"("dev_cla": ")" + dev_cla + R"(",)" 
-  //           + R"("unit_of_meas": ")" + unit_of_meas + R"(",)"
-  //           + R"("stat_cla": ")" + stat_cla + R"(",)"
-  //           + R"("value_template": "{{ value_json.)" + object_id + R"( }}",)";
-  //     }
-  //     else if (entity_type == "switch") { 
-  //         info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
-  //               "pl":  "{{ value_json.)" + object_id + R"( }}",
-  //               "pl_on": "{ \")" + object_id + R"(\": \"1\"  } ",
-  //               "pl_off": "{ \")" + object_id + R"(\": \"0\"  } ",
-  //               "stat_on":1,
-  //               "stat_off":0,
-  //               "qos":1,
-  //               "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",)";
-  //     } 
-  //     else if (entity_type == "number") { 
-  //         info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
-  //               "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
-  //               "cmd_tpl": "{ \")" + object_id + R"(\": {{ value }} } ",
-  //               "entity_category": ")" + entity_category + R"(",
-  //               "max": ")" + max + R"(",
-  //               "min": ")" + min + R"(",
-  //               "step": ")" + step + R"(",)";
-  //     } 
-  //     else if (entity_type == "select") { 
-  //         info = R"("val_tpl": "{{ value_json.)" + object_id + R"( }}",
-  //               "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
-  //               "cmd_tpl": "{ \")" + object_id + R"(\": {{ value }} } ",
-  //               "entity_category": ")" + entity_category + R"(",
-  //               "options": [)" + entity_option + R"(],)";
-  //     } 
-  //     else if (entity_type == "binary_sensor") { 
-  //         info = R"("dev_cla": ")" + dev_cla + R"(",
-  //               "pl_on":"true",
-  //               "pl_off":"false",
-  //               "val_tpl": "{{ value_json.)" + object_id + R"( }}",)";
-  //     }
-  //     else if (entity_type == "button") { 
-  //         info = R"("entity_category": ")" + entity_category + R"(",
-  //               "cmd_t": ")" + topic_Xlyric + R"(command/)" +  entity_type + R"(/)" + object_id + R"(",
-  //               "pl_prs": "{ \"")" + object_id + R"(": \""1\"  } ",)";
-  //     }
-  //     return info;
-
-
-  //   }
+  private:String expire_after; 
+  public:void Set_expire_after(bool setter) {
+    if (setter) {expire_after=R"("exp_aft": ")" + String(MQTT_INTERVAL) + R"(", )"; }
+  }
 
 
 
-  // private:String IPaddress = WiFi.localIP().toString();
-  
-  //   private:String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-  //   // setter mod_mac
-  //   public:void Set_node_mac(String setter) {node_mac=setter; }
-       
-  //   private:String node_id = String("Dimmer-") + node_mac; 
-  //   // private:String topic_switch = "homeassistant/switch/"+ node_id +"/";
-  //   // private:String topic_switch_state = "homeassistant/switch/";
-  //   private:String HA_device_declare() { 
-  //             String IPaddress = WiFi.localIP().toString();
-  //             String info = R"(
-  //                 "dev": {
-  //                     "ids": ")" + node_id + R"(",
-  //                     "name": ")" + node_id + R"(",
-  //                     "sw": "Dimmer )" + String(VERSION) + R"(",
-  //                     "mdl": "ESP8266 )" + IPaddress + R"(",
-  //                     "mf": "Cyril Poissonnier",
-  //                     "cu": "http://)" + IPaddress + R"("
-  //                 }
-  //             )";
-  //           return info;
-  //           }
-
-
-  // public:void HA_discovery(){
-  //     String topic = "homeassistant/"+ entity_type +"/"+ node_id +"/";
-  //     String topic_Xlyric = "Xlyric/"+ node_id +"/";
-  //     String device = R"({"name": ")" + name + R"(", 
-  //                 "obj_id": "Dimmer-)" + node_mac + R"(-)" + object_id + R"(", 
-  //                 "uniq_id": ")" + node_mac + R"(-)" + object_id + R"(", 
-  //                 "stat_t": ")" + topic_Xlyric + R"(sensors/)" + object_id + R"(/state", 
-  //                 "avty_t": ")" + topic_Xlyric + R"(status",)"
-  //                 + HA_sensor_type()
-  //                 + icon
-  //                 + retain
-  //                 + expire_after
-  //                 + HA_device_declare() + "}";
-  //     if (strlen(object_id.c_str()) > 0) {
-  //       client.publish(String(topic+object_id+"/config").c_str() ,1,false, device.c_str()); // déclaration autoconf dimmer
-  //     }  
-  //     else {
-  //       client.publish(String(topic+"config").c_str() ,1,true, device.c_str()); // déclaration autoconf dimmer
-  //     }
-  //     delay(500);
-  //   }
-
-private:String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-private:String node_id = String("Dimmer-") + node_mac; 
-private:String topic_Xlyric = "Xlyric/"+ node_id +"/";
-
-private:void Set_node_mac(String setter) {node_mac=setter; }
+// private:String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
+// private:String topic_Xlyric = "Xlyric/"+ (config.say_my_name) +"/";
 
 private:
   void createHA_sensor_type(JsonObject& root) {
-      root["name"] = name;
-      root["obj_id"] = "Dimmer-" + node_mac + "-" + object_id;
-      root["uniq_id"] = node_mac + "-" + object_id;
-      root["stat_t"] =  topic_Xlyric + "sensors/" + object_id + "/state";
-      root["avty_t"] = topic_Xlyric + "status";
 
-      if (entity_type == "sensor") {
+char node_mac[21];
+char obj_id[53]; // config.say_my_name + object_id + 1 -1
+char uniq_id[41]; // node_mac + object_id -1
+char topic_Xlyric[40]; // 8 + config.say_my_name
+char stat_t[73]; // 14 + topic_Xlyric + object_id -1 
+char avty_t[46]; // 6 + topic_Xlyric
+char value_template[37]; // 17 + object_id
+
+char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
+      snprintf(node_mac, sizeof(node_mac), "%s%s", (WiFi.macAddress().substring(12,14)).c_str(), (WiFi.macAddress().substring(15,17)).c_str());
+      snprintf(uniq_id, sizeof(uniq_id), "%s-%s", node_mac, object_id);
+      snprintf(obj_id, sizeof(obj_id), "%s-%s", config.say_my_name, object_id);
+      snprintf(topic_Xlyric, sizeof(topic_Xlyric), "Xlyric/%s/", config.say_my_name);
+      snprintf(stat_t, sizeof(stat_t), "%ssensors/%s/state", topic_Xlyric,object_id );
+      snprintf(avty_t, sizeof(avty_t), "%sstatus", topic_Xlyric);
+
+      root["name"] = name;
+      root["obj_id"] = obj_id;
+      root["uniq_id"] = uniq_id;
+      root["stat_t"] =  stat_t;
+      root["avty_t"] = avty_t;
+      if (!strcmp(entity_type, "button") == 0) {
+        snprintf(value_template, sizeof(value_template), "{{ value_json.%s }}", object_id);
+      }
+      if (!strcmp(entity_type, "sensor") == 0 && !strcmp(entity_type, "binary_sensor") == 0) {
+      snprintf(cmd_t, sizeof(cmd_t), "%scommand/%s/%s", topic_Xlyric,entity_type,object_id );
+      }
+      
+      if (strcmp(entity_type, "sensor") == 0) {
           root["dev_cla"] = dev_cla;
           root["unit_of_meas"] = unit_of_meas;
           root["stat_cla"] = stat_cla;
-          root["value_template"] = "{{ value_json." + object_id + " }}";
+          root["val_tpl"] = value_template;
       }
-      else if (entity_type == "switch") { 
-          root["val_tpl"] = "{{ value_json." + object_id + " }}";
-          root["pl"] = "{{ value_json." + object_id + " }}";
-          root["pl_on"] = "{\"" + object_id + "\": \"1\" }";
-          root["pl_off"] = "{\"" + object_id + "\": \"0\" }";
+      else if (strcmp(entity_type, "switch") == 0) {
+          char pl_on[34]; //14+object_id
+          char pl_off[34]; //14+object_id
+          snprintf(pl_on, sizeof(pl_on), "{\"%s\": \"1\" }", object_id);
+          snprintf(pl_off, sizeof(pl_off), "{\"%s\": \"0\" }", object_id);
+
+          root["val_tpl"] = value_template;
+          root["pl"] = value_template;
+          root["pl_on"] = pl_on;
+          root["pl_off"] = pl_off;
           root["stat_on"] = 1;
           root["stat_off"] = 0;
           root["qos"] = 1;
-          root["cmd_t"] = topic_Xlyric + "command/" + entity_type + "/" + object_id;
+          root["cmd_t"] = cmd_t;
       } 
-      else if (entity_type == "number" || entity_type == "select") { 
-          root["val_tpl"] = "{{ value_json." + object_id + " }}";
-          root["cmd_t"] = topic_Xlyric + "command/" + entity_type + "/" + object_id;
-          root["cmd_tpl"] = "{\"" + object_id + "\": {{ value }} }";
+      else if (strcmp(entity_type, "number") == 0 || strcmp(entity_type, "select") == 0) {
+          char cmd_tpl[40]; //20+object_id
+          snprintf(cmd_tpl, sizeof(cmd_tpl), "{\"%s\": {{ value }} }", object_id );
+          root["val_tpl"] = value_template;
+          root["cmd_t"] = cmd_t;
+          root["cmd_tpl"] = cmd_tpl;
           root["entity_category"] = entity_category;
 
-          if (entity_type == "number") {
+          if (strcmp(entity_type, "number") == 0) {
               root["max"] = max;
               root["min"] = min;
               root["step"] = step;
           } 
-          else if (entity_type == "select") {
-              root["options"] = entity_option;
+          else if (strcmp(entity_type, "select") == 0) {
+            JsonArray options = root.createNestedArray("options");
+            options.add("off");
+            options.add("delester");
+            options.add("equal");
           }
       } 
-      else if (entity_type == "binary_sensor") { 
+      else if (strcmp(entity_type, "binary_sensor") == 0) {
           root["dev_cla"] = dev_cla;
           root["pl_on"] = "true";
           root["pl_off"] = "false";
-          root["val_tpl"] = "{{ value_json." + object_id + " }}";
+          root["val_tpl"] = value_template;
       }
-      else if (entity_type == "button") { 
+      else if (strcmp(entity_type, "button") == 0) {
+        char pl_prs[34]; //14+object_id    
+          snprintf(pl_prs, sizeof(pl_prs), "{\"%s\": \"1\" }", object_id );
           root["entity_category"] = entity_category;
-          root["cmd_t"] = topic_Xlyric + "command/" + entity_type + "/" + object_id;
-          root["pl_prs"] = "{\"" + object_id + "\": \"1\" }";
+          root["cmd_t"] = cmd_t;
+          root["pl_prs"] = pl_prs;
       }
       if (!icon.isEmpty()) {
           root["ic"] = icon;
@@ -243,54 +178,73 @@ private:
       return WiFi.localIP().toString();
   }
 
-  String getNodeID() {
-      return "Dimmer-" + node_mac;
-  }
-
   void createHA_device_declare(JsonObject& root) { 
-      String IPaddress = getIPaddress();
-      root["ids"] = getNodeID();
-      root["name"] = getNodeID();
-      root["sw"] = "Dimmer " + String(VERSION);
-      root["mdl"] = "ESP8266 " + IPaddress;
+      root["ids"] = config.say_my_name;
+      root["name"] = config.say_my_name;
+      root["sw"] = VERSION;
+      root["mdl"] = "ESP8266 " + getIPaddress();
       root["mf"] = "Cyril Poissonnier";
-      root["cu"] = "http://" + IPaddress;
+      root["cu"] = "http://" + getIPaddress();
   }
 
 public:
   void HA_discovery(){
+    if (client.connected() && config.HA){
       JsonDocument device;
       JsonObject root = device.to<JsonObject>();
-      String topic = "homeassistant/" + entity_type + "/" + getNodeID() + "/";
-      String topic_Xlyric = "Xlyric/" + getNodeID() + "/";
+      // String topic = "homeassistant/" + entity_type + "/" + config.say_my_name + "/";
+      // String topic_Xlyric = "Xlyric/" + config.say_my_name + "/";
 
+      char topic[87]; // 23 + entity_type + config.say_my_name + object_id -2
+      snprintf(topic, sizeof(topic), "homeassistant/%s/%s/%s/config", entity_type,config.say_my_name,object_id );
 
       JsonObject deviceObj = root["device"].to<JsonObject>(); // Création d'un objet JSON imbriqué pour "device"
       createHA_device_declare(deviceObj);
 
       createHA_sensor_type(root); // Appel de la fonction pour créer les données relatives au capteur
 
-      String output;
+      char output[700];
+      // String output;
       serializeJson(root, output);
-      
-      if (!object_id.isEmpty()) {
-          client.publish((topic + object_id + "/config").c_str(), 1, false, output.c_str());
-      }  
-      else {
-          client.publish((topic + "config").c_str(), 1, true, output.c_str());
+
+      // logging.Set_log_init("String lenght: ",true);
+      // logging.Set_log_init(String(output.length()));
+      // logging.Set_log_init("\r\n");
+
+      int status;
+      status = client.publish(topic, 1, false, output);
+      // status = client.publish(topic, 1, false, output.c_str());
+
+      if (status == 0) {
+        logging.Set_log_init("MQTT ERROR : discovery not sended for ",true);
+        logging.Set_log_init(object_id);
+        logging.Set_log_init("\r\n");
       }
-      // delay(500);
+    }
   }
 
     public:void send(String value){
+      if (client.connected()){
     if (config.JEEDOM || config.HA) {
-      String topic = R"(Xlyric/)" + node_id + R"(/sensors/)";
-      String message = R"({")" + object_id + R"(" : ")" + value.c_str() + R"("} )";
-      client.publish(String(topic + object_id + "/state").c_str() ,qos, retain_flag , message.c_str());
-  
+
+      char topic[74]; // 22 +  config.say_my_name  + object_id
+      snprintf(topic, sizeof(topic), "Xlyric/%s/sensors/%s/state",config.say_my_name,object_id );
+
+      char message[40]; // 11 +  object_id + value?
+      snprintf(message, sizeof(message),"{\"%s\":\"%s\"}" ,object_id, value.c_str());
+      int status;
+      // String message = R"({")" + object_id + R"(" : ")" + value.c_str() + R"("} )";
+      status = client.publish(topic ,qos, retain_flag , message);  
+      if (status == 0) {
+        logging.Set_log_init("MQTT ERROR : discovery not sended for ",true);
+        logging.Set_log_init(object_id);
+        logging.Set_log_init("\r\n");
+      }
     }
+      }
   } 
 };
+
 
 
 /// création des sensors
@@ -502,7 +456,7 @@ void devices_init(){
     device_dimmer_child_mode.Set_object_id("child_mode");
     device_dimmer_child_mode.Set_entity_type("select");
     device_dimmer_child_mode.Set_entity_category("config");
-    device_dimmer_child_mode.Set_entity_option(R"("off","delester","equal")");
+    // device_dimmer_child_mode.Set_entity_option(R"("off","delester","equal")");
     device_dimmer_child_mode.Set_entity_qos(0);
     device_dimmer_child_mode.Set_retain_flag(false);
 

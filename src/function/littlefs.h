@@ -88,15 +88,15 @@ void loadConfiguration(const char *filename, Config &config) {
           doc["mode"] | "off", 
           sizeof(config.mode));
   strlcpy(config.SubscribePV,                 
-        doc["SubscribePV"] | "Xlyric/+/sensors/dimmer/state", 
+        doc["SubscribePV"] | "", 
         sizeof(config.SubscribePV));    
   strlcpy(config.SubscribeTEMP,                 
         doc["SubscribeTEMP"] | "", 
         sizeof(config.SubscribeTEMP));
   config.dimmer_on_off = doc["dimmer_on_off"] | 1; 
-  config.HA = doc["HA"] | true; 
-  config.JEEDOM = doc["JEEDOM"] | true; 
-  config.DOMOTICZ = doc["DOMOTICZ"] | true; 
+  config.HA = doc["HA"] | false; 
+  config.JEEDOM = doc["JEEDOM"] | false; 
+  config.DOMOTICZ = doc["DOMOTICZ"] | false; 
   // strlcpy(config.PVROUTER,
   //       doc["PVROUTER"] | "mqtt", 
   //       sizeof(config.PVROUTER)); 
@@ -207,7 +207,7 @@ bool loadmqtt(const char *filename, Mqtt &mqtt_config) {
   strlcpy(mqtt_config.password,                  // <- destination
           doc["MQTT_PASSWORD"] | "", // <- source
           sizeof(mqtt_config.password));         // <- destination's capacity
-  mqtt_config.mqtt = doc["mqtt"] | true;
+  mqtt_config.mqtt = doc["mqtt"] | false;
 
   configFile.close();
 
@@ -239,7 +239,7 @@ void savemqtt(const char *filename, const Mqtt &mqtt_config) {
 
   // Close the file
   configFile.close();
-  config.restart = true;
+  // config.restart = true;
 }
 
 

@@ -35,22 +35,29 @@ void cooler() {
         if ( sysvar.cooler == 1 ) {
         digitalWrite(COOLER, HIGH);
         // envoie mqtt
-        if ( mqtt_config.mqtt ) {  device_cooler.send(stringBool(true));  }
         } else {
         lastCoolerOffTime = millis(); // on enregistre le temps d'arret pour le cooldown
         }
+        if ( mqtt_config.mqtt ) {  device_cooler.send(stringBool(sysvar.cooler));  }
 
     }
 
     if (sysvar.cooler == 0 && millis() - lastCoolerOffTime >= cooldownDuration && digitalRead(COOLER) == HIGH && programme.run == false) {
         digitalWrite(COOLER, LOW); // Éteindre le ventilateur après X secondes (cooldownDuration)
     
-        if ( mqtt_config.mqtt ) {  device_cooler.send(stringBool(false));  }
+        if ( mqtt_config.mqtt ) {  device_cooler.send(stringBool(sysvar.cooler));  }
         }
     
     
     ///ajout d'envoie MQTT pour test fuite mémoire
     // client.publish((topic_Xlyric+"memory").c_str(),1,true, String(ESP.getFreeHeap()).c_str());
+  DEBUG_PRINTLN("FreeHeap :");
+  DEBUG_PRINTLN(ESP.getFreeHeap());
+  DEBUG_PRINTLN("FreeBlockSize");
+  DEBUG_PRINTLN(ESP.getMaxFreeBlockSize());
+  DEBUG_PRINTLN("HeapFragmentation");
+  DEBUG_PRINTLN(ESP.getHeapFragmentation());
+  DEBUG_PRINTLN("");
 
  // pas besoin de tempo pour l'arret, vu que c'est toute les 15 secondes la task 
 }

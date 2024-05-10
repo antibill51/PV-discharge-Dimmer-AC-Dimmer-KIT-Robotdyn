@@ -54,14 +54,15 @@ extern Logs logging;
 extern String devAddrNames[MAX_DALLAS];
 extern espMqttClientAsync client; 
 
-// extern void HA_discover();
+extern uint32_t lastDisconnect;
+
+void HA_discover();
 
 // void connectToMqtt();
 void onMqttConnect(bool sessionPresent);
 void onMqttDisconnect(espMqttClientTypes::DisconnectReason reason);
 void onMqttSubscribe(uint16_t packetId, const espMqttClientTypes::SubscribeReturncode* codes, size_t len);
 void onMqttMessage(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total);
-char buffer[1024];// NOSONAR
   /// @brief Enregistrement du dimmer sur MQTT pour récuperer les informations remonté par MQTT
   /// @param Subscribedtopic 
   /// @param message 
@@ -311,9 +312,10 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
         strlcpy(config.SubscribeTEMP , doc2["SubscribeTEMP"], sizeof(config.SubscribeTEMP));
         //saveConfiguration(filename_conf, config);  
         Serial.println("sauvegarde conf mqtt ");
-        serializeJson(doc2, buffer);
+        // char buffer[512];// NOSONAR
+        // serializeJson(doc2, buffer);
         Serial.println(config.hostname);
-        Serial.println(buffer); 
+        // Serial.println(buffer); 
   }
 
 
@@ -323,6 +325,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
         logging.Set_log_init("\r\n");
         if (strcmp( fixedpayload.c_str(), "online" ) == 0) {
           client.disconnect();
+          lastDisconnect = millis();
           logging.Set_log_init("MQTT Disconnection to resend HA discovery \r\n",true);
         }
   }
@@ -384,6 +387,7 @@ void child_communication(int delest_power, bool equal = false){
 }
 void HA_discover(){
   if (config.HA) {
+    logging.Set_log_init("Send HA Discovery \r\n",true);
     device_dimmer_on_off.HA_discovery();
     device_dimmer.HA_discovery();
     device_dimmer_power.HA_discovery();
@@ -405,22 +409,23 @@ void HA_discover(){
     device_dimmer_child_mode.HA_discovery();
     device_dimmer_save.HA_discovery();
 
-    // device_dimmer_on_off.send(String(config.dimmer_on_off));
-    // device_dimmer.send(String(sysvar.puissance));
-    // device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-    // device_dimmer_send_power.send(String(sysvar.puissance));
-    // device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-    // device_cooler.send(String(sysvar.cooler));
-    // device_dimmer_starting_pow.send(String(config.startingpow));
-    // device_dimmer_minpow.send(String(config.minpow));
-    // device_dimmer_maxpow.send(String(config.maxpow));
-    // device_dimmer_charge1.send(String(config.charge1));
-    // device_dimmer_charge2.send(String(config.charge2));
-    // device_dimmer_charge3.send(String(config.charge3));
-    // device_dimmer_child_mode.send(String(config.mode));
+    logging.Set_log_init("Send HA values \r\n",true);
 
-    // discovery_temp = false;
+    device_dimmer_on_off.send(stringBool(config.dimmer_on_off));
+    device_dimmer.send(String(sysvar.puissance));
+    device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+    device_dimmer_send_power.send(String(sysvar.puissance));
+    device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+    device_cooler.send(String(sysvar.cooler));
+    device_dimmer_starting_pow.send(String(config.startingpow));
+    device_dimmer_minpow.send(String(config.minpow));
+    device_dimmer_maxpow.send(String(config.maxpow));
+    device_dimmer_charge1.send(String(config.charge1));
+    device_dimmer_charge2.send(String(config.charge2));
+    device_dimmer_charge3.send(String(config.charge3));
+    device_dimmer_child_mode.send(String(config.mode));
 
+    discovery_temp = false;
   }
 
 }
@@ -489,18 +494,16 @@ void async_mqtt_init() {
 
 void connectToMqtt() {
   if (!client.connected() ) {
-  DEBUG_PRINTLN("Connecting to MQTT...");
-    logging.Set_log_init("Connecting to MQTT... \r\n");
-  client.connect();
-
-
+    DEBUG_PRINTLN("Connecting to MQTT...");
+    logging.Set_log_init("Connecting to MQTT... \r\n",true);
+    client.connect();
   }
   
 }
 
 void onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to MQTT.");
-  logging.Set_log_init("Connected to MQTT.\r\n");
+  logging.Set_log_init("Connected to MQTT.\r\n",true);
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
   client.publish(String(topic_Xlyric +"status").c_str(),1,true, "online");         // Once connected, publish online to the availability topic
@@ -515,15 +518,15 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println((command_number + "/#").c_str());
   Serial.println((command_select + "/#").c_str());
   Serial.println((command_switch + "/#").c_str());
-  logging.Set_log_init("MQTT connected \r\n");
+  logging.Set_log_init("MQTT callback started \r\n",true);
  // mqttConnected = true;
-
+  HA_discover();
   
 
 }
-
 void onMqttDisconnect(espMqttClientTypes::DisconnectReason reason)
-{
+{    
+    lastDisconnect = millis();
     Serial.println("Disconnected from MQTT.");
     logging.Set_log_init("MQTT disconnected \r\n",true);
 

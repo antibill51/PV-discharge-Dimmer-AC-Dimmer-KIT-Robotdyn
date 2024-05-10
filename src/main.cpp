@@ -272,7 +272,9 @@ gestion_puissance unified_dimmer;
 unsigned long Timer_Cooler;
 
 IPAddress _ip,_gw,_sn,gatewayIP  ; // NOSONAR
-
+uint32_t lastDisconnect = 0;
+uint32_t lastConnectAttempt = 0;
+uint32_t currentMillis = 0;
 
     //***********************************
     //************* Setup 
@@ -403,9 +405,9 @@ void setup() {
     //***********************************
     //************* Setup -  récupération du fichier de configuration
     //***********************************
-  #if !defined(ESP32) && !defined(ESP32ETH)
-    ESP.getResetReason();
-  #endif
+  // #if !defined(ESP32) && !defined(ESP32ETH)
+  //   ESP.getResetReason();
+  // #endif
   // Should load default config if run for the first time
   Serial.println(F("Loading configuration..."));
   logging.Set_log_init("Load config \r\n"); 
@@ -465,9 +467,9 @@ void setup() {
   }
 
   if (strcmp(config.say_my_name, "") == 0) {
-    strcpy(config.say_my_name, (WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17)).c_str());
+    strcpy(config.say_my_name, (("Dimmer-")+WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17)).c_str());
   }
-  wifiManager.autoConnect(("Dimmer-"+String(config.say_my_name)).c_str());
+  wifiManager.autoConnect(config.say_my_name);
   
   
   
@@ -490,7 +492,7 @@ void setup() {
     Serial.print(".");
   }
 
-    WiFi.setHostname(("Dimmer-"+String(config.say_my_name)).c_str());
+    WiFi.setHostname(config.say_my_name);
 
   //***********************************
 
@@ -566,7 +568,7 @@ void setup() {
   /// MQTT 
   if (!AP && mqtt_config.mqtt) {
     Serial.println("Connection MQTT" );
-    logging.Set_log_init("Attempting MQTT connexion \r\n"); 
+    logging.Set_log_init("Pre configure MQTT connexion \r\n"); 
     
     /// Configuration et connexion MQTT 
     async_mqtt_init();
@@ -602,10 +604,8 @@ ntpinit();
 
   runner.addTask(Task_GET_POWER);
   Task_GET_POWER.enable();
-
-  DEBUG_PRINTLN(ESP.getFreeHeap());
-
-/// affichage de l'heure  GMT +1 dans la log
+  
+lastDisconnect = millis();  
 logging.Set_log_init("fin du demarrage: ");
 logging.Set_log_init("",true);
 logging.Set_log_init("\r\n");
@@ -625,79 +625,15 @@ void loop() {
 
   /// connexion MQTT
   if ( mqtt_config.mqtt && !AP ) {
-    if (!client.connected() ) {
-      connectToMqtt();
-      delay(1000);
-  if (config.HA) {
-    //  delay(500);
-    device_dimmer_on_off.HA_discovery();
-    // delay(500);
-    device_dimmer.HA_discovery();
-    // delay(500);
-    device_dimmer_power.HA_discovery();
-    // delay(500);
-    device_dimmer_send_power.HA_discovery();
-    // delay(500);
-    device_dimmer_total_power.HA_discovery();
-    // delay(500);
-    device_cooler.HA_discovery();
-    // delay(500);
-    #ifdef RELAY1
-      device_relay1.HA_discovery();
-      // delay(500);
-    #endif
-    #ifdef RELAY2
-      device_relay2.HA_discovery();
-      // delay(500);
-    #endif
-    device_dimmer_starting_pow.HA_discovery();
-    // delay(500);
-    device_dimmer_minpow.HA_discovery();
-    // delay(500);
-    device_dimmer_maxpow.HA_discovery();
-    // delay(500);
-    device_dimmer_charge1.HA_discovery();
-    // delay(500);
-    device_dimmer_charge2.HA_discovery();
-    // delay(500);
-    device_dimmer_charge3.HA_discovery();
-    // delay(500);
-    device_dimmer_child_mode.HA_discovery();
-    // delay(500);
-    device_dimmer_save.HA_discovery();
-    
-    // delay(500);
-
-    device_dimmer_on_off.send(String(config.dimmer_on_off));
-    // delay(500);
-    device_dimmer.send(String(sysvar.puissance));
-    // delay(500);
-    device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-    // delay(500);
-    device_dimmer_send_power.send(String(sysvar.puissance));
-    // delay(500);
-    device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-    // delay(500);
-    device_cooler.send(String(sysvar.cooler));
-    // delay(500);
-    device_dimmer_starting_pow.send(String(config.startingpow));
-    // delay(500);
-    device_dimmer_minpow.send(String(config.minpow));
-    // delay(500);
-    device_dimmer_maxpow.send(String(config.maxpow));
-    // delay(500);
-    device_dimmer_charge1.send(String(config.charge1));
-    // delay(500);
-    device_dimmer_charge2.send(String(config.charge2));
-    // delay(500);
-    device_dimmer_charge3.send(String(config.charge3));
-    // delay(500);
-    device_dimmer_child_mode.send(String(config.mode));
-    // delay(500);
-
-    discovery_temp = false;
-  }}
-
+    currentMillis = millis();
+    if (!client.connected() && currentMillis - lastDisconnect > MQTT_LAST_DISCONNECT_DELAY && currentMillis - lastConnectAttempt > MQTT_LAST_CONNECT_DELAY) { // 10 sec en millisecondes
+        lastConnectAttempt = millis();
+        logging.Set_log_init("Connexion MQTT (loop)\r\n",true);
+        // async_mqtt_init();
+        // delay(1000);
+        connectToMqtt();
+        delay(3000);
+    }
   }
 
   runner.execute(); // gestion des taches
@@ -1053,9 +989,9 @@ void dallaspresent () {
       }
 
     logging.Set_log_init("Dallas sensor " );
-    logging.Set_log_init(String(a).c_str()); 
+    logging.Set_log_init(String(a+1).c_str()); 
     logging.Set_log_init(" found. Address : " );
-    logging.Set_log_init(String(address).c_str()); 
+    logging.Set_log_init(address); 
     logging.Set_log_init("\r\n");
 
     delay(250);

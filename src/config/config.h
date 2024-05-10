@@ -1,10 +1,5 @@
 #ifndef CONFIG
 #define CONFIG
-#define EMC_TX_BUFFER_SIZE 1440 * 2
-#define EMC_MIN_FREE_MEMORY 16
-#define EMC_ESP8266_MULTITHREADING 1
-#define DEBUG_ESP_ASYNC_TCP 1
-#define DEBUG_ESP_TCP_SSL 1
 #define VERSION "Version 20240501" 
 #define FS_RELEASE "20240501" // date de la release
 
@@ -98,8 +93,11 @@
 
 #define LOG_MAX_STRING_LENGTH 1500 // taille max des logs stockées
 
+#define MQTT_LAST_CONNECT_DELAY 10 * 1000 // 10 secondes en ms
+#define MQTT_LAST_DISCONNECT_DELAY 5 * 1000 // 5 secondes en ms
+
 /// activation mode debug
-//#define Debug
+// #define Debug
   #ifdef Debug
     #define DEBUG_PRINTLN(x) Serial.println(x)
   #else
