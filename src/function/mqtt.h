@@ -160,7 +160,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
       }
     #endif
     if (doc2.containsKey("on_off")) { 
-        config.dimmer_on_off = doc2["on_off"]; 
+        config.dimmer_on_off = int(doc2["on_off"]); 
         logging.Set_log_init("Dimmer ON_OFF at " ,true);
         logging.Set_log_init(String(config.dimmer_on_off));
         logging.Set_log_init("\r\n"); 
@@ -411,12 +411,12 @@ void HA_discover(){
 
     logging.Set_log_init("Send HA values \r\n",true);
 
-    device_dimmer_on_off.send(stringBool(config.dimmer_on_off));
+    device_dimmer_on_off.send(String(config.dimmer_on_off));
     device_dimmer.send(String(sysvar.puissance));
     device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
     device_dimmer_send_power.send(String(sysvar.puissance));
     device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-    device_cooler.send(String(sysvar.cooler));
+    device_cooler.send(stringBool(sysvar.cooler));
     device_dimmer_starting_pow.send(String(config.startingpow));
     device_dimmer_minpow.send(String(config.minpow));
     device_dimmer_maxpow.send(String(config.maxpow));
@@ -462,7 +462,7 @@ void HA_discover(){
 
 
 //         String node_id = config.say_my_name;
-        String save_command = String("Xlyric/sauvegarde/"+ node_id );
+        // String save_command = String("Xlyric/sauvegarde/"+ node_id );
 
 //         int instant_power = sysvar.puissance;  // 
 //         Mqtt_send_DOMOTICZ(String(config.IDX), String (sysvar.puissance * config.charge/100));   /// correction 19/04 valeur remonté au dessus du max conf
@@ -533,32 +533,31 @@ void onMqttDisconnect(espMqttClientTypes::DisconnectReason reason)
     logging.Set_log_init("Disconnect reason:",true);
     switch (reason) {
     case espMqttClientTypes::DisconnectReason::TCP_DISCONNECTED:
-        logging.Set_log_init("TCP_DISCONNECTED");
+        logging.Set_log_init("TCP_DISCONNECTED",true);
         logging.Set_log_init("\r\n");
         break;
     case espMqttClientTypes::DisconnectReason::MQTT_UNACCEPTABLE_PROTOCOL_VERSION:
-        logging.Set_log_init("MQTT_UNACCEPTABLE_PROTOCOL_VERSION");
+        logging.Set_log_init("MQTT_UNACCEPTABLE_PROTOCOL_VERSION",true);
         logging.Set_log_init("\r\n");
         break;
     case espMqttClientTypes::DisconnectReason::MQTT_IDENTIFIER_REJECTED:
-        logging.Set_log_init("MQTT_IDENTIFIER_REJECTED");
+        logging.Set_log_init("MQTT_IDENTIFIER_REJECTED",true);
         logging.Set_log_init("\r\n");
         break;
     case espMqttClientTypes::DisconnectReason::MQTT_SERVER_UNAVAILABLE:
-        logging.Set_log_init("MQTT_SERVER_UNAVAILABLE");
+        logging.Set_log_init("MQTT_SERVER_UNAVAILABLE",true);
         logging.Set_log_init("\r\n");
         break;
     case espMqttClientTypes::DisconnectReason::MQTT_MALFORMED_CREDENTIALS:
-        logging.Set_log_init("MQTT_MALFORMED_CREDENTIALS");
+        logging.Set_log_init("MQTT_MALFORMED_CREDENTIALS",true);
         logging.Set_log_init("\r\n");
         break;
     case espMqttClientTypes::DisconnectReason::MQTT_NOT_AUTHORIZED:
-        logging.Set_log_init("MQTT_NOT_AUTHORIZED");
+        logging.Set_log_init("MQTT_NOT_AUTHORIZED",true);
         logging.Set_log_init("\r\n");
         break;
     default:
-        logging.Set_log_init("Unknown");
-        logging.Set_log_init("\r\n");
+        logging.Set_log_init("Unknown \r\n",true);
     }
 }
 

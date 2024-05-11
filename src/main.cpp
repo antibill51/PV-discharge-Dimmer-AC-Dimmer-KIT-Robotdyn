@@ -632,7 +632,6 @@ void loop() {
         // async_mqtt_init();
         // delay(1000);
         connectToMqtt();
-        delay(3000);
     }
   }
 

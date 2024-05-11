@@ -10,7 +10,7 @@ extern System sysvar;
 // extern DeviceAddress addr[MAX_DALLAS];  // array of (up to) 15 temperature sensors
 extern String devAddrNames[MAX_DALLAS];  // array of (up to) 15 temperature sensors
 extern int deviceCount ; // nombre de sonde(s) dallas détectée(s)
-// String stringBool(bool mybool);
+extern String stringBool(bool mybool);
 extern Logs logging; 
 
 struct MQTT
@@ -65,7 +65,7 @@ struct MQTT
 
   private:String retain; 
   public:void Set_retain(bool setter) {
-  if (setter) {retain=setter; }
+  if (setter) {retain=stringBool(setter); }
   }
 
   private:String expire_after; 
@@ -118,15 +118,15 @@ char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
       else if (strcmp(entity_type, "switch") == 0) {
           char pl_on[34]; //14+object_id
           char pl_off[34]; //14+object_id
-          snprintf(pl_on, sizeof(pl_on), "{\"%s\": \"1\" }", object_id);
-          snprintf(pl_off, sizeof(pl_off), "{\"%s\": \"0\" }", object_id);
+          snprintf(pl_on, sizeof(pl_on), "{ \"%s\" : \"1\"  } ", object_id);
+          snprintf(pl_off, sizeof(pl_off), "{ \"%s\" : \"0\"  } ", object_id);
 
           root["val_tpl"] = value_template;
           root["pl"] = value_template;
           root["pl_on"] = pl_on;
           root["pl_off"] = pl_off;
-          root["stat_on"] = 1;
-          root["stat_off"] = 0;
+          root["stat_on"] = "1";
+          root["stat_off"] = "0";
           root["qos"] = 1;
           root["cmd_t"] = cmd_t;
       } 
