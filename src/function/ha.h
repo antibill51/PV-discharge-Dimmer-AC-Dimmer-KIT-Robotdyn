@@ -20,7 +20,7 @@ struct MQTT
   private:String name; 
   public:void Set_name(String setter) {name=setter; }
 
-  private:char object_id[20]; 
+  private:char object_id[30]; 
   public:void Set_object_id(String setter) {
     snprintf(object_id, sizeof(object_id), "%s", setter.c_str());}
 
@@ -82,12 +82,12 @@ private:
   void createHA_sensor_type(JsonObject& root) {
 
 char node_mac[21];
-char obj_id[53]; // config.say_my_name + object_id + 1 -1
-char uniq_id[41]; // node_mac + object_id -1
+char obj_id[63]; // config.say_my_name + object_id + 1 -1
+char uniq_id[51]; // node_mac + object_id -1
 char topic_Xlyric[40]; // 8 + config.say_my_name
-char stat_t[73]; // 14 + topic_Xlyric + object_id -1 
+char stat_t[83]; // 14 + topic_Xlyric + object_id -1 
 char avty_t[46]; // 6 + topic_Xlyric
-char value_template[37]; // 17 + object_id
+char value_template[47]; // 17 + object_id
 
 char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
       snprintf(node_mac, sizeof(node_mac), "%s%s", (WiFi.macAddress().substring(12,14)).c_str(), (WiFi.macAddress().substring(15,17)).c_str());
@@ -116,8 +116,8 @@ char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
           root["val_tpl"] = value_template;
       }
       else if (strcmp(entity_type, "switch") == 0) {
-          char pl_on[34]; //14+object_id
-          char pl_off[34]; //14+object_id
+          char pl_on[44]; //14+object_id
+          char pl_off[44]; //14+object_id
           snprintf(pl_on, sizeof(pl_on), "{ \"%s\" : \"1\"  } ", object_id);
           snprintf(pl_off, sizeof(pl_off), "{ \"%s\" : \"0\"  } ", object_id);
 
@@ -131,7 +131,7 @@ char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
           root["cmd_t"] = cmd_t;
       } 
       else if (strcmp(entity_type, "number") == 0 || strcmp(entity_type, "select") == 0) {
-          char cmd_tpl[40]; //20+object_id
+          char cmd_tpl[50]; //20+object_id
           snprintf(cmd_tpl, sizeof(cmd_tpl), "{\"%s\": {{ value }} }", object_id );
           root["val_tpl"] = value_template;
           root["cmd_t"] = cmd_t;
@@ -145,6 +145,7 @@ char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
           } 
           else if (strcmp(entity_type, "select") == 0) {
             JsonArray options = root.createNestedArray("options");
+            // JsonArray options = root.to<JsonObject>();
             options.add("off");
             options.add("delester");
             options.add("equal");
@@ -157,7 +158,7 @@ char cmd_t[83]; //9+topic_Xlyric + entity_type + object_id -2
           root["val_tpl"] = value_template;
       }
       else if (strcmp(entity_type, "button") == 0) {
-        char pl_prs[34]; //14+object_id    
+        char pl_prs[44]; //14+object_id    
           snprintf(pl_prs, sizeof(pl_prs), "{\"%s\": \"1\" }", object_id );
           root["entity_category"] = entity_category;
           root["cmd_t"] = cmd_t;
@@ -227,10 +228,10 @@ public:
       if (client.connected()){
     if (config.JEEDOM || config.HA) {
 
-      char topic[74]; // 22 +  config.say_my_name  + object_id
+      char topic[84]; // 22 +  config.say_my_name  + object_id
       snprintf(topic, sizeof(topic), "Xlyric/%s/sensors/%s/state",config.say_my_name,object_id );
 
-      char message[40]; // 11 +  object_id + value?
+      char message[50]; // 11 +  object_id + value?
       snprintf(message, sizeof(message),"{\"%s\":\"%s\"}" ,object_id, value.c_str());
       int status;
       // String message = R"({")" + object_id + R"(" : ")" + value.c_str() + R"("} )";
