@@ -72,9 +72,9 @@ extern String stringBool(bool myBool);
 
   String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
   String node_id = String("Dimmer-") + node_mac; 
-  
-  String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
+  String topic_Xlyric = "Xlyric/"+ node_id +"/";
 
+  // String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
   String command_switch = String(topic_Xlyric + "command/switch");
   String command_number = String(topic_Xlyric + "command/number");
   String command_select = String(topic_Xlyric + "command/select");
@@ -408,10 +408,16 @@ void HA_discover(){
     device_dimmer_charge3.HA_discovery();
     device_dimmer_child_mode.HA_discovery();
     device_dimmer_save.HA_discovery();
+  }
 
+}
+
+void HA_send_all(){
+  if (config.HA) {
     logging.Set_log_init("Send HA values \r\n",true);
 
-    device_dimmer_on_off.send(String(config.dimmer_on_off));
+    // device_dimmer_on_off.send(String(config.dimmer_on_off)); don't send to restore last value from MQTT
+    // TODO : Add option to select value at restart ( ON/OFF/LAST). Maybe do the same for relays.
     device_dimmer.send(String(sysvar.puissance));
     device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
     device_dimmer_send_power.send(String(sysvar.puissance));
@@ -429,6 +435,7 @@ void HA_discover(){
   }
 
 }
+
 //////////// reconnexion MQTT
 
 // void connect_and_subscribe() {

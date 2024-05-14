@@ -623,9 +623,11 @@ void loop() {
     if (!client.connected() && currentMillis - lastDisconnect > MQTT_LAST_DISCONNECT_DELAY && currentMillis - lastConnectAttempt > MQTT_LAST_CONNECT_DELAY) { // 10 sec en millisecondes
         lastConnectAttempt = millis();
         logging.Set_log_init("Connexion MQTT (loop)\r\n",true);
-        // async_mqtt_init();
-        // delay(1000);
+        async_mqtt_init();
+        delay(1000);
         connectToMqtt();
+        delay(5000);
+        HA_send_all();
     }
   }
 

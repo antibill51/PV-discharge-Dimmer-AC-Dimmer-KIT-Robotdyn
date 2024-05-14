@@ -164,7 +164,7 @@ String loadConfiguration() {
   String PublishSubscribeTEMP = doc["SubscribeTEMP"].as<String>();   
   strlcpy(SubscribeTEMP, PublishSubscribeTEMP.c_str(), sizeof(SubscribeTEMP));
   
-  dimmer_on_off = doc["dimmer_on_off"] | 1; 
+  dimmer_on_off = doc["dimmer_on_off"]; 
   HA = doc["HA"] | true; 
   JEEDOM = doc["JEEDOM"] | true; 
   DOMOTICZ = doc["DOMOTICZ"] | true; 

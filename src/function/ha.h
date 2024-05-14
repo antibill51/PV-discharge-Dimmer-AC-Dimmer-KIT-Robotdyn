@@ -125,8 +125,8 @@ char cmd_t[93]; //9+topic_Xlyric + entity_type + object_id -2
           root["pl"] = value_template;
           root["pl_on"] = pl_on;
           root["pl_off"] = pl_off;
-          root["stat_on"] = "1";
-          root["stat_off"] = "0";
+          root["stat_on"] = 1;
+          root["stat_off"] = 0;
           root["qos"] = 1;
           root["cmd_t"] = cmd_t;
       } 
