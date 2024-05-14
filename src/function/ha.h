@@ -81,17 +81,17 @@ struct MQTT
 private:
   void createHA_sensor_type(JsonObject& root) {
 
-char node_mac[21];
+// char node_mac[21];
 char obj_id[62]; // config.say_my_name + object_id + 1 -1
-char uniq_id[51]; // node_mac + object_id -1
+// char uniq_id[51]; // config.say_my_name + object_id -1
 char topic_Xlyric[40]; // 8 + config.say_my_name
 char stat_t[83]; // 14 + topic_Xlyric + object_id -1 
 char avty_t[46]; // 6 + topic_Xlyric
 char value_template[47]; // 17 + object_id
 
 char cmd_t[93]; //9+topic_Xlyric + entity_type + object_id -2
-      snprintf(node_mac, sizeof(node_mac), "%s%s", (WiFi.macAddress().substring(12,14)).c_str(), (WiFi.macAddress().substring(15,17)).c_str());
-      snprintf(uniq_id, sizeof(uniq_id), "%s-%s", node_mac, object_id);
+      // snprintf(node_mac, sizeof(node_mac), "%s%s", (WiFi.macAddress().substring(12,14)).c_str(), (WiFi.macAddress().substring(15,17)).c_str());
+      // snprintf(uniq_id, sizeof(uniq_id), "%s-%s", node_mac, object_id);
       snprintf(obj_id, sizeof(obj_id), "%s-%s", config.say_my_name, object_id);
       snprintf(topic_Xlyric, sizeof(topic_Xlyric), "Xlyric/%s/", config.say_my_name);
       snprintf(stat_t, sizeof(stat_t), "%ssensors/%s/state", topic_Xlyric,object_id );
@@ -99,7 +99,7 @@ char cmd_t[93]; //9+topic_Xlyric + entity_type + object_id -2
 
       root["name"] = name;
       root["obj_id"] = obj_id;
-      root["uniq_id"] = uniq_id;
+      root["uniq_id"] = obj_id;
       root["stat_t"] =  stat_t;
       root["avty_t"] = avty_t;
       if (!strcmp(entity_type, "button") == 0) {

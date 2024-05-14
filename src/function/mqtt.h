@@ -70,18 +70,25 @@ void onMqttMessage(const espMqttClientTypes::MessageProperties& properties, cons
 
 extern String stringBool(bool myBool);
 
-  String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-  String node_id = String("Dimmer-") + node_mac; 
-  String topic_Xlyric = "Xlyric/"+ node_id +"/";
+  // String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
+  // String node_id = String("Dimmer-") + node_mac; 
+  // String topic_Xlyric = "Xlyric/"+ node_id +"/";
 
   // String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
-  String command_switch = String(topic_Xlyric + "command/switch");
-  String command_number = String(topic_Xlyric + "command/number");
-  String command_select = String(topic_Xlyric + "command/select");
-  String command_button = String(topic_Xlyric + "command/button");
+  // String command_switch = String(topic_Xlyric + "command/switch");
+  // String command_number = String(topic_Xlyric + "command/number");
+  // String command_select = String(topic_Xlyric + "command/select");
+  // String command_button = String(topic_Xlyric + "command/button");
   const String HA_status = String("homeassistant/status");
-  String command_save = String("Xlyric/sauvegarde/"+ node_id );
-
+  // String command_save = String("Xlyric/sauvegarde/"+ node_id );
+  
+  String node_id; 
+  String topic_Xlyric;
+  String command_switch;
+  String command_number;
+  String command_select;
+  String command_button;
+  String command_save;
 
 void callback(const espMqttClientTypes::MessageProperties& properties, const char* Subscribedtopic, const uint8_t* payload, size_t len, size_t index, size_t total) {
 // void callback(char* Subscribedtopic, char* payload, espMqttClientAsyncMessageProperties properties, size_t len, size_t index, size_t total) {
@@ -487,6 +494,7 @@ void async_mqtt_init() {
   IPAddress ip;
   ip.fromString(config.hostname);
   DEBUG_PRINTLN(ip);
+  node_id = String("Dimmer-") + WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17); 
   client.setClientId(node_id.c_str());
   client.setKeepAlive(30);
   client.setWill(arrayWill, 2, true, "offline");
@@ -514,7 +522,14 @@ void onMqttConnect(bool sessionPresent) {
   logging.Set_log_init("Connected to MQTT.\r\n",true);
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
-  String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
+  topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
+  command_switch = String(topic_Xlyric + "command/switch");
+  command_number = String(topic_Xlyric + "command/number");
+  command_select = String(topic_Xlyric + "command/select");
+  command_button = String(topic_Xlyric + "command/button");
+  command_save = String("Xlyric/sauvegarde/"+ node_id );
+
+
   client.publish(String(topic_Xlyric +"status").c_str(),1,true, "online");         // Once connected, publish online to the availability topic
   if (strlen(config.SubscribePV) !=0 ) {client.subscribe(config.SubscribePV,1);}
   if (strlen(config.SubscribeTEMP) != 0 ) {client.subscribe(config.SubscribeTEMP,1);}
