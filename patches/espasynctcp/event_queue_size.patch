@@ -1,0 +1,12 @@
+diff --git a/.pio/libdeps/$$$env$$$/ESPAsyncTCP-esphome/src/DebugPrintMacros.h b/.pio/libdeps/$$$env$$$/ESPAsyncTCP-esphome/src/DebugPrintMacros.h
+--- a/.pio/libdeps/$$$env$$$/ESPAsyncTCP-esphome/src/DebugPrintMacros.h
++++ b/.pio/libdeps/$$$env$$$/ESPAsyncTCP-esphome/src/DebugPrintMacros.h
+@@ -4,6 +4,8 @@
+ 
+ // Debug macros
+ // #include <pgmspace.h>
++#include <Arduino.h>
+ // https://stackoverflow.com/questions/8487986/file-macro-shows-full-path
+ // This value is resolved at compile time.
+ #define _FILENAME_ strrchr("/" __FILE__, '/')
+ 
