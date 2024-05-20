@@ -115,6 +115,7 @@
 #include "tasks/cooler.h"
 #include "tasks/get_power.h"
 #include "tasks/relais.h"
+#include "tasks/send_all_mqtt.h"
 
 #if defined(ESP32) || defined(ESP32ETH)
 // Web services
@@ -147,6 +148,7 @@ Task Task_GET_POWER(10000, TASK_FOREVER, &get_dimmer_child_power);
 #ifdef RELAY1
 Task Task_relay(20000, TASK_FOREVER, &relais_controle);
 #endif
+Task Task_mqtt(300000, TASK_FOREVER, &HA_send_all);
 Scheduler runner;
 
 
@@ -598,6 +600,10 @@ ntpinit();
 
   runner.addTask(Task_GET_POWER);
   Task_GET_POWER.enable();
+
+  runner.addTask(Task_mqtt);
+  Task_mqtt.enableDelayed(10000);
+
   
 lastDisconnect = millis();  
 logging.Set_log_init("fin du demarrage: ");
@@ -626,8 +632,8 @@ void loop() {
         async_mqtt_init();
         delay(1000);
         connectToMqtt();
-        delay(5000);
-        HA_send_all();
+        // delay(5000);
+        // HA_send_all();
     }
   }
 
@@ -658,6 +664,8 @@ void loop() {
         sysvar.puissance=0;
         Serial.print("stop minuteur dimmer");
         Mqtt_send_DOMOTICZ(String(config.IDX), String (sysvar.puissance * config.charge/100) ); // remonté MQTT de la commande réelle
+        // réinint de la sécurité température 
+        sysvar.security = 0 ;
         if (config.HA) {
           int instant_power = unified_dimmer.get_power();
           device_dimmer_on_off.send(String(config.dimmer_on_off));
@@ -665,9 +673,8 @@ void loop() {
           device_dimmer_send_power.send(String(instant_power));
           device_dimmer_power.send(String(instant_power * config.charge/100)); 
           device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+          device_dimmer_alarm_temp.send(stringBool(sysvar.security));
         } 
-        // réinint de la sécurité température 
-        sysvar.security = 0 ;
 
     } 
   } 
@@ -702,7 +709,8 @@ void loop() {
       if (programme_relay1.stop_progr()) { 
         logging.Set_log_init("stop minuteur relay1\r\n",true);
         digitalWrite(RELAY1 , LOW);
-        device_relay1.send(String(0));
+        sysvar.relay1 = false;
+        device_relay1.send(String(sysvar.relay1));
 
       }
     }
@@ -710,7 +718,8 @@ void loop() {
       if (programme_relay1.start_progr()){ 
         logging.Set_log_init("start minuteur relay1\r\n",true);
         digitalWrite(RELAY1 , HIGH);
-        device_relay1.send(String(1));
+        sysvar.relay1 = true;
+        device_relay1.send(String(sysvar.relay1));
       }
     }
 
@@ -718,14 +727,18 @@ void loop() {
       if (programme_relay2.stop_progr()) { 
         logging.Set_log_init("stop minuteur relay2\r\n",true);
         digitalWrite(RELAY2 , LOW);
-        device_relay2.send(String(0));
+        // device_relay2.send(String(0));
+        sysvar.relay2 = false;
+        device_relay2.send(String(sysvar.relay2));
       }
     }
     else {
       if (programme_relay2.start_progr()){ 
         logging.Set_log_init("start minuteur relay2\r\n",true);
         digitalWrite(RELAY2 , HIGH);
-        device_relay2.send(String(1));
+        // device_relay2.send(String(1));
+        sysvar.relay2 = true;
+        device_relay2.send(String(sysvar.relay2));
       }
     }
   #endif
@@ -907,9 +920,10 @@ void loop() {
               Mqtt_send_DOMOTICZ(String(config.IDX), String (sysvar.puissance * config.charge/100) );
             }
             if ( config.HA ) { 
-              device_dimmer.send("0"); 
-              device_dimmer_send_power.send("0");
-              device_dimmer_power.send("0");
+              device_dimmer.send(String(0));
+              device_dimmer_send_power.send(String(0));
+              device_dimmer_power.send(String(0)); 
+              device_dimmer_total_power.send(String(0));
             }
 
         }

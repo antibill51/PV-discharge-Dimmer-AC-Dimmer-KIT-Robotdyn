@@ -338,21 +338,21 @@ void devices_init(){
     device_relay1.Set_object_id("relay1");
     device_relay1.Set_entity_type("switch");
     device_relay1.Set_entity_qos(0);
-    device_relay1.Set_retain_flag(false);
+    device_relay1.Set_retain_flag(true);
     device_relay1.Set_retain(true);
 
     device_relay2.Set_name("Relais 2");
     device_relay2.Set_object_id("relay2");
     device_relay2.Set_entity_type("switch");
     device_relay2.Set_entity_qos(0);
-    device_relay2.Set_retain_flag(false);
+    device_relay2.Set_retain_flag(true);
     device_relay2.Set_retain(true);
 
     device_dimmer_on_off.Set_name("Dimmer");
     device_dimmer_on_off.Set_object_id("on_off");
     device_dimmer_on_off.Set_entity_type("switch");
     device_dimmer_on_off.Set_entity_qos(0);
-    device_dimmer_on_off.Set_retain_flag(false);
+    device_dimmer_on_off.Set_retain_flag(true);
     device_dimmer_on_off.Set_retain(true);
   
     /// création des button

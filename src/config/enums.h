@@ -347,6 +347,11 @@ int puissance_dispo=0;
 int change=0; 
 /// @brief état du ventilateur
 bool cooler=false;
+/// @brief état du relais 1
+bool relay1=false;
+/// @brief état du relais 2
+bool relay2=false;
+
 /// @brief  puissance cumulée en Watt (remonté par l'enfant toute les 10 secondes)
 int puissance_cumul=0;
 /// @brief etat de la surchauffe

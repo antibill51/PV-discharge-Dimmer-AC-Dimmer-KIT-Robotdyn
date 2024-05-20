@@ -537,7 +537,8 @@ if (request->hasParam("charge1")) {
         char str[8];// NOSONAR
         itoa( relaystate, str, 10 );
         request->send(200, "text/html", str );
-        if (!AP && mqtt_config.mqtt) { device_relay1.send(String(relaystate));}
+        sysvar.relay1 = relaystate;
+        if (!AP && mqtt_config.mqtt) {device_relay1.send(String(sysvar.relay1));}
     }
   #endif
   #ifdef RELAY2
@@ -550,7 +551,8 @@ if (request->hasParam("charge1")) {
         char str[8];// NOSONAR
         itoa( relaystate, str, 10 );
         request->send(200, "text/html", str );
-        if (!AP && mqtt_config.mqtt) { device_relay2.send(String(relaystate));}
+        sysvar.relay2 = relaystate;
+        if (!AP && mqtt_config.mqtt) {device_relay2.send(String(sysvar.relay2));}
     }
   #endif 
 

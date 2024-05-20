@@ -128,8 +128,8 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
       device_dimmer_alarm_temp.HA_discovery();
       device_temp[sysvar.dallas_maitre].HA_discovery();
       device_dimmer_maxtemp.HA_discovery();
-      device_dimmer_alarm_temp.send(stringBool(sysvar.security));
-      device_dimmer_maxtemp.send(String(config.maxtemp));
+      // device_dimmer_alarm_temp.send(stringBool(sysvar.security));
+      // device_dimmer_maxtemp.send(String(config.maxtemp));
       device_dimmer_alarm_temp_clear.HA_discovery();
     }
     device_temp[sysvar.dallas_maitre].send(String(sysvar.celsius[sysvar.dallas_maitre]));
@@ -152,7 +152,9 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
           logging.Set_log_init("RELAY1 at ",true);
           logging.Set_log_init(String(relay));
           logging.Set_log_init("\r\n"); 
-          device_relay1.send(String(relay));
+          sysvar.relay1 = relay;
+          device_relay1.send(String(sysvar.relay1));
+          // device_relay1.send(String(relay));
       }
     #endif
     #ifdef RELAY2
@@ -163,7 +165,9 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
           logging.Set_log_init("RELAY2 at ",true);
           logging.Set_log_init(String(relay));
           logging.Set_log_init("\r\n"); 
-          device_relay2.send(String(relay));      
+          sysvar.relay2 = relay;
+          device_relay2.send(String(sysvar.relay2));
+          // device_relay2.send(String(relay));      
       }
     #endif
     if (doc2.containsKey("on_off")) { 
@@ -415,33 +419,34 @@ void HA_discover(){
     device_dimmer_charge3.HA_discovery();
     device_dimmer_child_mode.HA_discovery();
     device_dimmer_save.HA_discovery();
-  }
-
-}
-
-void HA_send_all(){
-  if (config.HA) {
-    logging.Set_log_init("Send HA values \r\n",true);
-
-    // device_dimmer_on_off.send(String(config.dimmer_on_off)); don't send to restore last value from MQTT
-    // TODO : Add option to select value at restart ( ON/OFF/LAST). Maybe do the same for relays.
-    device_dimmer.send(String(sysvar.puissance));
-    device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
-    device_dimmer_send_power.send(String(sysvar.puissance));
-    device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
-    device_cooler.send(stringBool(sysvar.cooler));
-    device_dimmer_starting_pow.send(String(config.startingpow));
-    device_dimmer_minpow.send(String(config.minpow));
-    device_dimmer_maxpow.send(String(config.maxpow));
-    device_dimmer_charge1.send(String(config.charge1));
-    device_dimmer_charge2.send(String(config.charge2));
-    device_dimmer_charge3.send(String(config.charge3));
-    device_dimmer_child_mode.send(String(config.mode));
-
     discovery_temp = false;
   }
 
 }
+
+// void HA_send_all(){
+//   if (config.HA) {
+//     logging.Set_log_init("Send HA values \r\n",true);
+
+//     // device_dimmer_on_off.send(String(config.dimmer_on_off)); don't send to restore last value from MQTT
+//     // TODO : Add option to select value at restart ( ON/OFF/LAST). Maybe do the same for relays.
+//     device_dimmer.send(String(sysvar.puissance));
+//     device_dimmer_power.send(String(sysvar.puissance* config.charge/100));
+//     device_dimmer_send_power.send(String(sysvar.puissance));
+//     device_dimmer_total_power.send(String(sysvar.puissance_cumul + (sysvar.puissance * config.charge/100)));
+//     device_cooler.send(stringBool(sysvar.cooler));
+//     device_dimmer_starting_pow.send(String(config.startingpow));
+//     device_dimmer_minpow.send(String(config.minpow));
+//     device_dimmer_maxpow.send(String(config.maxpow));
+//     device_dimmer_charge1.send(String(config.charge1));
+//     device_dimmer_charge2.send(String(config.charge2));
+//     device_dimmer_charge3.send(String(config.charge3));
+//     device_dimmer_child_mode.send(String(config.mode));
+
+//     discovery_temp = false;
+//   }
+
+// }
 
 //////////// reconnexion MQTT
 
