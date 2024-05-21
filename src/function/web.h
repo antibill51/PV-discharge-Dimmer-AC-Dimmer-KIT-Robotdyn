@@ -247,6 +247,15 @@ void call_pages() {
     config.restart = true;
   });
 
+    server.on("/disconnect", HTTP_ANY, [](AsyncWebServerRequest *request){
+    request->redirect("/");
+    WiFi.disconnect();
+  });
+
+  server.on("/ping", HTTP_ANY, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", "pong");   
+  });
+
 //// compressé
   server.on("/all.min.css", HTTP_ANY, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/css/all.css.gz", "text/css");
