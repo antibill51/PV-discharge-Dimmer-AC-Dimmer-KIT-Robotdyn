@@ -152,7 +152,7 @@ Task Task_relay(20000, TASK_FOREVER, &relais_controle);
 /// @brief  task d'envoi régulier valeurs MQTT
 Task Task_mqtt(300000, TASK_FOREVER, &HA_send_all);
 /// @brief  task de ping 
-Task Task_ping(180000, TASK_FOREVER, &ping);
+Task Task_ping(120000, TASK_FOREVER, &ping);
 Scheduler runner;
 
 
