@@ -100,6 +100,9 @@
 #include "function/minuteur.h"
 #include "function/reset_reason.h"
 
+extern "C" {
+#include "user_interface.h"
+}
 
 #ifdef ROBOTDYN
   #include "function/dimmer.h"
@@ -449,6 +452,9 @@ void setup() {
   Serial.print("start Wifiautoconnect");
   logging.Set_log_init("Start Wifiautoconnect \r\n"); 
 
+    WiFi.setPhyMode(WIFI_PHY_MODE_11N);
+    wifi_set_phy_mode(PHY_MODE_11N);
+  
 
 
   // préparation  configuration IP fixe 
@@ -493,9 +499,10 @@ void setup() {
   }
 
     WiFi.setHostname(config.say_my_name);
-
-  //***********************************
-
+    WiFi.setPhyMode(WIFI_PHY_MODE_11N);
+    wifi_set_phy_mode(PHY_MODE_11N);
+    WiFi.setAutoReconnect(true);
+    WiFi.setOutputPower(20);
 
    /// restart si la configuration OP static est différente ip affectée suite changement ip Autoconf
   if ( !strcmp(wifi_config_fixe.static_ip, "" ) == 0 )  {
@@ -616,6 +623,7 @@ lastDisconnect = millis();
 logging.Set_log_init("fin du demarrage: ");
 logging.Set_log_init("",true);
 logging.Set_log_init("\r\n");
+
 
 delay(1000);
 
