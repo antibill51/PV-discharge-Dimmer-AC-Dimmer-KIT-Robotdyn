@@ -870,6 +870,8 @@ void loop() {
           device_dimmer.send("0");  // remonté MQTT HA de la commande 0
           device_dimmer_send_power.send("0");
           device_dimmer_power.send("0"); 
+          device_dimmer_total_power.send(String(sysvar.puissance_cumul));
+
 
         }
         else if ( sysvar.puissance > config.maxpow ) {
@@ -899,6 +901,18 @@ void loop() {
         if ( strcmp(config.mode,"delester") == 0 ) { child_communication(int(sysvar.puissance) ,true); childsend = 0 ; } // si mode délest, envoi du surplus
         if ( strcmp(config.mode,"equal") == 0) { child_communication(sysvar.puissance,true); childsend = 0 ; }  //si mode equal envoie de la commande vers la carte fille
       }
+
+
+            if ( mqtt_config.mqtt ) {
+              Mqtt_send_DOMOTICZ(String(config.IDX), String (0) );
+            }
+            if ( config.HA ) { 
+              device_dimmer.send(String(0));
+              device_dimmer_send_power.send(String(0));
+              device_dimmer_power.send(String(0)); 
+              device_dimmer_total_power.send(String(sysvar.puissance_cumul));
+            }
+
     }
     //// si la commande est trop faible on coupe tout partout
     else if ( sysvar.puissance <= config.minpow ){
@@ -915,27 +929,15 @@ void loop() {
                     childsend++; 
                 }
             }
-
-            if ( mqtt_config.mqtt ) {
-              Mqtt_send_DOMOTICZ(String(config.IDX), String (sysvar.puissance * config.charge/100) );
-            }
-            if ( config.HA ) { 
-              device_dimmer.send(String(0));
-              device_dimmer_send_power.send(String(0));
-              device_dimmer_power.send(String(0)); 
-              device_dimmer_total_power.send(String(0));
-            }
-
         }
 
 
         if (!AP && mqtt_config.Mqtt::mqtt) {
-          int instant_power = unified_dimmer.get_power();
           Mqtt_send_DOMOTICZ(String(config.IDX), String (sysvar.puissance * config.charge/100) );  // correction 19/04
-          device_dimmer.send(String(instant_power));
-          device_dimmer_send_power.send(String(instant_power));
-          device_dimmer_power.send(String(instant_power * config.charge/100)); 
-          device_dimmer_total_power.send(String(sysvar.puissance_cumul + (instant_power*config.charge/100) ));
+          device_dimmer.send(String(0));
+          device_dimmer_send_power.send(String(0));
+          device_dimmer_power.send(String(0)); 
+          device_dimmer_total_power.send(String(0));
         }
       }
     
