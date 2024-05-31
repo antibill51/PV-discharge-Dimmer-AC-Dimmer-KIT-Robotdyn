@@ -50,7 +50,7 @@ void cooler() {
     
     
     ///ajout d'envoie MQTT pour test fuite mémoire
-    // client.publish((topic_Xlyric+"memory").c_str(),1,true, String(ESP.getFreeHeap()).c_str());
+    client.publish((topic_Xlyric+"memory").c_str(),1,true, String(ESP.getFreeHeap()).c_str());
   DEBUG_PRINTLN("FreeHeap :");
   DEBUG_PRINTLN(ESP.getFreeHeap());
   DEBUG_PRINTLN("FreeBlockSize");

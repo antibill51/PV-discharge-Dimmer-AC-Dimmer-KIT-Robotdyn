@@ -20,6 +20,7 @@ extern Config config;
 extern MQTT devicetemp[MAX_DALLAS];
 extern String devAddrNames[MAX_DALLAS];
 extern int deviceCount; // nombre de sonde(s) dallas détectée(s)
+extern bool discovery_temp; 
 
 DeviceAddress addr[MAX_DALLAS];  // array of (up to) MAX_DALLAS temperature sensors
 int dallas_error[MAX_DALLAS] = {0}; // compteur d'erreur dallas

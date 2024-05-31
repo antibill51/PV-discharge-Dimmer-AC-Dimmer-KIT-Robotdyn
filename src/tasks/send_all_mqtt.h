@@ -85,6 +85,7 @@ void HA_send_all(){
         device_dimmer_alarm_temp.send(stringBool(sysvar.security));
         device_dimmer_maxtemp.send(String(config.maxtemp)); 
     }
+    sysvar.change=1; // To force resend power values
   }
 
 }

@@ -637,11 +637,10 @@ bool alerte=false;
 /////////////////////
 void loop() {
 
-
   /// connexion MQTT
-  if ( mqtt_config.mqtt && !AP ) {
+  if ( !client.connected() && mqtt_config.mqtt && !AP ) {
     currentMillis = millis();
-    if (!client.connected() && currentMillis - lastDisconnect > MQTT_LAST_DISCONNECT_DELAY && currentMillis - lastConnectAttempt > MQTT_LAST_CONNECT_DELAY) { // 10 sec en millisecondes
+    if (currentMillis - lastDisconnect > MQTT_LAST_DISCONNECT_DELAY && currentMillis - lastConnectAttempt > MQTT_LAST_CONNECT_DELAY) { // 10 sec en millisecondes
         lastConnectAttempt = millis();
         logging.Set_log_init("Connexion MQTT (loop)\r\n",true);
         async_mqtt_init();
@@ -803,7 +802,6 @@ void loop() {
   else {
     alerte=false;
   }
-
   ////////////////// controle de la puissance /////////////////
 
   if ( sysvar.change == 1  && programme.run == false ) {   /// si changement et pas de minuteur en cours
@@ -844,7 +842,7 @@ void loop() {
               }
               if ( strcmp(config.mode,"equal") == 0) { 
                 child_communication(sysvar.puissance,true);   //si mode equal envoie de la commande vers la carte fille
-}
+              }
           }
         DEBUG_PRINTLN(("%d------------------",__LINE__));
         DEBUG_PRINTLN(sysvar.puissance);
@@ -885,9 +883,7 @@ void loop() {
           device_dimmer.send("0");  // remonté MQTT HA de la commande 0
           device_dimmer_send_power.send("0");
           device_dimmer_power.send("0"); 
-          device_dimmer_total_power.send(String(sysvar.puissance_cumul));
-
-
+          device_dimmer_total_power.send("0"); 
         }
         else if ( sysvar.puissance > config.maxpow ) {
           Mqtt_send_DOMOTICZ(String(config.IDX), String (sysvar.puissance * config.charge/100) );  // remonté MQTT de la commande max
@@ -909,15 +905,12 @@ void loop() {
     /// si la sécurité est active on déleste 
     else if ( sysvar.puissance != 0 && sysvar.security == 1)
     {
-
       if ( strcmp(config.child,"") != 0 && strcmp(config.child,"none") != 0  && strcmp(config.mode,"off") != 0) {
         if (sysvar.puissance > 200 ) {sysvar.puissance = 200 ;}
 
         if ( strcmp(config.mode,"delester") == 0 ) { child_communication(int(sysvar.puissance) ,true); childsend = 0 ; } // si mode délest, envoi du surplus
-        if ( strcmp(config.mode,"equal") == 0) { child_communication(sysvar.puissance,true); childsend = 0 ; }  //si mode equal envoie de la commande vers la carte fille
+        if ( strcmp(config.mode,"equal") == 0) { child_communication(int(sysvar.puissance),true); childsend = 0 ; }  //si mode equal envoie de la commande vers la carte fille
       }
-
-
             if ( mqtt_config.mqtt ) {
               Mqtt_send_DOMOTICZ(String(config.IDX), String (0) );
             }
@@ -958,7 +951,6 @@ void loop() {
     
   sysvar.change = 0; /// déplacé ici à la fin
   }
-
     //***********************************
     //************* LOOP - Activation de la sécurité --> doublon partiel avec la fonction sécurité ?  
     //***********************************
@@ -971,7 +963,9 @@ void loop() {
     device_temp[sysvar.dallas_maitre].send(String(temp)); 
     // device_temp_master.send(String(temp)); 
     device_dimmer_alarm_temp.send(stringBool(sysvar.security));
-    device_dimmer_power.send(String(0));
+    device_dimmer.send(String(0));
+    device_dimmer_send_power.send(String(0));
+    device_dimmer_power.send(String(0)); 
     device_dimmer_total_power.send(String(sysvar.puissance_cumul));
   }
 //// protection contre la perte de la sonde dallas
