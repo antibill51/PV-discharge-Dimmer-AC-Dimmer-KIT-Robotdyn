@@ -6,10 +6,12 @@
 #include <Arduino.h>
 #ifdef ROBOTDYN
   #include "function/dimmer.h"
+  extern dimmerLamp dimmer;
+  extern dimmerLamp dimmer2;
+  extern dimmerLamp dimmer3;
 #else
     #include "function/jotta.h"
 #endif
-
 
 
 // @brief  structure pour uniformiser les commandes de puissances entre robotdyn et SSR
@@ -38,6 +40,7 @@ void set_power(float is_set_power){
   #ifdef ROBOTDYN
     // On transforme la puissance totale à envoyer aux dimmers en watts pour mieux les répartir entre les 3 SSR
     // Meilleure précision en float 
+    config.calcul_charge();
     float tmp_pwr_watt = is_set_power * config.charge / 100; 
     int dimmer1_pwr = 0;
     int dimmer2_pwr = 0;
@@ -141,6 +144,7 @@ float get_power(){
 
     // pour le dimmer robotdyn
     #ifdef ROBOTDYN
+    config.calcul_charge();
     int power1 = 0;
     int power2 = 0;
     int power3 = 0;
@@ -168,14 +172,14 @@ float get_power(){
 void dimmer_off()
 {
   #ifdef ROBOTDYN
-    if (dimmer.getState()==1) {
+    if (dimmer.getState()) {
       dimmer.setPower(0);
       dimmer.setState(OFF);
       logging.Set_log_init("Dimmer1 Off\r\n",true);
       delay(50);
     }
     #ifdef outputPin2
-      if (dimmer2.getState()==1) {
+      if (dimmer2.getState()) {
       dimmer2.setPower(0);
       dimmer2.setState(OFF);
       logging.Set_log_init("Dimmer2 Off\r\n",true);
@@ -183,7 +187,7 @@ void dimmer_off()
 }
     #endif
     #ifdef outputPin3
-      if (dimmer3.getState()==1) {
+      if (dimmer3.getState()) {
         dimmer3.setPower(0);
         dimmer3.setState(OFF);
         logging.Set_log_init("Dimmer3 Off\r\n",true);

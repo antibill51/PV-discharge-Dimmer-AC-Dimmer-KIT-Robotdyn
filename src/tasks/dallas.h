@@ -2,8 +2,8 @@
 #define TASK_DALLAS
 
 #ifdef STANDALONE
-#include <Pinger.h>
-Pinger pinger;
+//#include <Pinger.h>
+//Pinger pinger;
 #endif
 
 extern espMqttClientAsync  client;
@@ -160,7 +160,7 @@ void mqttdallas() {
        String temp_topic = "Xlyric/" + String(config.say_my_name) + "/dallas" ;
 
        String message = String(logging.loguptime()) + "Dallas maitre perdue";
-       client.publish((temp_topic+"dallas").c_str(),1,true, String(message).c_str());
+       client.publish((temp_topic+"dallas").c_str(), String(message).c_str(),true);
 
         unified_dimmer.dimmer_off();  /// mise en sécurité de l'ensemble
 
@@ -169,7 +169,7 @@ void mqttdallas() {
    }
 
 
-#ifdef STANDALONE
+#ifdef qsdfsqdsfqs
   if ( pinger.Ping(WiFi.gatewayIP())) {
     gw_error = 0; // remise à zéro du compteur d'erreur
   }

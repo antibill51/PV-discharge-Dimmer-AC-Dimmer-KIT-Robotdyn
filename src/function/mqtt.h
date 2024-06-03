@@ -10,12 +10,11 @@
 #if defined(ESP32) || defined(ESP32ETH)
 // Web services
   #include "WiFi.h"
-  #include <AsyncTCP.h>
   #include "HTTPClient.h"
 #else
 // Web services
   #include <ESP8266WiFi.h>
-  #include <ESPAsyncTCP.h>
+  //#include <ESPAsyncTCP.h>
   #include <ESP8266HTTPClient.h> 
 #endif
 
@@ -64,7 +63,7 @@ void onMqttDisconnect(espMqttClientTypes::DisconnectReason reason);
 void onMqttSubscribe(uint16_t packetId, const espMqttClientTypes::SubscribeReturncode* codes, size_t len);
 void onMqttMessage(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total);
   /// @brief Enregistrement du dimmer sur MQTT pour récuperer les informations remonté par MQTT
-  /// @param Subscribedtopic 
+  /// @param topic 
   /// @param message 
   /// @param length 
 
@@ -143,7 +142,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
   }
 
   /// @brief Enregistrement des requetes de commandes 
-  if (strstr( Subscribedtopic, command_switch.c_str() ) != NULL) { 
+  if (strstr( topic, command_switch.c_str() ) != NULL) { 
     #ifdef RELAY1
       if (doc2.containsKey("relay1")) { 
           int relay = doc2["relay1"]; 
@@ -180,7 +179,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
     }
   } 
 
-  if (strstr( Subscribedtopic, command_number.c_str() ) != NULL) { 
+  if (strstr( topic, command_number.c_str() ) != NULL) { 
     if (doc2.containsKey("starting_power")) { 
       int startingpow = doc2["starting_power"]; 
       if (config.startingpow != startingpow ) {
@@ -272,7 +271,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
     }
   }
 //clear alarm & save
-  if (strstr( Subscribedtopic, command_button.c_str() ) != NULL) { 
+  if (strstr( topic, command_button.c_str() ) != NULL) { 
     if (doc2.containsKey("reset_alarm")) { 
       if (doc2["reset_alarm"] == "1" ) {
         logging.Set_log_init("Clear alarm temp \r\n",true);
@@ -293,7 +292,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
 
 
 //child mode
-  if (strstr( Subscribedtopic, command_select.c_str() ) != NULL) { 
+  if (strstr( topic, command_select.c_str() ) != NULL) { 
     if (doc2.containsKey("child_mode")) { 
       String childmode = doc2["child_mode"]; 
       if (config.mode != doc2["child_mode"] ) {
@@ -306,7 +305,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
       }
     }
   }
-  if (strcmp( Subscribedtopic, command_save.c_str() ) == 0) { 
+  if (strcmp( topic, command_save.c_str() ) == 0) { 
         strlcpy(config.hostname , doc2["hostname"], sizeof(config.hostname));
         config.port = doc2["port"];
         strlcpy(config.Publish , doc2["Publish"], sizeof(config.Publish));
@@ -330,7 +329,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
   }
 
 
-  if (strcmp( Subscribedtopic, HA_status.c_str() ) == 0) { 
+  if (strcmp( topic, HA_status.c_str() ) == 0) { 
         logging.Set_log_init("MQTT HA_status ",true);
         logging.Set_log_init(fixedpayload);
         logging.Set_log_init("\r\n");
@@ -357,7 +356,7 @@ void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
       serializeJson(doc, retour);
       // si config.Publish est vide, on ne publie pas
       if (strlen(config.Publish) != 0 ) {
-        client.publish(config.Publish, 0,true, retour.c_str());
+        client.publish(config.Publish, retour.c_str(), true);
       }
     }
 
@@ -365,7 +364,7 @@ void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
       String jeedom_publish = String(config.Publish) + "/" + idx ; 
       // si config.Publish est vide, on ne publie pas
       if (strlen(config.Publish) != 0 ) {
-        client.publish(jeedom_publish.c_str(), 0,true, value.c_str());
+        client.publish(jeedom_publish.c_str(), value.c_str(), true);
       }
     }
 
@@ -454,7 +453,7 @@ void HA_discover(){
 //   if  (LittleFS.exists("/mqtt.json"))
 //   {
 //       if (!client.connected() && WiFi.isConnected()) {
-//         Serial.print("Attempting MQTT connection...");
+//         Serial.print("Attempting MQTT connection...\n");
 //         connectToMqtt();
 //         delay(1000); // Attente d'avoir le callback de connexion MQTT avant de faire les subscriptions
 //       }
@@ -462,7 +461,7 @@ void HA_discover(){
       
 //       if (mqttConnected) {
 //         logging.Set_log_init("Subscribe and publish to MQTT topics\r\n");
-//        
+// 
 //         Serial.println("connected");
 //         logging.Set_log_init("Connected\r\n");
 

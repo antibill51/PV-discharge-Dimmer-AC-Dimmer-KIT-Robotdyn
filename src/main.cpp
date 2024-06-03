@@ -100,9 +100,11 @@
 #include "function/minuteur.h"
 #include "function/reset_reason.h"
 
+/*
 extern "C" {
 #include "user_interface.h"
 }
+*/
 
 #ifdef ROBOTDYN
   #include "function/dimmer.h"
@@ -124,8 +126,8 @@ extern "C" {
 #if defined(ESP32) || defined(ESP32ETH)
 // Web services
   #include "WiFi.h"
-  #include <AsyncTCP.h>
   #include "HTTPClient.h"
+  #include <driver/adc.h>
 // File System
   #include <FS.h>
   #include "SPIFFS.h"
@@ -135,7 +137,7 @@ extern "C" {
 #else
 // Web services
   #include <ESP8266WiFi.h>
-  #include <ESPAsyncTCP.h>
+  //#include <ESPAsyncTCP.h>
   #include <ESP8266HTTPClient.h> 
 // File System
   #include <LittleFS.h> // NO SONAR
@@ -242,6 +244,8 @@ bool pingIP(IPAddress ip) ;
 String stringBool(bool mybool);
 String getServermode(String Servermode);
 String switchstate(int state);
+void tests ();
+
 
 /// @brief  declaration des logs 
 Logs logging;/// declare logs 
@@ -255,7 +259,7 @@ int childsend = 0;
  **************************/
 #ifdef ROBOTDYN  
     dimmerLamp dimmer(outputPin, zerocross); //initialise port for dimmer for ESP8266, ESP32, Arduino due boards
-
+  
   #ifdef outputPin2
     dimmerLamp dimmer2(outputPin2, zerocross); //initialise port for dimmer2 for ESP8266, ESP32, Arduino due boards
   #endif
@@ -302,6 +306,7 @@ void setup() {
 
   /// Correction issue full power at start
   pinMode(outputPin, OUTPUT); 
+  pinMode(zerocross, INPUT);
   #ifndef ESP32ETH 
     #ifndef ESP32
       pinMode(D1, OUTPUT);
@@ -322,6 +327,7 @@ void setup() {
   pinMode(POS_PIN, OUTPUT); 
   digitalWrite(POS_PIN, 1);
   #endif
+
 
   // #if defined(ESP32) || defined(ESP32ETH)
   //   esp_reset_reason_t reset_reason = esp_reset_reason();
@@ -352,6 +358,7 @@ void setup() {
   //   logging.Set_log_init(String(bootReasonMessage).c_str());
   //   logging.Set_log_init("\r\n");
   // #endif
+  
   SendBootReasonMessage();
 
   #ifdef RELAY1 // permet de rajouter les relais en ne modifiant que config.h, et pas seulement en STANDALONE
@@ -374,16 +381,16 @@ void setup() {
   Serial.println("Demarrage file System");
   logging.Set_log_init("Start filesystem \r\n"); 
   test_fs_version();
-  #ifdef ROBOTDYN
+#ifdef ROBOTDYN
   // configuration dimmer
     #ifdef outputPin
-      dimmer.begin(NORMAL_MODE, ON); //dimmer initialisation: name.begin(MODE, STATE) 
+      dimmer.begin(NORMAL_MODE, OFF); //dimmer initialisation: name.begin(MODE, STATE) 
     #endif
     #ifdef outputPin2 
-      dimmer2.begin(NORMAL_MODE, ON); //dimmer2 initialisation: name.begin(MODE, STATE) 
+    //  dimmer2.begin(NORMAL_MODE, ON); //dimmer2 initialisation: name.begin(MODE, STATE)  // la déclaration est en fait globale pas besoin de redéclarer et pose pb sur ESP32
     #endif
     #ifdef outputPin3
-      dimmer3.begin(NORMAL_MODE, ON); //dimmer3 initialisation: name.begin(MODE, STATE) 
+    //  dimmer3.begin(NORMAL_MODE, ON); //dimmer3 initialisation: name.begin(MODE, STATE) 
     #endif
 
   #ifdef POWERSUPPLY2022  
@@ -393,13 +400,14 @@ void setup() {
   pinMode(GND_PIN, OUTPUT);  /// board bug
   digitalWrite(GND_PIN, 0);  /// board bug with pin 16 
 
-    pinMode(POS_PIN, OUTPUT); 
-    digitalWrite(POS_PIN, 1);
-    #endif
+  pinMode(POS_PIN, OUTPUT); 
+  digitalWrite(POS_PIN, 1);
   #endif
+#endif
+
 
   /// init de sécurité     
-#ifdef ROBOTDYN
+  #ifdef ROBOTDYN
     dimmer.setState(OFF); 
   #endif
   #ifdef outputPin2
@@ -452,8 +460,8 @@ void setup() {
   Serial.print("start Wifiautoconnect");
   logging.Set_log_init("Start Wifiautoconnect \r\n"); 
 
-    WiFi.setPhyMode(WIFI_PHY_MODE_11N);
-    wifi_set_phy_mode(PHY_MODE_11N);
+    //WiFi.setPhyMode(WIFI_PHY_MODE_11N);
+    //wifi_set_phy_mode(PHY_MODE_11N);
   
 
 
@@ -477,8 +485,10 @@ void setup() {
         Serial.print(String(wifi_config_fixe.static_ip));
   }
 
+    WiFi.setHostname(config.say_my_name); /// doit être placé avant la connexion sinon sous ESP32, l'hostname n'est pas pris en compte
     wifiManager.autoConnect(config.say_my_name);
-    
+    // Afficher le nom : 
+    Serial.println("say_my_name: " + String(config.say_my_name));
     DEBUG_PRINTLN("end Wifiautoconnect");
     wifiManager.setSaveConfigCallback(saveConfigCallback);
     wifiManager.setConfigPortalTimeout(600);
@@ -498,11 +508,11 @@ void setup() {
     Serial.print(".");
   }
 
-    WiFi.setHostname(config.say_my_name);
-    WiFi.setPhyMode(WIFI_PHY_MODE_11N);
-    wifi_set_phy_mode(PHY_MODE_11N);
+    
+   // WiFi.setPhyMode(WIFI_PHY_MODE_11N);
+    //wifi_set_phy_mode(PHY_MODE_11N);
     WiFi.setAutoReconnect(true);
-    WiFi.setOutputPower(20);
+   // WiFi.setOutputPower(20);
 
    /// restart si la configuration OP static est différente ip affectée suite changement ip Autoconf
   if ( !strcmp(wifi_config_fixe.static_ip, "" ) == 0 )  {
@@ -536,10 +546,7 @@ void setup() {
       AP = true; 
   }
 
-
   
-
-
     //***********************************
     //************* Setup - OTA 
     //***********************************
@@ -624,9 +631,7 @@ logging.Set_log_init("fin du demarrage: ");
 logging.Set_log_init("",true);
 logging.Set_log_init("\r\n");
 
-
 delay(1000);
-
 }
 
 
@@ -1038,3 +1043,26 @@ void dallaspresent () {
 String stringBool(bool myBool) {
   return myBool ? "true" : "false";
 }
+
+
+void tests () {
+///test de debug
+#ifdef ROBOTDYN
+  USE_SERIAL.println("--- Toggle dimmer example start ---");
+  dimmer.setState(ON); // state: dimmer1.setState(ON/OFF);
+  dimmer.setState(ON);
+  dimmer3.setState(ON); 
+  dimmer2.setState(ON);
+  dimmer2.setPower(100);
+  dimmer3.setPower(100);
+  dimmer.setPower(100);
+  delay(5000);
+  dimmer.setPower(0);
+  dimmer2.setPower(0);
+  dimmer3.setPower(0);
+  delay(5000);
+  USE_SERIAL.println("--- Toggle dimmer example end ---");
+
+#endif  
+}
+
