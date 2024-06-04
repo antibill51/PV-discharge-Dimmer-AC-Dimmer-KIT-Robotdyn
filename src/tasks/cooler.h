@@ -9,7 +9,7 @@ extern Mqtt mqtt_config;
 extern String logs;
 extern bool AP; // mode point d'accès
 extern MQTT device_cooler;
-extern byte security;
+//extern byte security;
 extern Programme programme;
 
 unsigned long lastCoolerOffTime = 0;

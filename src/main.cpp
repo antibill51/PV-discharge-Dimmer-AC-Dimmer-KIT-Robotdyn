@@ -215,9 +215,9 @@ DallasTemperature sensors(&ds);
   
   byte present = 0;
   
-  byte data[12];
-  float previous_celsius[MAX_DALLAS] = {0.00}; // NO SONAR
-  byte security = 0;
+  byte data[12]; //NOSONAR
+  float previous_celsius[MAX_DALLAS] = {0.00}; // NOSONAR
+  //byte security = 0;
   int refresh = 60;
   int refreshcount = 0; 
 int deviceCount = 0;
@@ -779,8 +779,8 @@ void loop() {
           }
 
   if ( sysvar.security == 1 ) { 
-    if (!alerte){
-      Serial.println("Alert Temp");
+      if (!alerte){
+        Serial.println("Alert Temp");
       logging.Set_log_init("Alert Temp\r\n",true);
     
       if (!AP && mqtt_config.mqtt){

@@ -48,7 +48,7 @@ extern MQTT device_dimmer_alarm_temp_clear;
 
 extern bool discovery_temp; 
 extern bool alerte; 
-extern byte security; // sécurité
+//extern byte security; // sécurité
 extern Logs logging; 
 extern String devAddrNames[MAX_DALLAS];
 extern espMqttClientAsync client; 

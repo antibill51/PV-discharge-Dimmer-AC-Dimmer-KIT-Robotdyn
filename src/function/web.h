@@ -30,7 +30,7 @@ extern Programme programme_relay2;
 extern gestion_puissance unified_dimmer; 
 
 extern DNSServer dns;
-extern byte security; 
+//extern byte security; 
 
 AsyncWebServer server(80);
 
@@ -614,7 +614,7 @@ String getState() {
     doc["power"] = int(instant_power * config.charge/100);
     doc["Ptotal"]  = sysvar.puissance_cumul + int(instant_power * config.charge/100);
     // recupération de l'état de surchauffe
-    doc["alerte"]  = security;
+    doc["alerte"]  = sysvar.security;
 #ifdef RELAY1    
     doc["relay1"]   = digitalRead(RELAY1);
     doc["relay2"]   = digitalRead(RELAY2);
