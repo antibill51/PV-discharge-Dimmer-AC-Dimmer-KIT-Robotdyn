@@ -339,6 +339,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
           logging.Set_log_init("MQTT Disconnection to resend HA discovery \r\n",true);
         }
   }
+  delete[] message;
 }
 
 void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
