@@ -97,7 +97,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
     memcpy(message, payload, len);
     message[len] = '\0';
 
-
+  Serial.println("length : " + String(len));
   Serial.println("topic : " + String(topic));
   Serial.println("payload : " + String(message));
   String fixedpayload = ((String)message).substring(0,len);

@@ -81,7 +81,7 @@ extern String devAddrNames[MAX_DALLAS];
 extern SSR_BURST ssr_burst;
 #endif
 
-void dallaspresent ();
+bool dallaspresent ();
 
 void call_pages() {
   // pages Statiques voir compressées
