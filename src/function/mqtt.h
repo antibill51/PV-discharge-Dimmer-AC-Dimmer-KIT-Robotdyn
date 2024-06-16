@@ -89,21 +89,22 @@ extern String stringBool(bool myBool);
   String command_button;
   String command_save;
 
-void callback(const espMqttClientTypes::MessageProperties& properties, const char* Subscribedtopic, const uint8_t* payload, size_t len, size_t index, size_t total) {
-// void callback(char* Subscribedtopic, char* payload, espMqttClientAsyncMessageProperties properties, size_t len, size_t index, size_t total) {
+void callback(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total) {
+// void callback(char* topic, char* payload, espMqttClientAsyncMessageProperties properties, size_t len, size_t index, size_t total) {
   // debug
-    char message[len + 1];
+    // char message[len + 1]; // Ajout d'un espace pour le caractère nul // NOSONAR
+    char* message = new char[len + 1];
     memcpy(message, payload, len);
     message[len] = '\0';
 
 
-  Serial.println("Subscribedtopic : " + String(Subscribedtopic));
+  Serial.println("topic : " + String(topic));
   Serial.println("payload : " + String(message));
   String fixedpayload = ((String)message).substring(0,len);
   JsonDocument doc2;
   deserializeJson(doc2, message);
   /// @brief Enregistrement du dimmer sur MQTT pour récuperer les informations remonté par MQTT
-  if (strcmp( Subscribedtopic, config.SubscribePV ) == 0 && doc2.containsKey("dimmer")) { 
+  if (strcmp( topic, config.SubscribePV ) == 0 && doc2.containsKey("dimmer")) { 
     float puissancemqtt = doc2["dimmer"]; 
     puissancemqtt = puissancemqtt - config.startingpow;
     if (puissancemqtt < 0) puissancemqtt = 0;
@@ -118,7 +119,7 @@ void callback(const espMqttClientTypes::MessageProperties& properties, const cha
     }
   }
   /// @brief Enregistrement temperature
-  if (strcmp( Subscribedtopic, config.SubscribeTEMP ) == 0 ){ // && doc2.containsKey("temperature")) { 
+  if (strcmp( topic, config.SubscribeTEMP ) == 0 ){ // && doc2.containsKey("temperature")) { 
     float temperaturemqtt = doc2[0]; 
     sysvar.dallas_maitre= deviceCount+1;
     devAddrNames[deviceCount+1] = "MQTT";
@@ -357,7 +358,7 @@ void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
       serializeJson(doc, retour);
       // si config.Publish est vide, on ne publie pas
       if (strlen(config.Publish) != 0 ) {
-        client.publish(config.Publish, retour.c_str(), true);
+        client.publish(config.Publish, 0,true, retour.c_str());
       }
     }
 
@@ -365,7 +366,7 @@ void Mqtt_send_DOMOTICZ(String idx, String value, String name="")
       String jeedom_publish = String(config.Publish) + "/" + idx ; 
       // si config.Publish est vide, on ne publie pas
       if (strlen(config.Publish) != 0 ) {
-        client.publish(jeedom_publish.c_str(), value.c_str(), true);
+        client.publish(jeedom_publish.c_str(), 0,true, value.c_str());
       }
     }
 
