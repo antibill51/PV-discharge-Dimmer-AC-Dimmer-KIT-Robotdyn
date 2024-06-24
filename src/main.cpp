@@ -148,7 +148,7 @@ extern "C" {
 #endif
 
 // taches
-Task Task_dallas(15000, TASK_FOREVER, &mqttdallas);
+Task Task_dallas(12000, TASK_FOREVER, &mqttdallas);
 Task Task_Cooler(15000, TASK_FOREVER, &cooler);
 Task Task_GET_POWER(10000, TASK_FOREVER, &get_dimmer_child_power);
 #ifdef RELAY1
@@ -442,19 +442,19 @@ void setup() {
  
   /// chargement des conf de minuteries
   Serial.println(F("Loading minuterie \r\n"));
-  programme.name="dimmer";
+  programme.set_name("/dimmer");
   programme.loadProgramme();
   programme.saveProgramme();
 
-  #ifdef RELAY1
-    programme_relay1.name="relay1";
-    programme_relay1.loadProgramme();
-    programme_relay1.saveProgramme();
+#ifdef RELAY1
+  programme_relay1.set_name("/relay1");
+  programme_relay1.loadProgramme();
+  programme_relay1.saveProgramme();
 
-    programme_relay2.name="relay2";
-    programme_relay2.loadProgramme();
-    programme_relay2.saveProgramme();
-  #endif
+  programme_relay2.set_name("/relay2");
+  programme_relay2.loadProgramme();
+  programme_relay2.saveProgramme();
+#endif
     //***********************************
     //************* Setup - Connexion Wifi
     //***********************************
