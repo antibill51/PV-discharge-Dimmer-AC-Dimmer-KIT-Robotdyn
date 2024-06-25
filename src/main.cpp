@@ -1069,7 +1069,7 @@ bool dallaspresent () {
     logging.Set_log_init(" found. Address : " );
     logging.Set_log_init(address); 
     logging.Set_log_init("\r\n");
-
+    present = 1 ; 
     delay(250);
 
 
@@ -1079,10 +1079,11 @@ bool dallaspresent () {
 
     ds.write(0x44, 1);        // start conversion, with parasite power on at the end
   
-    delay(1000);     // maybe 750ms is enough, maybe not
+    delay(750);     // maybe 750ms is enough, maybe not
   // we might do a ds.depower() here, but the reset will take care of it.
   
-    present = ds.reset();    ///  byte 0 > 1 si present
+    ds.reset();    ///  byte 0 > 1 si present
+    delay(250);
     ds.select(addr[a]);    
     ds.write(0xBE);         // Read Scratchpad
 
