@@ -181,14 +181,14 @@ void call_pages() {
         sysvar.change=1; 
         }
         String pb=getState().c_str(); 
-        request->send_P(200, "text/plain", pb.c_str() );  
+        request->send(200, "text/plain", pb.c_str() );  
       } 
       
       else if (request->hasParam(PARAM_INPUT_2)) { 
         config.startingpow = request->getParam(PARAM_INPUT_2)->value().toInt(); 
         logging.Set_log_init("HTTP Startingpower at " + String(config.startingpow)+"W\r\n",true);
         sysvar.change=1; 
-        request->send_P(200, "text/plain", getState().c_str());
+        request->send(200, "text/plain", getState().c_str());
       }
 
       else  { 
@@ -203,7 +203,7 @@ void call_pages() {
     }
     else
     { 
-      request->send_P(200, "text/html", textnofiles().c_str());
+      request->send(200, "text/html", textnofiles().c_str());
     }
     
     DEBUG_PRINTLN(sysvar.puissance);
@@ -224,20 +224,20 @@ void call_pages() {
     }
     else
     { 
-      request->send_P(200, "text/plain", textnofiles().c_str());
+      request->send(200, "text/plain", textnofiles().c_str());
     }
   });
 
   server.on("/state", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/plain", getState().c_str());
+    request->send(200, "text/plain", getState().c_str());
   });
 
     server.on("/state_dallas", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/plain", getState_dallas().c_str());
+    request->send(200, "text/plain", getState_dallas().c_str());
   });
 
   server.on("/resetwifi", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/plain", "Resetting Wifi and reboot");
+    request->send(200, "text/plain", "Resetting Wifi and reboot");
     wifiManager.resetSettings();
     config.restart = true;
   });
@@ -403,17 +403,17 @@ void call_pages() {
 
 
   server.on("/config", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/plain", getconfig().c_str());
+    request->send(200, "text/plain", getconfig().c_str());
   });
 
   server.on("/reset", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/plain","Restarting");
+    request->send(200, "text/plain","Restarting");
     config.restart = true;
   });
 
   server.on("/cs", HTTP_ANY, [](AsyncWebServerRequest *request){
     logging.Set_log_init("}1");
-    request->send_P(200, "text/plain", logging.Get_log_init().c_str());
+    request->send(200, "text/plain", logging.Get_log_init().c_str());
     // reinit de logging.log_init 
     logging.reset_log_init(); 
   });
@@ -429,7 +429,7 @@ void call_pages() {
   });
 
   server.on("/readmqtt", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/html", readmqttsave().c_str());
+    request->send(200, "text/html", readmqttsave().c_str());
     });
 
 
@@ -711,7 +711,7 @@ String getMinuteur() {
 
 String getmqtt() {
     String retour;
-    JsonDocument doc; 
+  JsonDocument doc; 
 
     doc["server"] = config.hostname;
     doc["port"] = config.port;

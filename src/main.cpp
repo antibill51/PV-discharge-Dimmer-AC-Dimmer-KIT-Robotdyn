@@ -84,7 +84,7 @@
 #include <TaskScheduler.h> // gestion des taches
 
 // ota mise à jour sans fil
-#include <AsyncElegantOTA.h>
+#include <ElegantOTA.h>
 // Dallas 18b20
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -197,7 +197,6 @@ int timesync_refresh = 120;
 //************* Dallas
 //***********************************
 bool dallaspresent ();
-//#define TEMPERATURE_PRECISION 10  // non utilisé ? 
 
 
 ////////////////////////////////////
@@ -555,7 +554,7 @@ void setup() {
     //***********************************
     //************* Setup - OTA 
     //***********************************
-  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+    ElegantOTA.begin(&server);    // Start ElegantOTA
    
     //***********************************
     //************* Setup - Web pages
@@ -575,10 +574,12 @@ void setup() {
   //// récupération des dallas .  
   Serial.println("start 18b20");
   
-  // delay(2000);
+  delay(1000);
   deviceCount = sensors.getDeviceCount();
+  
   if (deviceCount == 0 ) { //si toujours pas trouvé 
-    delay(1000);
+    sensors.begin(); //réinit du bus one wire
+    delay(1500);
     deviceCount = sensors.getDeviceCount();
   }
 
