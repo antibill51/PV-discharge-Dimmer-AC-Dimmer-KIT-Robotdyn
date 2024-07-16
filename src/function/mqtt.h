@@ -495,8 +495,8 @@ void HA_discover(){
 char arrayWill[64];// NOSONAR
 void async_mqtt_init() {
   String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-  String topic_Xlyric = "Xlyric/dimmer-" + node_mac +"/";; 
-  //String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
+  // String topic_Xlyric = "Xlyric/Dimmer-" + node_mac +"/";; 
+  String topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
 	const String LASTWILL_TOPIC = topic_Xlyric + "status";
 	LASTWILL_TOPIC.toCharArray(arrayWill, 64);
   IPAddress ip;
@@ -530,9 +530,9 @@ void onMqttConnect(bool sessionPresent) {
   logging.Set_log_init("Connected to MQTT.\r\n",true);
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
-  //topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
-  String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
-  String topic_Xlyric = "Xlyric/dimmer-" + node_mac +"/";; 
+  topic_Xlyric = "Xlyric/" + String(config.say_my_name) +"/";
+  // String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
+  // String topic_Xlyric = "Xlyric/dimmer-" + node_mac +"/";; 
 
   command_switch = String(topic_Xlyric + "command/switch");
   command_number = String(topic_Xlyric + "command/number");
