@@ -84,7 +84,7 @@
 #include <TaskScheduler.h> // gestion des taches
 
 // ota mise à jour sans fil
-#include <ElegantOTA.h>
+#include <AsyncElegantOTA.h>
 // Dallas 18b20
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -554,7 +554,7 @@ void setup() {
     //***********************************
     //************* Setup - OTA 
     //***********************************
-    ElegantOTA.begin(&server);    // Start ElegantOTA
+    AsyncElegantOTA.begin(&server);    // Start ElegantOTA
    
     //***********************************
     //************* Setup - Web pages
